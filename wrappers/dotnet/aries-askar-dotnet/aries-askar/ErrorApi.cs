@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 
 namespace aries_askar_dotnet.aries_askar
 {
-    public static class Error
+    public static class ErrorApi
     {
         public static Task<string> GetCurrentErrorAsync()
         {

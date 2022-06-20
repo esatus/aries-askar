@@ -3,9 +3,9 @@ using FluentAssertions;
 using NUnit.Framework;
 using System.Threading.Tasks;
 
-namespace indy_shared_rs_dotnet_test.indy_credx
+namespace aries_askar_dotnet_tests.aries_askar
 {
-    public class ErrorTests
+    public class ErrorApiTests
     {
         [Test]
         [TestCase(TestName = "GetCurrentErrorAsync returns the json of an empty error.")]
@@ -15,7 +15,7 @@ namespace indy_shared_rs_dotnet_test.indy_credx
 
             //Act
             string expected = "{\"code\":0,\"message\":null}";
-            string actual = await Error.GetCurrentErrorAsync();
+            string actual = await ErrorApi.GetCurrentErrorAsync();
 
             //Assert
             actual.Should().Be(expected);
