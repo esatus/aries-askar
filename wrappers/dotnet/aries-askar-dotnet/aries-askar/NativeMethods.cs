@@ -124,6 +124,11 @@ namespace aries_askar_dotnet.aries_askar
         internal static extern int askar_set_max_log_level(int max_level);
         #endregion
 
+        #region Mod
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern string askar_version();
+        #endregion
+
         #region ResultList
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int askar_entry_list_count(uint entryListHandle, int count);
