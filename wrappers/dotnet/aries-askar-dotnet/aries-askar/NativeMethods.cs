@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.InteropServices;
 using static indy_vdr_dotnet.models.Structures;
 
@@ -103,6 +104,150 @@ namespace aries_askar_dotnet.aries_askar
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int askar_key_derive_ecdh_1pu(FfiStr alg, uint ephemeralKeyHandle, uint senderKeyHandle, uint recipKeyHandle, ByteBuffer algId, ByteBuffer apu, ByteBuffer apv, ByteBuffer ccTag, byte receive, ref uint localKeyHandle);
+        #endregion
+
+        #region Log
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        // Option<EnableCallback, Option<FlushCallback>
+        internal static extern int askar_set_custom_logger(IntPtr context, GetLogCallbackDelegate log, GetEnableCallbackDelegate enable, GetFlushCallbackDelegate flush, int max_level); 
+        internal delegate void GetLogCallbackDelegate(IntPtr context, int level, string target, string message, string module_path, string file, int line);
+        internal delegate void GetEnableCallbackDelegate(IntPtr context, int level);
+        internal delegate void GetFlushCallbackDelegate(IntPtr context);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_clear_custom_logger();
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_set_default_logger();
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_set_max_log_level(int max_level);
+        #endregion
+
+        #region ResultList
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_entry_list_count(uint entryListHandle, int count);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_entry_list_get_category(uint entryListHandle, int index, string category);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_entry_list_get_name(uint entryListHandle, int index, string name);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_entry_list_get_value(uint entryListHandle, int index, SecretBuffer value);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_entry_list_get_tags(uint entryListHandle, int index, string tags);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_entry_list_free(uint entryListHandle);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_key_entry_list_count(uint keyEntryListHandle, int count);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_key_entry_list_free(uint keyEntryListHandle);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_key_entry_list_get_algorithm(uint keyEntryListHandle, int index, string alg);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_key_entry_list_get_name(uint keyEntryListHandle, int index, string name);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_key_entry_list_get_metadata(uint keyEntryListHandle, int index, string metadata);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_key_entry_list_get_tags(uint keyEntryListHandle, int index, string tags);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_key_entry_list_load_local(uint keyEntryListHandle, int index, uint outLocalKeyHandle);
+        #endregion
+
+        #region Secret
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_buffer_free(SecretBuffer buffer);
+        #endregion
+
+        #region Store
+        internal delegate void GetStoreCompletedDelegate(long callback_id, int err);
+        internal delegate void GetStoreByteCompletedDelegate(long callback_id, int err, byte remove);
+        internal delegate void GetStoreStringCompltedDelegate(long callback_id, int err, string result_p);
+        internal delegate void GetStoreLongCompletedDelegate(long callback_id, int err, long count);
+        internal delegate void GetStoreHandleCompletedDelegate(long callback_id, int err, uint handle);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_store_generate_raw_key(ByteBuffer seed, string output);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_store_provision(FfiStr spec_uri, FfiStr key_method, FfiStr pass_key, FfiStr profile, byte recreate, GetStoreHandleCompletedDelegate cb, long cb_id);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_store_open(FfiStr spec_uri, FfiStr key_method, FfiStr pass_key, FfiStr profile, GetStoreHandleCompletedDelegate cb, long cb_id);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_store_remove(FfiStr spec_uri, GetStoreHandleCompletedDelegate cb, long cb_id);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_store_create_profile(uint storeHandle, FfiStr profile, GetStoreStringCompltedDelegate cb, long cb_id);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_store_get_profile_name(uint storeHandle, GetStoreStringCompltedDelegate cb, long cb_id);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_store_remove_profile(uint storeHandle, FfiStr profile, GetStoreByteCompletedDelegate cb, long cb_id);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_store_rekey(uint storeHandle, FfiStr key_method, FfiStr pass_key, GetStoreCompletedDelegate cb, long cb_id);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_store_close(uint storeHandle, GetStoreCompletedDelegate cb, long cb_id);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_scan_start(uint storeHandle, FfiStr profile, FfiStr category, FfiStr tag_filter, long offset, long limit, GetStoreHandleCompletedDelegate cb, long cb_id);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_scan_next(uint scanHandle, GetStoreHandleCompletedDelegate cb, long cb_id);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_scan_free(uint scanHandle);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_session_start(uint storeHandle, FfiStr profile, byte as_transaction, GetStoreHandleCompletedDelegate cb, long cb_id);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_session_count(uint storeHandle, FfiStr category, byte tag_filter, GetStoreLongCompletedDelegate cb, long cb_id);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_session_fetch(uint storeHandle, FfiStr category, FfiStr name, byte for_update, GetStoreHandleCompletedDelegate cb, long cb_id);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_session_fetch_all(uint storeHandle, FfiStr category, FfiStr tag_filter, long limit, byte for_update, GetStoreHandleCompletedDelegate cb, long cb_id);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_session_remove_all(uint storeHandle, FfiStr category, FfiStr tag_filter, GetStoreLongCompletedDelegate cb, long cb_id);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_session_update(uint sesstionHandle, byte operation, FfiStr category, FfiStr name, ByteBuffer value, FfiStr tags, long expiry_ms, GetStoreCompletedDelegate cb, long cb_id);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_session_insert_key(uint storeHandle, uint localKeyHandle, FfiStr tag_filter, FfiStr metadata, FfiStr tags, long expiry_ms, GetStoreCompletedDelegate cb, long cb_id);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_session_fetch_key(uint storeHandle, FfiStr name, byte for_update, GetStoreHandleCompletedDelegate cb, long cb_id);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_session_fetch_all_keys(uint sessionHandle, FfiStr alg, FfiStr thumbprint, FfiStr tag_filter, long limit, byte for_update, GetStoreHandleCompletedDelegate cb, long cb_id);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_session_update_key(uint sessionHandle, FfiStr name, FfiStr metadata, FfiStr tags, long expiry_ms, GetStoreCompletedDelegate cb, long cb_id);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_session_remove_key(uint sessionHandle, FfiStr name, GetStoreCompletedDelegate cb, long cb_id);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_session_close(uint sessionHandle, byte commit, GetStoreCompletedDelegate cb, long cb_id);
         #endregion
     }
 }
