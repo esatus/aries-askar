@@ -26,16 +26,27 @@ namespace indy_vdr_dotnet.models
         [StructLayout(LayoutKind.Sequential)]
         public unsafe struct ByteBuffer
         {
-            public uint len;
+            public long len;
             public byte* value;
 
             public static ByteBuffer Create(string json)
             {
-                UTF8Encoding decoder = new UTF8Encoding(true, true);
+                UTF8Encoding decoder = new(true, true);
                 byte[] bytes = new byte[json.Length];
                 decoder.GetBytes(json, 0, json.Length, bytes, 0);
                 ByteBuffer buffer = new();
                 buffer.len = (uint)json.Length;
+                fixed (byte* bytebuffer_p = &bytes[0])
+                {
+                    buffer.value = bytebuffer_p;
+                }
+                return buffer;
+            }
+
+            public static ByteBuffer Create(byte[] bytes)
+            {
+                ByteBuffer buffer = new();
+                buffer.len = bytes.Length;
                 fixed (byte* bytebuffer_p = &bytes[0])
                 {
                     buffer.value = bytebuffer_p;
@@ -47,7 +58,7 @@ namespace indy_vdr_dotnet.models
         [StructLayout(LayoutKind.Sequential)]
         public unsafe struct SecretBuffer
         {
-            public uint len;
+            public long len;
             public byte* data;
         }
 

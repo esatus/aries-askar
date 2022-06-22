@@ -21,7 +21,30 @@
                 KeyAlg.X25519 => "x25519",
                 KeyAlg.K256 => "k256",
                 KeyAlg.P256 => "p256",
-                _ => null,
+                _ => null
+            };
+        }
+
+        public static string ToJwkCrvString(this KeyAlg keyAlg)
+        {
+            return keyAlg switch
+            {
+                KeyAlg.A128GCM => "A128GCM",
+                KeyAlg.A256GCM => "A256GCM",
+                KeyAlg.A128CBC_HS256 => "A128CBC_HS256",
+                KeyAlg.A256CBC_HS512 => "A256CBC_HS512",
+                KeyAlg.A128KW => "A128KW",
+                KeyAlg.A256KW => "A256KW",
+                KeyAlg.BLS12_381_G1 => "BLS12381_G1",
+                KeyAlg.BLS12_381_G2 => "BLS12381_G2",
+                KeyAlg.BLS12_381_G1G2 => "BLS12381_G1G2",
+                KeyAlg.C20P => "C20P",
+                KeyAlg.XC20P => "XC20P",
+                KeyAlg.ED25519 => "ED25519",
+                KeyAlg.X25519 => "X25519",
+                KeyAlg.K256 => "K256",
+                KeyAlg.P256 => "P256",
+                _ => null
             };
         }
     }
