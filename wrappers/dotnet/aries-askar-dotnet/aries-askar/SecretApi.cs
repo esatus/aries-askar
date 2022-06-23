@@ -9,16 +9,18 @@ namespace aries_askar_dotnet.aries_askar
 {
     public class SecretApi
     {
-        public static async Task BufferFree(SecretBuffer buffer)
+        public static async Task<bool> BufferFree(SecretBuffer buffer)
         {
             int errorCode = NativeMethods.askar_buffer_free(buffer);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
+            else
+                return true;
         }
     }
 }

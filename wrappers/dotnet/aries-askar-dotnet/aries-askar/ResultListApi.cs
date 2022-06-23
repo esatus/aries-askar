@@ -14,11 +14,11 @@ namespace aries_askar_dotnet.aries_askar
                 entryListHandle,
                 ref count);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
             return count;
         }
@@ -33,11 +33,11 @@ namespace aries_askar_dotnet.aries_askar
                 index,
                 category);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
             return category;
         }
@@ -52,11 +52,11 @@ namespace aries_askar_dotnet.aries_askar
                 index,
                 name);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
             return name;
         }
@@ -71,11 +71,11 @@ namespace aries_askar_dotnet.aries_askar
                 index,
                 ref value);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
             return value;
         }
@@ -90,27 +90,29 @@ namespace aries_askar_dotnet.aries_askar
                 index,
                 tags);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
             return tags;
         }
 
-        public static async Task EntryListFreeAsync(
+        public static async Task<bool> EntryListFreeAsync(
             uint entryListHandle)
         {
             int errorCode = NativeMethods.askar_entry_list_free(
                 entryListHandle);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
+            else
+                return true;
         }
 
         public static async Task<int> KeyEntryListCountAsync(
@@ -121,27 +123,29 @@ namespace aries_askar_dotnet.aries_askar
                 keyEntryListHandle,
                 ref count);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
             return count;
         }
 
-        public static async Task KeyEntryListFreeAsync(
+        public static async Task<bool> KeyEntryListFreeAsync(
             uint keyEntryListHandle)
         {
             int errorCode = NativeMethods.askar_key_entry_list_free(
                 keyEntryListHandle);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
+            else
+                return true;
         }
 
         public static async Task<string> KeyEntryListGetAlgorithmAsync(
@@ -154,11 +158,11 @@ namespace aries_askar_dotnet.aries_askar
                 index,
                 alg);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
             return alg;
         }
@@ -173,11 +177,11 @@ namespace aries_askar_dotnet.aries_askar
                 index,
                 name);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
             return name;
         }
@@ -192,16 +196,16 @@ namespace aries_askar_dotnet.aries_askar
                 index,
                 metadata);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
             return metadata;
         }
 
-        public static async Task<string> KeyEntryListgetTagsyAsync(
+        public static async Task<string> KeyEntryListGetTagsAsync(
             uint keyEntryListHandle,
             int index)
         {
@@ -211,11 +215,11 @@ namespace aries_askar_dotnet.aries_askar
                 index,
                 tags);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
             return tags;
         }
@@ -230,11 +234,11 @@ namespace aries_askar_dotnet.aries_askar
                 index,
                 ref output);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
             return output;
         }

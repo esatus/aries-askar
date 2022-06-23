@@ -17,11 +17,11 @@ namespace aries_askar_dotnet.aries_askar
                 ephemeral,
                 ref localKeyHandle);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
 
             return localKeyHandle;
@@ -39,11 +39,11 @@ namespace aries_askar_dotnet.aries_askar
                 FfiStr.Create(method.ToSeedMethodString()),
                 ref localKeyHandle);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
 
             return localKeyHandle;
@@ -57,11 +57,11 @@ namespace aries_askar_dotnet.aries_askar
                 ByteBuffer.Create(jwkJson),
                 ref localKeyHandle);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
 
             return localKeyHandle;
@@ -77,11 +77,11 @@ namespace aries_askar_dotnet.aries_askar
                 ByteBuffer.Create(publicBytes),
                 ref localKeyHandle);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
 
             return localKeyHandle;
@@ -95,11 +95,11 @@ namespace aries_askar_dotnet.aries_askar
                 localKeyHandle,
                 ref secret);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
 
             return secret;
@@ -115,11 +115,11 @@ namespace aries_askar_dotnet.aries_askar
                 FfiStr.Create(keyAlg.ToKeyAlgString()),
                 ref jwk);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
 
             return jwk;
