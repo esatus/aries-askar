@@ -22,7 +22,7 @@ namespace aries_askar_dotnet
             if (int.TryParse(errCode, out errCodeInt))
             {
                 return new AriesAskarException(
-                    $"'{ErrorCodeConverter.ToErrorCodeString((ErrorCode)errCodeInt)}' error occured with ErrorCode '{errCode}' : {msg}.");
+                    $"'{((ErrorCode)errCodeInt).ToErrorCodeString()}' error occured with ErrorCode '{errCode}' : {msg}.");
             }
             else
             {
