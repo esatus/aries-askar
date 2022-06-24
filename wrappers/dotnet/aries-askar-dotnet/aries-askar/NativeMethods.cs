@@ -31,7 +31,7 @@ namespace aries_askar_dotnet.aries_askar
         internal static extern int askar_key_from_secret_bytes(FfiStr alg, ByteBuffer secret, ref uint localKeyHandle);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int askar_key_get_secret_bytes(FfiStr alg, ref SecretBuffer secret);
+        internal static extern int askar_key_get_secret_bytes(uint localKeyHandle, ref SecretBuffer secret);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int askar_key_convert(uint inputHandle, FfiStr alg, ref uint outputHandle);
@@ -43,7 +43,7 @@ namespace aries_askar_dotnet.aries_askar
         internal static extern int askar_key_free(uint localKeyHandle);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int askar_key_get_algorithm(uint localKeyHandle, ref string alg);
+        internal static extern int askar_key_get_algorithm(uint localKeyHandle, string alg);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int askar_key_get_ephemeral(uint localKeyHandle, ref byte ephemeral);
@@ -73,10 +73,10 @@ namespace aries_askar_dotnet.aries_askar
         internal static extern int askar_key_aead_decrypt(uint localKeyHandle, ByteBuffer ciphertext, ByteBuffer nonce, ByteBuffer tag, ByteBuffer aad, ref SecretBuffer aead);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int askar_key_sign_message(uint localKeyHandle, ByteBuffer message, FfiStr sigType , ref SecretBuffer secret);
+        internal static extern int askar_key_sign_message(uint localKeyHandle, ByteBuffer message, FfiStr sigType, ref SecretBuffer secret);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int askar_key_verify_signature(uint localKeyHandle, ByteBuffer message, ByteBuffer signature, FfiStr sigType , ref byte verify);
+        internal static extern int askar_key_verify_signature(uint localKeyHandle, ByteBuffer message, ByteBuffer signature, FfiStr sigType, ref byte verify);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int askar_key_wrap_key(uint localKeyHandle, uint otherLocalKeyHandle, ByteBuffer nonce, ref EncryptedBuffer wrappedKey);
@@ -91,7 +91,7 @@ namespace aries_askar_dotnet.aries_askar
         internal static extern int askar_key_crypto_box(uint recipKeyHandle, uint senderKeyHandle, ByteBuffer message, ByteBuffer nonce, ref SecretBuffer secret);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int askar_key_crypto_box_open(uint recipKeyHandle, uint senderKeyHandle, ByteBuffer message, ByteBuffer nonce, SecretBuffer secret);
+        internal static extern int askar_key_crypto_box_open(uint recipKeyHandle, uint senderKeyHandle, ByteBuffer message, ByteBuffer nonce, ref SecretBuffer secret);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int askar_key_crypto_box_seal(uint localKeyHandle, ByteBuffer message, ref SecretBuffer secret);
@@ -109,7 +109,7 @@ namespace aries_askar_dotnet.aries_askar
         #region Log
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         // Option<EnableCallback, Option<FlushCallback>
-        internal static extern int askar_set_custom_logger(IntPtr context, GetLogCallbackDelegate log, GetEnableCallbackDelegate enable, GetFlushCallbackDelegate flush, int max_level); 
+        internal static extern int askar_set_custom_logger(IntPtr context, GetLogCallbackDelegate log, GetEnableCallbackDelegate enable, GetFlushCallbackDelegate flush, int max_level);
         internal delegate void GetLogCallbackDelegate(IntPtr context, int level, string target, string message, string module_path, string file, int line);
         internal delegate void GetEnableCallbackDelegate(IntPtr context, int level);
         internal delegate void GetFlushCallbackDelegate(IntPtr context);
