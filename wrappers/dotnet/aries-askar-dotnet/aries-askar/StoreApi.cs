@@ -306,6 +306,7 @@ namespace aries_askar_dotnet.aries_askar
             return await taskCompletionSource.Task;
         }
 
+        //Returns an EntryListHandle
         public static async Task<uint> SessionFetchAsync(uint sessionHandle, string category, string name, bool forUpdate)
         {
             var taskCompletionSource = new TaskCompletionSource<uint>();
@@ -329,6 +330,7 @@ namespace aries_askar_dotnet.aries_askar
             return await taskCompletionSource.Task;
         }
 
+        //Returns an EntryListHandle
         public static async Task<uint> SessionFetchAllAsync(uint sessionHandle, string category, string tagFilter, long limit, bool forUpdate)
         {
             var taskCompletionSource = new TaskCompletionSource<uint>();
