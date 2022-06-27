@@ -80,7 +80,7 @@ namespace aries_askar_dotnet.aries_askar
         internal static extern int askar_key_crypto_box(IntPtr recipKeyHandle, IntPtr senderKeyHandle, ByteBuffer message, ByteBuffer nonce, ref SecretBuffer secret);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int askar_key_crypto_box_open(IntPtr recipKeyHandle, IntPtr senderKeyHandle, ByteBuffer message, ByteBuffer nonce, SecretBuffer secret);
+        internal static extern int askar_key_crypto_box_open(IntPtr recipKeyHandle, IntPtr senderKeyHandle, ByteBuffer message, ByteBuffer nonce, ref SecretBuffer secret);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int askar_key_crypto_box_seal(IntPtr localKeyHandle, ByteBuffer message, ref SecretBuffer secret);
@@ -89,7 +89,7 @@ namespace aries_askar_dotnet.aries_askar
         internal static extern int askar_key_crypto_box_seal_open(IntPtr localKeyHandle, ByteBuffer ciphertext, ref SecretBuffer secret);
         #endregion
 
-        #region Util
+        #region Utils
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int askar_key_convert(IntPtr inputHandle, FfiStr alg, ref IntPtr outputHandle);
 

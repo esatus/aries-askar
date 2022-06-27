@@ -392,6 +392,293 @@ namespace aries_askar_dotnet.aries_askar
 
             return nonce;
         }
+
+        public static async Task<SecretBuffer> CryptoBoxAsync(
+            IntPtr recipKey,
+            IntPtr senderKey,
+            ByteBuffer message,
+            ByteBuffer nonce)
+        {
+            SecretBuffer output = new() { len = 0, data = null };
+
+            int errorCode = NativeMethods.askar_key_crypto_box(
+                recipKey,
+                senderKey,
+                message,
+                nonce,
+                ref output);
+
+            if (errorCode != (int)ErrorCode.Success)
+            {
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
+            }
+            return output;
+        }
+
+        public static async Task<SecretBuffer> OpenCryptoBoxAsync(
+            IntPtr recipKey,
+            IntPtr senderKey,
+            ByteBuffer message,
+            ByteBuffer nonce)
+        {
+            SecretBuffer output = new() { len = 0, data = null };
+
+            int errorCode = NativeMethods.askar_key_crypto_box_open(
+                recipKey,
+                senderKey,
+                message,
+                nonce,
+                ref output);
+
+            if (errorCode != (int)ErrorCode.Success)
+            {
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
+            }
+            return output;
+        }
+
+        public static async Task<SecretBuffer> SealCryptoBoxAsync(
+            IntPtr localKeyHandle,
+            ByteBuffer message)
+        {
+            SecretBuffer output = new() { len = 0, data = null };
+
+            int errorCode = NativeMethods.askar_key_crypto_box_seal(
+                localKeyHandle,
+                message,
+                ref output);
+
+            if (errorCode != (int)ErrorCode.Success)
+            {
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
+            }
+            return output;
+        }
+
+        public static async Task<SecretBuffer> OpenSealCryptoBoxAsync(
+            IntPtr localKeyHandle,
+            ByteBuffer ciphertext)
+        {
+            SecretBuffer output = new() { len = 0, data = null };
+
+            int errorCode = NativeMethods.askar_key_crypto_box_seal_open(
+                localKeyHandle,
+                ciphertext,
+                ref output);
+
+            if (errorCode != (int)ErrorCode.Success)
+            {
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
+            }
+            return output;
+        }
+        #endregion
+
+        #region Utils
+        public static async Task<IntPtr> ConvertKey(
+            IntPtr inputHandle,
+            KeyAlg keyAlg)
+        {
+            IntPtr output = new();
+
+            int errorCode = NativeMethods.askar_key_convert(
+                inputHandle,
+                FfiStr.Create(keyAlg.ToKeyAlgString()),
+                ref output);
+
+            if (errorCode != (int)ErrorCode.Success)
+            {
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
+            }
+            return output;
+        }
+
+        public static async Task FreeKey(
+            IntPtr inputHandle)
+        {
+            int errorCode = NativeMethods.askar_key_free(
+                inputHandle);
+
+            if (errorCode != (int)ErrorCode.Success)
+            {
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
+            };
+        }
+
+        public static async Task<SecretBuffer> GetSignMessageFromKeyAsync(
+            IntPtr localKeyHandle,
+            ByteBuffer message,
+            string sigType)
+        {
+            SecretBuffer output = new() { len = 0, data = null };
+
+            int errorCode = NativeMethods.askar_key_sign_message(
+                localKeyHandle,
+                message,
+                FfiStr.Create(sigType),
+                ref output);
+
+            if (errorCode != (int)ErrorCode.Success)
+            {
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
+            }
+            return output;
+        }
+
+        public static async Task<bool> VerifySignatureFromKeyAsync(
+            IntPtr localKeyHandle,
+            ByteBuffer message,
+            ByteBuffer signature,
+            string sigType)
+        {
+            byte output = new();
+
+            int errorCode = NativeMethods.askar_key_verify_signature(
+                localKeyHandle,
+                message,
+                signature,
+                FfiStr.Create(sigType),
+                ref output);
+
+            if (errorCode != (int)ErrorCode.Success)
+            {
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
+            }
+            return Convert.ToBoolean(output);
+        }
+
+        public static async Task<EncryptedBuffer> WrapKeyAsync(
+            IntPtr localKeyHandle,
+            IntPtr otherLocalKeyHandle,
+            ByteBuffer nonce)
+        {
+            EncryptedBuffer output = new()
+            {
+                buffer = new() { len = 0, data = null },
+                nonce_pos = 0,
+                tag_pos = 0
+            };
+
+            int errorCode = NativeMethods.askar_key_wrap_key(
+                localKeyHandle,
+                otherLocalKeyHandle,
+                nonce,
+                ref output);
+
+            if (errorCode != (int)ErrorCode.Success)
+            {
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
+            }
+            return output;
+        }
+
+        public static async Task<IntPtr> UnwrapKeyAsync(
+            IntPtr localKeyHandle,
+            string alg,
+            ByteBuffer ciphertext,
+            ByteBuffer nonce,
+            ByteBuffer tag)
+        {
+            IntPtr output = new();
+
+            int errorCode = NativeMethods.askar_key_unwrap_key(
+                localKeyHandle,
+                FfiStr.Create(alg),
+                ciphertext,
+                nonce,
+                tag,
+                ref output);
+
+            if (errorCode != (int)ErrorCode.Success)
+            {
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
+            }
+            return output;
+        }
+
+        public static async Task<IntPtr> DeriveEcdhEsAsync(
+            string alg,
+            IntPtr ephemKey,
+            IntPtr recipKey,
+            ByteBuffer algId,
+            ByteBuffer apu,
+            ByteBuffer apv,
+            byte receive)
+        {
+            IntPtr output = new();
+
+            int errorCode = NativeMethods.askar_key_derive_ecdh_es(
+                FfiStr.Create(alg),
+                ephemKey,
+                recipKey,
+                algId,
+                apu,
+                apv,
+                receive,
+                ref output);
+
+            if (errorCode != (int)ErrorCode.Success)
+            {
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
+            }
+            return output;
+        }
+
+        public static async Task<IntPtr> DeriveEcdh1puAsync(
+            string alg,
+            IntPtr ephemKey,
+            IntPtr senderKey,
+            IntPtr recipKey,
+            ByteBuffer algId,
+            ByteBuffer apu,
+            ByteBuffer apv,
+            ByteBuffer ccTag,
+            byte receive)
+        {
+            IntPtr output = new();
+
+            int errorCode = NativeMethods.askar_key_derive_ecdh_1pu(
+                FfiStr.Create(alg),
+                ephemKey,
+                senderKey,
+                recipKey,
+                algId,
+                apu,
+                apv,
+                ccTag,
+                receive,
+                ref output);
+
+            if (errorCode != (int)ErrorCode.Success)
+            {
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
+            }
+            return output;
+        }
         #endregion
     }
 }
