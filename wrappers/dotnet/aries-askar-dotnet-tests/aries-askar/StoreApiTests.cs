@@ -93,10 +93,10 @@ namespace aries_askar_dotnet_tests.aries_askar
         {
             //Arrange
             //Act
-            uint actual = await StoreApi.StoreProvisionAsync(testSpecUri, keyMethod, passKey, profile, recreate);
+            Store actual = await StoreApi.ProvisionAsync(testSpecUri, keyMethod, passKey, profile, recreate);
 
             //Assert
-            actual.Should().NotBe((uint)0);
+            actual.storeHandle.Should().NotBe((uint)0);
             
         }
 
@@ -118,27 +118,27 @@ namespace aries_askar_dotnet_tests.aries_askar
         {
             //Arrange
             //Act
-            Func<Task> actual = async() => await StoreApi.StoreProvisionAsync(testSpecUri, keyMethod, passKey, profile, recreate);
+            Func<Task> actual = async() => await StoreApi.ProvisionAsync(testSpecUri, keyMethod, passKey, profile, recreate);
 
             //Assert
             await actual.Should().ThrowAsync<Exception>();
 
         }
 
-        [Test, TestCase(TestName = "SessionUpdateAsync call returns store handle.")]
+        [Test, TestCase(TestName = "InsertAsync call works.")]
         public async Task SessionUpdate()
         {
             //Arrange
-            uint storeHandle = await StoreApi.StoreProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile, testRecreate);
-            uint sessionHandle = await StoreApi.SessionStartAsync(storeHandle, testProfile, testAsTransactions);
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile, testRecreate);
+            Session session = await store.StartSessionAsync(testProfile, testAsTransactions);
 
             //Act
-            bool actual = await StoreApi.SessionInsertAsync(
-                sessionHandle,
+            bool actual = await session.InsertAsync(
                 testEntry["category"].ToString(),
                 testEntry["name"].ToString(),
                 testEntry["value"].ToString(),
-                testEntry["tags"].ToString(),
+                null,
+                //testEntry["tags"].ToString(), //TODO
                 (long)999999);
 
             //Assert
@@ -149,12 +149,11 @@ namespace aries_askar_dotnet_tests.aries_askar
         public async Task SessionClose()
         {
             //Arrange
-            uint storeHandle = await StoreApi.StoreProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile, testRecreate);
-            uint sessionHandle = await StoreApi.SessionStartAsync(storeHandle, testProfile, testAsTransactions);
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile, testRecreate);
+            Session session = await store.StartSessionAsync(testProfile, testAsTransactions);
 
             //Act
-            bool actual = await StoreApi.SessionCloseAndRollbackAsync(
-                sessionHandle);
+            bool actual = await session.RollbackAsync();
 
             //Assert
             actual.Should().Be(true);
