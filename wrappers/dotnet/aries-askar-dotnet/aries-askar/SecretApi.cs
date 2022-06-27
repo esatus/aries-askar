@@ -9,7 +9,7 @@ namespace aries_askar_dotnet.aries_askar
 {
     public class SecretApi
     {
-        public static async Task<bool> BufferFree(SecretBuffer buffer)
+        public static async Task<bool> BufferFree(ByteBuffer buffer)
         {
             int errorCode = NativeMethods.askar_buffer_free(buffer);
 

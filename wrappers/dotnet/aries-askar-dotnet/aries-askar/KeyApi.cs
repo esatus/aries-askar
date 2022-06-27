@@ -70,7 +70,7 @@ namespace aries_askar_dotnet.aries_askar
 
         public static async Task<IntPtr> CreateKeyFromPublicBytesAsync(
             KeyAlg keyAlg,
-            SecretBuffer publicBytes)
+            byte[] publicBytes)
         {
             IntPtr localKeyHandle = new();
             int errorCode = NativeMethods.askar_key_from_public_bytes(
@@ -90,7 +90,7 @@ namespace aries_askar_dotnet.aries_askar
 
         public static async Task<IntPtr> CreateKeyFromSecretBytesAsync(
             KeyAlg keyAlg,
-            SecretBuffer secretBytes)
+            byte[] secretBytes)
         {
             IntPtr localKeyHandle = new();
             int errorCode = NativeMethods.askar_key_from_secret_bytes(
@@ -132,10 +132,10 @@ namespace aries_askar_dotnet.aries_askar
         #endregion
 
         #region Get
-        public static async Task<SecretBuffer> GetPublicBytesFromKeyAsync(
+        public static async Task<byte[]> GetPublicBytesFromKeyAsync(
             IntPtr localKeyHandle)
         {
-            SecretBuffer secret = new() { len = 0, data = null };
+            ByteBuffer secret = new() { len = 0, value = null };
             int errorCode = NativeMethods.askar_key_get_public_bytes(
                 localKeyHandle,
                 ref secret);
@@ -147,13 +147,13 @@ namespace aries_askar_dotnet.aries_askar
                 Console.WriteLine(error);
             }
 
-            return secret;
+            return secret.Decode();
         }
 
-        public static async Task<SecretBuffer> GetSecretBytesFromKeyAsync(
+        public static async Task<byte[]> GetSecretBytesFromKeyAsync(
             IntPtr localKeyHandle)
         {
-            SecretBuffer secret = new() { len = 0, data = null };
+            ByteBuffer secret = new() { len = 0, value = null };
             int errorCode = NativeMethods.askar_key_get_secret_bytes(
                 localKeyHandle,
                 ref secret);
@@ -165,7 +165,7 @@ namespace aries_askar_dotnet.aries_askar
                 Console.WriteLine(error);
             }
 
-            return secret;
+            return secret.Decode();
         }
 
         public static async Task<string> GetAlgorithmFromKeyAsync(
@@ -224,10 +224,10 @@ namespace aries_askar_dotnet.aries_askar
             return jwk;
         }
 
-        public static async Task<SecretBuffer> GetJwkSecretFromKeyAsync(
+        public static async Task<byte[]> GetJwkSecretFromKeyAsync(
             IntPtr localKeyHandle)
         {
-            SecretBuffer secret = new() { len = 0, data = null };
+            ByteBuffer secret = new() { len = 0, value = null };
             int errorCode = NativeMethods.askar_key_get_jwk_secret(
                 localKeyHandle,
                 ref secret);
@@ -239,7 +239,7 @@ namespace aries_askar_dotnet.aries_askar
                 Console.WriteLine(error);
             }
 
-            return secret;
+            return secret.Decode();
         }
 
         public static async Task<string> GetJwkThumbprintFromKeyAsync(
@@ -264,10 +264,10 @@ namespace aries_askar_dotnet.aries_askar
         #endregion
 
         #region aead
-        public static async Task<SecretBuffer> GetAeadRandomNonceFromKeyAsync(
+        public static async Task<byte[]> GetAeadRandomNonceFromKeyAsync(
             IntPtr localKeyHandle)
         {
-            SecretBuffer secret = new() { len = 0, data = null };
+            ByteBuffer secret = new() { len = 0, value = null };
             int errorCode = NativeMethods.askar_key_aead_random_nonce(
                 localKeyHandle,
                 ref secret);
@@ -279,7 +279,7 @@ namespace aries_askar_dotnet.aries_askar
                 Console.WriteLine(error);
             }
 
-            return secret;
+            return secret.Decode();
         }
 
         public static async Task<AeadParams> GetAeadParamsFromKeyAsync(
@@ -320,15 +320,15 @@ namespace aries_askar_dotnet.aries_askar
             return padding;
         }
 
-        public static async Task<EncryptedBuffer> EncryptKeyWithAeadAsync(
+        public static async Task<(byte[], byte[], byte[])> EncryptKeyWithAeadAsync(
             IntPtr localKeyHandle,
             string message,
-            SecretBuffer nonce,
+            byte[] nonce,
             string aad)
         {
-            EncryptedBuffer encrypted = new() 
+            EncryptedBuffer encrypted = new()
             {
-                buffer = new SecretBuffer(){ len = 0, data = null },
+                buffer = new ByteBuffer(){ len = 0, value = null },
                 nonce_pos = 0,
                 tag_pos = 0
             };
@@ -346,17 +346,17 @@ namespace aries_askar_dotnet.aries_askar
                 Console.WriteLine(error);
             }
 
-            return encrypted;
+            return encrypted.Decode();
         }
 
-        public static async Task<SecretBuffer> DecryptKeyWithAeadAsync(
+        public static async Task<byte[]> DecryptKeyWithAeadAsync(
             IntPtr localKeyHandle,
-            string ciphertext,
-            SecretBuffer nonce,
-            string tag,
+            byte[] ciphertext,
+            byte[] nonce,
+            byte[] tag,
             string aad)
         {
-            SecretBuffer aead = new() { len = 0, data = null };
+            ByteBuffer aead = new() { len = 0, value = null };
             int errorCode = NativeMethods.askar_key_aead_decrypt(
                 localKeyHandle,
                 ByteBuffer.Create(ciphertext),
@@ -372,14 +372,14 @@ namespace aries_askar_dotnet.aries_askar
                 Console.WriteLine(error);
             }
 
-            return aead;
+            return aead.Decode();
         }
         #endregion
 
         #region Crypto
-        public static async Task<SecretBuffer> CreateCryptoBoxRandomNonceAsync()
+        public static async Task<byte[]> CreateCryptoBoxRandomNonceAsync()
         {
-            SecretBuffer nonce = new() { len = 0, data = null };
+            ByteBuffer nonce = new() { len = 0, value = null };
             int errorCode = NativeMethods.askar_key_crypto_box_random_nonce(
                 ref nonce);
 
@@ -390,22 +390,22 @@ namespace aries_askar_dotnet.aries_askar
                 Console.WriteLine(error);
             }
 
-            return nonce;
+            return nonce.Decode();
         }
 
-        public static async Task<SecretBuffer> CryptoBoxAsync(
+        public static async Task<byte[]> CryptoBoxAsync(
             IntPtr recipKey,
             IntPtr senderKey,
-            ByteBuffer message,
-            ByteBuffer nonce)
+            string message,
+            byte[] nonce)
         {
-            SecretBuffer output = new() { len = 0, data = null };
+            ByteBuffer output = new() { len = 0, value = null };
 
             int errorCode = NativeMethods.askar_key_crypto_box(
                 recipKey,
                 senderKey,
-                message,
-                nonce,
+                ByteBuffer.Create(message),
+                ByteBuffer.Create(nonce),
                 ref output);
 
             if (errorCode != (int)ErrorCode.Success)
@@ -414,22 +414,22 @@ namespace aries_askar_dotnet.aries_askar
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
-            return output;
+            return output.Decode();
         }
 
-        public static async Task<SecretBuffer> OpenCryptoBoxAsync(
+        public static async Task<byte[]> OpenCryptoBoxAsync(
             IntPtr recipKey,
             IntPtr senderKey,
-            ByteBuffer message,
-            ByteBuffer nonce)
+            byte[] encrypted,
+            byte[] nonce)
         {
-            SecretBuffer output = new() { len = 0, data = null };
+            ByteBuffer output = new() { len = 0, value = null };
 
             int errorCode = NativeMethods.askar_key_crypto_box_open(
                 recipKey,
                 senderKey,
-                message,
-                nonce,
+                ByteBuffer.Create(encrypted),
+                ByteBuffer.Create(nonce),
                 ref output);
 
             if (errorCode != (int)ErrorCode.Success)
@@ -438,18 +438,18 @@ namespace aries_askar_dotnet.aries_askar
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
-            return output;
+            return output.Decode();
         }
 
-        public static async Task<SecretBuffer> SealCryptoBoxAsync(
+        public static async Task<byte[]> SealCryptoBoxAsync(
             IntPtr localKeyHandle,
-            ByteBuffer message)
+            string message)
         {
-            SecretBuffer output = new() { len = 0, data = null };
+            ByteBuffer output = new() { len = 0, value = null };
 
             int errorCode = NativeMethods.askar_key_crypto_box_seal(
                 localKeyHandle,
-                message,
+                ByteBuffer.Create(message),
                 ref output);
 
             if (errorCode != (int)ErrorCode.Success)
@@ -458,18 +458,18 @@ namespace aries_askar_dotnet.aries_askar
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
-            return output;
+            return output.Decode();
         }
 
-        public static async Task<SecretBuffer> OpenSealCryptoBoxAsync(
+        public static async Task<byte[]> OpenSealCryptoBoxAsync(
             IntPtr localKeyHandle,
-            ByteBuffer ciphertext)
+            byte[] ciphertext)
         {
-            SecretBuffer output = new() { len = 0, data = null };
+            ByteBuffer output = new() { len = 0, value = null };
 
             int errorCode = NativeMethods.askar_key_crypto_box_seal_open(
                 localKeyHandle,
-                ciphertext,
+                ByteBuffer.Create(ciphertext),
                 ref output);
 
             if (errorCode != (int)ErrorCode.Success)
@@ -478,7 +478,7 @@ namespace aries_askar_dotnet.aries_askar
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
-            return output;
+            return output.Decode();
         }
         #endregion
 
@@ -517,12 +517,12 @@ namespace aries_askar_dotnet.aries_askar
             };
         }
 
-        public static async Task<SecretBuffer> GetSignMessageFromKeyAsync(
+        public static async Task<ByteBuffer> GetSignMessageFromKeyAsync(
             IntPtr localKeyHandle,
             ByteBuffer message,
             string sigType)
         {
-            SecretBuffer output = new() { len = 0, data = null };
+            ByteBuffer output = new() { len = 0, value = null };
 
             int errorCode = NativeMethods.askar_key_sign_message(
                 localKeyHandle,
@@ -570,7 +570,7 @@ namespace aries_askar_dotnet.aries_askar
         {
             EncryptedBuffer output = new()
             {
-                buffer = new() { len = 0, data = null },
+                buffer = new() { len = 0, value = null },
                 nonce_pos = 0,
                 tag_pos = 0
             };
