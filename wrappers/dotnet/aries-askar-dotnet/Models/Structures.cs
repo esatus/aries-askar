@@ -35,7 +35,7 @@ namespace indy_vdr_dotnet.models
                 byte[] bytes = new byte[json.Length];
                 decoder.GetBytes(json, 0, json.Length, bytes, 0);
                 ByteBuffer buffer = new();
-                buffer.len = (uint)json.Length;
+                buffer.len = json.Length;
                 fixed (byte* bytebuffer_p = &bytes[0])
                 {
                     buffer.value = bytebuffer_p;
