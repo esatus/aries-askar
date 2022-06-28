@@ -476,7 +476,7 @@ namespace aries_askar_dotnet_tests.aries_askar
             string testMessage = "testMessage";
             byte[] testNonce = await KeyApi.CreateCryptoBoxRandomNonceAsync();
 
-            byte[] encrypted = await KeyApi.CryptoBoxAsync(
+            byte[] testBox = await KeyApi.CryptoBoxAsync(
                 testRecipientHandle,
                 testSenderHandle,
                 testMessage,
@@ -486,11 +486,173 @@ namespace aries_askar_dotnet_tests.aries_askar
             byte[] actual = await KeyApi.OpenCryptoBoxAsync(
                 testRecipientHandle,
                 testSenderHandle,
-                encrypted,
+                testBox,
                 testNonce);
 
             //Assert
             _ = ByteBuffer.Create(actual).len.Should().NotBe(0);
+        }
+
+        [Test, TestCase(TestName = "SealCryptoBoxAsync call returns request handle.")]
+        public async Task SealCryptoBoxAsyncWorks()
+        {
+            KeyAlg keyAlg = KeyAlg.X25519;
+            byte testEphemeral = 5;
+            IntPtr testKeyHandle = await KeyApi.CreateKeyAsync(
+                    keyAlg,
+                    testEphemeral);
+
+            string testMessage = "testMessage";
+
+            //Act
+            byte[] actual = await KeyApi.SealCryptoBoxAsync(
+                testKeyHandle,
+                testMessage);
+
+            //Assert
+            _ = ByteBuffer.Create(actual).len.Should().NotBe(0);
+        }
+
+        [Test, TestCase(TestName = "OpenSealCryptoBoxAsync call returns request handle.")]
+        public async Task OpenSealCryptoBoxAsyncWorks()
+        {
+            KeyAlg keyAlg = KeyAlg.X25519;
+            byte testEphemeral = 5;
+            IntPtr testKeyHandle = await KeyApi.CreateKeyAsync(
+                    keyAlg,
+                    testEphemeral);
+
+            string testMessage = "testMessage";
+
+            byte[] sealedBox = await KeyApi.SealCryptoBoxAsync(
+                testKeyHandle,
+                testMessage);
+
+            byte[] actual = await KeyApi.OpenSealCryptoBoxAsync(
+                testKeyHandle,
+                sealedBox);
+
+            //Assert
+            _ = ByteBuffer.Create(actual).len.Should().NotBe(0);
+        }
+        #endregion
+
+        #region Utils
+        [Test, TestCase(TestName = "ConvertKeyAsync call returns request handle.")]
+        public async Task ConvertKeyAsyncWorks()
+        {
+            //Arrange
+            KeyAlg oldKeyAlg = KeyAlg.ED25519;
+            byte testEphemeral = 5;
+            IntPtr oldKey = await KeyApi.CreateKeyAsync(
+                    oldKeyAlg,
+                    testEphemeral);
+            KeyAlg newKeyAlg = KeyAlg.X25519;
+
+            //Act
+            IntPtr convertedKey = await KeyApi.ConvertKeyAsync(
+                oldKey,
+                newKeyAlg);
+            string actual = await KeyApi.GetAlgorithmFromKeyAsync(convertedKey);
+
+            //Assert
+            _ = actual.Should().Be(newKeyAlg.ToKeyAlgString());
+        }
+
+        [Test, TestCase(TestName = "FreeKeyAsync call returns request handle.")]
+        public async Task FreeKeyAsyncWorks()
+        {
+            //Arrange
+            KeyAlg keyAlg = KeyAlg.ED25519;
+            byte testEphemeral = 5;
+            IntPtr testKeyHandle = await KeyApi.CreateKeyAsync(
+                    keyAlg,
+                    testEphemeral);
+
+            //Act
+            string keyBeforeFree = await KeyApi.GetAlgorithmFromKeyAsync(testKeyHandle);
+            Func<Task> actual = async () => await KeyApi.FreeKeyAsync(testKeyHandle);
+
+            //Assert
+            _ = actual.Should().ThrowAsync<Exception>();
+        }
+
+        [Test, TestCase(TestName = "SignMessageFromKeyAsync call returns request handle.")]
+        public async Task SignMessageFromKeyAsyncWorks()
+        {
+            //Arrange
+            KeyAlg keyAlg = KeyAlg.K256;
+            byte testEphemeral = 5;
+            IntPtr testKeyHandle = await KeyApi.CreateKeyAsync(
+                    keyAlg,
+                    testEphemeral);
+            byte[] testMessage = ByteBuffer.Create("testMessage").Decode();
+            string testSigType = "ES256K";
+
+            //Act
+            byte[] actual = await KeyApi.SignMessageFromKeyAsync(
+                testKeyHandle,
+                testMessage,
+                testSigType);
+
+            //Assert
+            _ = actual.Should().NotBeEmpty();
+        }
+
+        [Test, TestCase(TestName = "VerifySignatureFromKeyAsync call returns request handle.")]
+        public async Task VerifySignatureFromKeyAsyncWorks()
+        {
+            //Arrange
+            KeyAlg keyAlg = KeyAlg.K256;
+            byte testEphemeral = 5;
+            IntPtr testKeyHandle = await KeyApi.CreateKeyAsync(
+                    keyAlg,
+                    testEphemeral);
+            byte[] testMessage = ByteBuffer.Create("testMessage").Decode();
+            string testSigType = "ES256K";
+
+            //Act
+            byte[] testSignedMessage = await KeyApi.SignMessageFromKeyAsync(
+                testKeyHandle,
+                testMessage,
+                testSigType);
+
+            bool actual = await KeyApi.VerifySignatureFromKeyAsync(
+                testKeyHandle,
+                testMessage,
+                testSignedMessage,
+                testSigType);
+
+            //Assert
+            _ = actual.Should().BeTrue();
+        }
+
+        [Test, TestCase(TestName = "WrapKeyAsync call returns request handle.")]
+        public async Task WrapKeyAsyncWorks()
+        {
+            //Arrange
+            KeyAlg keyAlg = KeyAlg.A256GCM;
+            byte testEphemeral = 5;
+            IntPtr testKeyHandle = await KeyApi.CreateKeyAsync(
+                    keyAlg,
+                    testEphemeral);
+
+            KeyAlg otherKeyAlg = KeyAlg.A128KW;
+            byte otherTestEphemeral = 15;
+            IntPtr otherTestKeyHandle = await KeyApi.CreateKeyAsync(
+                    otherKeyAlg,
+                    otherTestEphemeral);
+
+            byte[] testNonce = await KeyApi.GetAeadRandomNonceFromKeyAsync(testKeyHandle);
+
+            //Act
+            (byte[] value, byte[] tag, byte[] nonce) = await KeyApi.WrapKeyAsync(
+                testKeyHandle,
+                otherTestKeyHandle,
+                testNonce);
+
+            //Assert
+            _ = value.Should().NotBeEmpty();
         }
         #endregion
     }

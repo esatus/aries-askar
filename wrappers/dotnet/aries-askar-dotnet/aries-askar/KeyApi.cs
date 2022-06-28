@@ -483,7 +483,7 @@ namespace aries_askar_dotnet.aries_askar
         #endregion
 
         #region Utils
-        public static async Task<IntPtr> ConvertKey(
+        public static async Task<IntPtr> ConvertKeyAsync(
             IntPtr inputHandle,
             KeyAlg keyAlg)
         {
@@ -503,30 +503,31 @@ namespace aries_askar_dotnet.aries_askar
             return output;
         }
 
-        public static async Task FreeKey(
+        public static async Task FreeKeyAsync(
             IntPtr inputHandle)
         {
-            int errorCode = NativeMethods.askar_key_free(
-                inputHandle);
-
-            if (errorCode != (int)ErrorCode.Success)
-            {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
-                Console.WriteLine(error);
-                throw AriesAskarException.FromSdkError(error);
-            };
+            NativeMethods.askar_key_free(inputHandle);
         }
 
-        public static async Task<ByteBuffer> GetSignMessageFromKeyAsync(
+        /// <summary>
+        /// Standard signature output for ed25519 is EdDSA
+        /// Elliptic curve DSA using P-256 and SHA-256 ES256
+        /// Elliptic curve DSA using K-256 and SHA-256 ES256K
+        /// </summary>
+        /// <param name="localKeyHandle"></param>
+        /// <param name="message"></param>
+        /// <param name="sigType"></param>
+        /// <returns></returns>
+        public static async Task<byte[]> SignMessageFromKeyAsync(
             IntPtr localKeyHandle,
-            ByteBuffer message,
+            byte[] message,
             string sigType)
         {
             ByteBuffer output = new() { len = 0, value = null };
 
             int errorCode = NativeMethods.askar_key_sign_message(
                 localKeyHandle,
-                message,
+                ByteBuffer.Create(message),
                 FfiStr.Create(sigType),
                 ref output);
 
@@ -536,21 +537,21 @@ namespace aries_askar_dotnet.aries_askar
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
-            return output;
+            return output.Decode();
         }
 
         public static async Task<bool> VerifySignatureFromKeyAsync(
             IntPtr localKeyHandle,
-            ByteBuffer message,
-            ByteBuffer signature,
+            byte[] message,
+            byte[] signature,
             string sigType)
         {
             byte output = new();
 
             int errorCode = NativeMethods.askar_key_verify_signature(
                 localKeyHandle,
-                message,
-                signature,
+                ByteBuffer.Create(message),
+                ByteBuffer.Create(signature),
                 FfiStr.Create(sigType),
                 ref output);
 
@@ -563,10 +564,10 @@ namespace aries_askar_dotnet.aries_askar
             return Convert.ToBoolean(output);
         }
 
-        public static async Task<EncryptedBuffer> WrapKeyAsync(
+        public static async Task<(byte[], byte[], byte[])> WrapKeyAsync(
             IntPtr localKeyHandle,
             IntPtr otherLocalKeyHandle,
-            ByteBuffer nonce)
+            byte[] nonce)
         {
             EncryptedBuffer output = new()
             {
@@ -578,7 +579,7 @@ namespace aries_askar_dotnet.aries_askar
             int errorCode = NativeMethods.askar_key_wrap_key(
                 localKeyHandle,
                 otherLocalKeyHandle,
-                nonce,
+                ByteBuffer.Create(nonce),
                 ref output);
 
             if (errorCode != (int)ErrorCode.Success)
@@ -587,24 +588,24 @@ namespace aries_askar_dotnet.aries_askar
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
-            return output;
+            return output.Decode();
         }
 
         public static async Task<IntPtr> UnwrapKeyAsync(
             IntPtr localKeyHandle,
             string alg,
-            ByteBuffer ciphertext,
-            ByteBuffer nonce,
-            ByteBuffer tag)
+            byte[] ciphertext,
+            byte[] nonce,
+            byte[] tag)
         {
             IntPtr output = new();
 
             int errorCode = NativeMethods.askar_key_unwrap_key(
                 localKeyHandle,
                 FfiStr.Create(alg),
-                ciphertext,
-                nonce,
-                tag,
+                ByteBuffer.Create(ciphertext),
+                ByteBuffer.Create(nonce),
+                ByteBuffer.Create(tag),
                 ref output);
 
             if (errorCode != (int)ErrorCode.Success)
@@ -620,9 +621,9 @@ namespace aries_askar_dotnet.aries_askar
             string alg,
             IntPtr ephemKey,
             IntPtr recipKey,
-            ByteBuffer algId,
-            ByteBuffer apu,
-            ByteBuffer apv,
+            byte[] algId,
+            byte[] apu,
+            byte[] apv,
             byte receive)
         {
             IntPtr output = new();
@@ -631,9 +632,9 @@ namespace aries_askar_dotnet.aries_askar
                 FfiStr.Create(alg),
                 ephemKey,
                 recipKey,
-                algId,
-                apu,
-                apv,
+                ByteBuffer.Create(algId),
+                ByteBuffer.Create(apu),
+                ByteBuffer.Create(apv),
                 receive,
                 ref output);
 
@@ -651,10 +652,10 @@ namespace aries_askar_dotnet.aries_askar
             IntPtr ephemKey,
             IntPtr senderKey,
             IntPtr recipKey,
-            ByteBuffer algId,
-            ByteBuffer apu,
-            ByteBuffer apv,
-            ByteBuffer ccTag,
+            byte[] algId,
+            byte[] apu,
+            byte[] apv,
+            byte[] ccTag,
             byte receive)
         {
             IntPtr output = new();
@@ -664,10 +665,10 @@ namespace aries_askar_dotnet.aries_askar
                 ephemKey,
                 senderKey,
                 recipKey,
-                algId,
-                apu,
-                apv,
-                ccTag,
+                ByteBuffer.Create(algId),
+                ByteBuffer.Create(apu),
+                ByteBuffer.Create(apv),
+                ByteBuffer.Create(ccTag),
                 receive,
                 ref output);
 
