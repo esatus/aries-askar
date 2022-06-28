@@ -7,7 +7,7 @@ namespace aries_askar_dotnet.aries_askar
     public class ResultListApi
     {
         public static async Task<int> EntryListCountAsync(
-            uint entryListHandle)
+            IntPtr entryListHandle)
         {
             int count = 0;
             int errorCode = NativeMethods.askar_entry_list_count(
@@ -24,7 +24,7 @@ namespace aries_askar_dotnet.aries_askar
         }
 
         public static async Task<string> EntryListGetCategoryAsync(
-            uint entryListHandle,
+            IntPtr entryListHandle,
             int index)
         {
             string category = "";
@@ -43,7 +43,7 @@ namespace aries_askar_dotnet.aries_askar
         }
 
         public static async Task<string> EntryListGetNameAsync(
-            uint entryListHandle,
+            IntPtr entryListHandle,
             int index)
         {
             string name = "";
@@ -62,7 +62,7 @@ namespace aries_askar_dotnet.aries_askar
         }
 
         public static async Task<ByteBuffer> EntryListGetValueAsync(
-            uint entryListHandle,
+            IntPtr entryListHandle,
             int index)
         {
             ByteBuffer value = new ByteBuffer();
@@ -81,7 +81,7 @@ namespace aries_askar_dotnet.aries_askar
         }
 
         public static async Task<string> EntryListGetTagsAsync(
-            uint entryListHandle,
+            IntPtr entryListHandle,
             int index)
         {
             string tags = "";
@@ -100,7 +100,7 @@ namespace aries_askar_dotnet.aries_askar
         }
 
         public static async Task<bool> EntryListFreeAsync(
-            uint entryListHandle)
+            IntPtr entryListHandle)
         {
             int errorCode = NativeMethods.askar_entry_list_free(
                 entryListHandle);
@@ -116,7 +116,7 @@ namespace aries_askar_dotnet.aries_askar
         }
 
         public static async Task<int> KeyEntryListCountAsync(
-            uint keyEntryListHandle)
+            IntPtr keyEntryListHandle)
         {
             int count = 0;
             int errorCode = NativeMethods.askar_key_entry_list_count(
@@ -133,7 +133,7 @@ namespace aries_askar_dotnet.aries_askar
         }
 
         public static async Task<bool> KeyEntryListFreeAsync(
-            uint keyEntryListHandle)
+            IntPtr keyEntryListHandle)
         {
             int errorCode = NativeMethods.askar_key_entry_list_free(
                 keyEntryListHandle);
@@ -149,7 +149,7 @@ namespace aries_askar_dotnet.aries_askar
         }
 
         public static async Task<string> KeyEntryListGetAlgorithmAsync(
-            uint keyEntryListHandle,
+            IntPtr keyEntryListHandle,
             int index)
         {
             string alg = "";
@@ -168,7 +168,7 @@ namespace aries_askar_dotnet.aries_askar
         }
 
         public static async Task<string> KeyEntryListGetNameAsync(
-            uint keyEntryListHandle,
+            IntPtr keyEntryListHandle,
             int index)
         {
             string name = "";
@@ -187,7 +187,7 @@ namespace aries_askar_dotnet.aries_askar
         }
 
         public static async Task<string> KeyEntryListGetMetadataAsync(
-            uint keyEntryListHandle,
+            IntPtr keyEntryListHandle,
             int index)
         {
             string metadata = "";
@@ -206,7 +206,7 @@ namespace aries_askar_dotnet.aries_askar
         }
 
         public static async Task<string> KeyEntryListGetTagsAsync(
-            uint keyEntryListHandle,
+            IntPtr keyEntryListHandle,
             int index)
         {
             string tags = "";
@@ -224,11 +224,11 @@ namespace aries_askar_dotnet.aries_askar
             return tags;
         }
 
-        public static async Task<uint> KeyEntryListLoadLocalAsync(
-            uint keyEntryListHandle,
+        public static async Task<IntPtr> KeyEntryListLoadLocalAsync(
+            IntPtr keyEntryListHandle,
             int index)
         {
-            uint output = 0;
+            IntPtr output = new IntPtr();
             int errorCode = NativeMethods.askar_key_entry_list_load_local(
                 keyEntryListHandle,
                 index,

@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace aries_askar_dotnet.Models
 {
-    public class Entry
+    public class EntryList
     {
-        public IntPtr entryHandle {get;set;}
+        public IntPtr entryListHandle { get; set; }
 
-        public Entry(IntPtr handle)
+        public EntryList(IntPtr handle)
         {
-            entryHandle = handle;
+            entryListHandle = handle;
         }
     }
 }

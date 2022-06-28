@@ -64,10 +64,10 @@ namespace aries_askar_dotnet.aries_askar
         public static async Task<bool> CloseAsync(this Store store, bool remove = false)
         {
             store.session = null;
-            if (store.storeHandle != 0)
+            if (store.storeHandle != new IntPtr())
             {
                 await StoreCloseAsync(store.storeHandle);
-                store.storeHandle = 0;
+                store.storeHandle = new IntPtr();
             }
             if (remove)
             {
@@ -89,7 +89,7 @@ namespace aries_askar_dotnet.aries_askar
 
         public static async Task<Session> StartSessionAsync(this Store store, string profile = null, bool asTransactions = false)
         {
-            if (store.storeHandle == 0 || store.storeHandle == null)
+            if (store.storeHandle == new IntPtr())
             {
                 //Error
             }
@@ -100,14 +100,14 @@ namespace aries_askar_dotnet.aries_askar
             this Store store,
             string profile = null)
         {
-            return new Session(store.storeHandle, 0, profile, false);
+            return new Session(store.storeHandle, new IntPtr(), profile, false);
         }
 
         public static Session CreateTransaction(
             this Store store,
             string profile = null)
         {
-            return new Session(store.storeHandle, 0, profile, true);
+            return new Session(store.storeHandle, new IntPtr(), profile, true);
         }
         #endregion
 
@@ -119,7 +119,7 @@ namespace aries_askar_dotnet.aries_askar
         #region Session calls
         public static async Task<Session> StartAsync(this Session session)
         {
-            if (session.storeHandle == 0 || session.storeHandle == null)
+            if (session.storeHandle == new IntPtr())
             {
                 //Error
             }
@@ -131,13 +131,13 @@ namespace aries_askar_dotnet.aries_askar
         }
 
         //Return EntryListHandle
-        public static async Task<uint> FetchAsync(this Session session, string category, string name, bool forUpdate = false)
+        public static async Task<IntPtr> FetchAsync(this Session session, string category, string name, bool forUpdate = false)
         {
             return await SessionFetchAsync(session.sessionHandle, category, name);
         }
 
         //Return EntryListHandle
-        public static async Task<uint> FetchAllAsync(this Session session, string category, string tagFilter = null , long limit = 0, bool forUpdate = false)
+        public static async Task<IntPtr> FetchAllAsync(this Session session, string category, string tagFilter = null , long limit = 0, bool forUpdate = false)
         {
             return await SessionFetchAllAsync(session.sessionHandle, category, tagFilter, limit, forUpdate);
         }
@@ -180,7 +180,7 @@ namespace aries_askar_dotnet.aries_askar
 
         public static async Task<bool> InsertKeyAsync(
             this Session session,
-            uint localKeyHandle, //TODO Key key  -> key.localKeyHandle
+            IntPtr localKeyHandle, //TODO Key key  -> key.localKeyHandle
             string name,
             string metaData = null,
             string tags = null,
@@ -190,13 +190,13 @@ namespace aries_askar_dotnet.aries_askar
         }
 
         //Returns KeyEntryListHandle
-        public static async Task<uint> FetchKeyAsync(this Session session, string name, bool forUpdate = false)
+        public static async Task<IntPtr> FetchKeyAsync(this Session session, string name, bool forUpdate = false)
         {
             return await SessionFetchKeyAsync(session.sessionHandle, name, forUpdate);
         }
 
         //Returns KeyEntryListHandle
-        public static async Task<uint> FetchAllKeysAsync(
+        public static async Task<IntPtr> FetchAllKeysAsync(
             this Session session,
             KeyAlg keyAlg = KeyAlg.NONE,
             string thumbprint = null,
@@ -231,12 +231,12 @@ namespace aries_askar_dotnet.aries_askar
             {
                 //ERROR
             }
-            if (session.sessionHandle == 0 || session.sessionHandle == null)
+            if (session.sessionHandle == new IntPtr())
             {
                 //ERROR
             }
             bool res = await SessionCloseAndCommitAsync(session.sessionHandle);
-            session.sessionHandle = 0;
+            session.sessionHandle = new IntPtr();
             return res;
         }
 
@@ -247,22 +247,22 @@ namespace aries_askar_dotnet.aries_askar
             {
                 //ERROR
             }
-            if (session.sessionHandle == 0 || session.sessionHandle == null)
+            if (session.sessionHandle == new IntPtr())
             {
                 //ERROR
             }
             bool res = await SessionCloseAndRollbackAsync(session.sessionHandle);
-            session.sessionHandle = 0;
+            session.sessionHandle = new IntPtr();
             return res;
         }
 
         public static async Task<bool> CloseAsync(
             this Session session)
         {
-            if (session.sessionHandle != 0)
+            if (session.sessionHandle != new IntPtr())
             {
                 bool res = await SessionCloseAsync(session.sessionHandle, false);
-                session.sessionHandle = 0;
+                session.sessionHandle = new IntPtr();
                 return res;
             }
             else
@@ -296,7 +296,7 @@ namespace aries_askar_dotnet.aries_askar
             string profile = null, 
             bool recreate = false)
         {
-            var taskCompletionSource = new TaskCompletionSource<uint>();
+            var taskCompletionSource = new TaskCompletionSource<IntPtr>();
             var callbackId = PendingCallbacks.Add(taskCompletionSource);
 
             int errorCode = NativeMethods.askar_store_provision(
@@ -324,7 +324,7 @@ namespace aries_askar_dotnet.aries_askar
             string passKey = null, 
             string profile = null)
         {
-            var taskCompletionSource = new TaskCompletionSource<uint>();
+            var taskCompletionSource = new TaskCompletionSource<IntPtr>();
             var callbackId = PendingCallbacks.Add(taskCompletionSource);
 
             int errorCode = NativeMethods.askar_store_open(
@@ -365,7 +365,7 @@ namespace aries_askar_dotnet.aries_askar
             return Convert.ToBoolean(await taskCompletionSource.Task);
         }
 
-        private static async Task<string> StoreCreateProfileAsync(uint storeHandle, string profile = null)
+        private static async Task<string> StoreCreateProfileAsync(IntPtr storeHandle, string profile = null)
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
             var callbackId = PendingCallbacks.Add(taskCompletionSource);
@@ -386,7 +386,7 @@ namespace aries_askar_dotnet.aries_askar
             return await taskCompletionSource.Task;
         }
 
-        private static async Task<string> StoreGetProfileNameAsync(uint storeHandle)
+        private static async Task<string> StoreGetProfileNameAsync(IntPtr storeHandle)
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
             var callbackId = PendingCallbacks.Add(taskCompletionSource);
@@ -406,7 +406,7 @@ namespace aries_askar_dotnet.aries_askar
             return await taskCompletionSource.Task;
         }
 
-        private static async Task<bool> StoreRemoveProfileAsync(uint storeHandle, string profile)
+        private static async Task<bool> StoreRemoveProfileAsync(IntPtr storeHandle, string profile)
         {
             var taskCompletionSource = new TaskCompletionSource<byte>();
             var callbackId = PendingCallbacks.Add(taskCompletionSource);
@@ -428,7 +428,7 @@ namespace aries_askar_dotnet.aries_askar
         }
 
         private static async Task<bool> StoreRekeyAsync(
-            uint storeHandle,
+            IntPtr storeHandle,
             KeyMethod keyMethod = KeyMethod.NONE,
             string passKey = null)
         {
@@ -452,7 +452,7 @@ namespace aries_askar_dotnet.aries_askar
             return await taskCompletionSource.Task;
         }
 
-        private static async Task<bool> StoreCloseAsync(uint storeHandle)
+        private static async Task<bool> StoreCloseAsync(IntPtr storeHandle)
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
             var callbackId = PendingCallbacks.Add(taskCompletionSource);
@@ -476,14 +476,14 @@ namespace aries_askar_dotnet.aries_askar
         #region Scan
         //Returns a scanHandle
         private static async Task<Scan> StartScanAsync(
-            uint storeHandle, 
+            IntPtr storeHandle, 
             string category, 
             string tagFilter = null, 
             long offset = 0, 
             long limit = 0,
             string profile = null)
         {
-            var taskCompletionSource = new TaskCompletionSource<uint>();
+            var taskCompletionSource = new TaskCompletionSource<IntPtr>();
             var callbackId = PendingCallbacks.Add(taskCompletionSource);
 
             int errorCode = NativeMethods.askar_scan_start(
@@ -511,9 +511,9 @@ namespace aries_askar_dotnet.aries_askar
             return await ScanNextAsync(scan.scanHandle);
         }
         //Returns an entryListHandle
-        private static async Task<Entry> ScanNextAsync(uint scanHandle)
+        private static async Task<Entry> ScanNextAsync(IntPtr scanHandle)
         {
-            var taskCompletionSource = new TaskCompletionSource<uint>();
+            var taskCompletionSource = new TaskCompletionSource<IntPtr>();
             var callbackId = PendingCallbacks.Add(taskCompletionSource);
 
             int errorCode = NativeMethods.askar_scan_next(
@@ -531,7 +531,7 @@ namespace aries_askar_dotnet.aries_askar
             return new Entry(await taskCompletionSource.Task);
         }
 
-        private static async Task<bool> ScanFreeAsync(uint scanHandle)
+        private static async Task<bool> ScanFreeAsync(IntPtr scanHandle)
         {
             int errorCode = NativeMethods.askar_scan_free(scanHandle);
 
@@ -548,9 +548,9 @@ namespace aries_askar_dotnet.aries_askar
 
         #region Session
         //Returns a sessionHandle
-        private static async Task<Session> SessionStartAsync(uint storeHandle, string profile = null, bool asTransactions = false)
+        private static async Task<Session> SessionStartAsync(IntPtr storeHandle, string profile = null, bool asTransactions = false)
         {
-            var taskCompletionSource = new TaskCompletionSource<uint>();
+            var taskCompletionSource = new TaskCompletionSource<IntPtr>();
             var callbackId = PendingCallbacks.Add(taskCompletionSource);
 
             int errorCode = NativeMethods.askar_session_start(
@@ -570,7 +570,7 @@ namespace aries_askar_dotnet.aries_askar
             return new Session(storeHandle, await taskCompletionSource.Task, profile, asTransactions);
         }
 
-        private static async Task<long> SessionCountAsync(uint sessionHandle, string category, string tagFilter = null)
+        private static async Task<long> SessionCountAsync(IntPtr sessionHandle, string category, string tagFilter = null)
         {
             var taskCompletionSource = new TaskCompletionSource<long>();
             var callbackId = PendingCallbacks.Add(taskCompletionSource);
@@ -593,9 +593,9 @@ namespace aries_askar_dotnet.aries_askar
         }
 
         //Returns an EntryListHandle
-        private static async Task<uint> SessionFetchAsync(uint sessionHandle, string category, string name, bool forUpdate = false)
+        private static async Task<IntPtr> SessionFetchAsync(IntPtr sessionHandle, string category, string name, bool forUpdate = false)
         {
-            var taskCompletionSource = new TaskCompletionSource<uint>();
+            var taskCompletionSource = new TaskCompletionSource<IntPtr>();
             var callbackId = PendingCallbacks.Add(taskCompletionSource);
 
             int errorCode = NativeMethods.askar_session_fetch(
@@ -617,14 +617,14 @@ namespace aries_askar_dotnet.aries_askar
         }
 
         //Returns an EntryListHandle
-        private static async Task<uint> SessionFetchAllAsync(
-            uint sessionHandle, 
+        private static async Task<IntPtr> SessionFetchAllAsync(
+            IntPtr sessionHandle, 
             string category, 
             string tagFilter = null, 
             long limit = 0, 
             bool forUpdate = false)
         {
-            var taskCompletionSource = new TaskCompletionSource<uint>();
+            var taskCompletionSource = new TaskCompletionSource<IntPtr>();
             var callbackId = PendingCallbacks.Add(taskCompletionSource);
 
             int errorCode = NativeMethods.askar_session_fetch_all(
@@ -646,7 +646,7 @@ namespace aries_askar_dotnet.aries_askar
             return await taskCompletionSource.Task;
         }
 
-        private static async Task<long> SessionRemoveAllAsync(uint sessionHandle, string category, string tagFilter = null)
+        private static async Task<long> SessionRemoveAllAsync(IntPtr sessionHandle, string category, string tagFilter = null)
         {
             var taskCompletionSource = new TaskCompletionSource<long>();
             var callbackId = PendingCallbacks.Add(taskCompletionSource);
@@ -668,7 +668,7 @@ namespace aries_askar_dotnet.aries_askar
             return await taskCompletionSource.Task;
         }
         private static async Task<bool> SessionInsertAsync(
-            uint sessionHandle,
+            IntPtr sessionHandle,
             string category,
             string name,
             string value = null,
@@ -688,7 +688,7 @@ namespace aries_askar_dotnet.aries_askar
         }
 
         private static async Task<bool> SessionReplaceAsync(
-            uint sessionHandle,
+            IntPtr sessionHandle,
             string category,
             string name,
             string value = null,
@@ -708,7 +708,7 @@ namespace aries_askar_dotnet.aries_askar
         }
 
         private static async Task<bool> SessionRemoveAsync(
-            uint sessionHandle,
+            IntPtr sessionHandle,
             string category,
             string name)
         {
@@ -722,7 +722,7 @@ namespace aries_askar_dotnet.aries_askar
         }
 
         private static async Task<bool> SessionUpdateAsync(
-            uint sessionHandle, 
+            IntPtr sessionHandle, 
             UpdateOperation operation, 
             string category, 
             string name, 
@@ -755,8 +755,8 @@ namespace aries_askar_dotnet.aries_askar
         }
 
         private static async Task<bool> SessionInsertKeyAsync(
-            uint sessionHandle, 
-            uint localKeyHandle, 
+            IntPtr sessionHandle, 
+            IntPtr localKeyHandle, 
             string name, 
             string metaData = null, 
             string tags = null,
@@ -786,9 +786,9 @@ namespace aries_askar_dotnet.aries_askar
         }
 
         //Returns a keyEntryListHandle
-        private static async Task<uint> SessionFetchKeyAsync(uint sessionHandle, string name, bool forUpdate = false)
+        private static async Task<IntPtr> SessionFetchKeyAsync(IntPtr sessionHandle, string name, bool forUpdate = false)
         {
-            var taskCompletionSource = new TaskCompletionSource<uint>();
+            var taskCompletionSource = new TaskCompletionSource<IntPtr>();
             var callbackId = PendingCallbacks.Add(taskCompletionSource);
 
             int errorCode = NativeMethods.askar_session_fetch_key(
@@ -809,15 +809,15 @@ namespace aries_askar_dotnet.aries_askar
         }
 
         //Returns a keyEntryListHandle
-        private static async Task<uint> SessionFetchAllKeysAsync(
-            uint sessionHandle, 
+        private static async Task<IntPtr> SessionFetchAllKeysAsync(
+            IntPtr sessionHandle, 
             KeyAlg keyAlg = KeyAlg.NONE, 
             string thumbprint = null, 
             string tagFilter = null, 
             long limit = 0, 
             bool forUpdate = false)
         {
-            var taskCompletionSource = new TaskCompletionSource<uint>();
+            var taskCompletionSource = new TaskCompletionSource<IntPtr>();
             var callbackId = PendingCallbacks.Add(taskCompletionSource);
 
             int errorCode = NativeMethods.askar_session_fetch_all_keys(
@@ -841,7 +841,7 @@ namespace aries_askar_dotnet.aries_askar
         }
 
         private static async Task<bool> SessionUpdateKeyAsync(
-            uint sessionHandle, 
+            IntPtr sessionHandle, 
             string name, 
             string metaData = null, 
             string tags = null, 
@@ -868,7 +868,7 @@ namespace aries_askar_dotnet.aries_askar
 
             return await taskCompletionSource.Task;
         }
-        private static async Task<bool> SessionRemoveKeyAsync(uint sessionHandle, string name)
+        private static async Task<bool> SessionRemoveKeyAsync(IntPtr sessionHandle, string name)
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
             var callbackId = PendingCallbacks.Add(taskCompletionSource);
@@ -889,7 +889,7 @@ namespace aries_askar_dotnet.aries_askar
             return await taskCompletionSource.Task;
         }
 
-        private static async Task<bool> SessionCloseAndCommitAsync(uint sessionHandle)
+        private static async Task<bool> SessionCloseAndCommitAsync(IntPtr sessionHandle)
         {
             bool res = await SessionCloseAsync(
                 sessionHandle,
@@ -898,7 +898,7 @@ namespace aries_askar_dotnet.aries_askar
             return await Task.FromResult(res);
         }
 
-        private static async Task<bool> SessionCloseAndRollbackAsync(uint sessionHandle)
+        private static async Task<bool> SessionCloseAndRollbackAsync(IntPtr sessionHandle)
         {
             bool res = await SessionCloseAsync(
                 sessionHandle,
@@ -907,7 +907,7 @@ namespace aries_askar_dotnet.aries_askar
             return await Task.FromResult(res);
         }
 
-        private static async Task<bool> SessionCloseAsync(uint sessionHandle, bool commit)
+        private static async Task<bool> SessionCloseAsync(IntPtr sessionHandle, bool commit)
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
             var callbackId = PendingCallbacks.Add(taskCompletionSource);
@@ -944,9 +944,9 @@ namespace aries_askar_dotnet.aries_askar
         }
         private static NoReturnValueStoreCompletedDelegate NoReturnValueStoreCallback = NoReturnValueStoreCallbackMethod;
 
-        private static void GetStoreHandleCallbackMethod(long callback_id, int err, uint handle)
+        private static void GetStoreHandleCallbackMethod(long callback_id, int err, IntPtr handle)
         {
-            var taskCompletionSource = PendingCallbacks.Remove<uint>(callback_id);
+            var taskCompletionSource = PendingCallbacks.Remove<IntPtr>(callback_id);
 
             if (err != (int)ErrorCode.Success)
             {
