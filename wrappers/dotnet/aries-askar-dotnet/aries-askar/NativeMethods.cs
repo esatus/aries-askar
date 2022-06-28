@@ -94,7 +94,7 @@ namespace aries_askar_dotnet.aries_askar
         internal static extern int askar_key_convert(IntPtr inputHandle, FfiStr alg, ref IntPtr outputHandle);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int askar_key_free(IntPtr localKeyHandle);
+        internal static extern void askar_key_free(IntPtr localKeyHandle);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int askar_key_sign_message(IntPtr localKeyHandle, ByteBuffer message, FfiStr sigType, ref ByteBuffer secret);
