@@ -8,9 +8,9 @@ namespace aries_askar_dotnet.Models
 {
     public class Entry
     {
-        public uint entryHandle {get;set;}
+        public IntPtr entryHandle {get;set;}
 
-        public Entry(uint handle)
+        public Entry(IntPtr handle)
         {
             entryHandle = handle;
         }

@@ -96,7 +96,7 @@ namespace aries_askar_dotnet_tests.aries_askar
             Store actual = await StoreApi.ProvisionAsync(testSpecUri, keyMethod, passKey, profile, recreate);
 
             //Assert
-            actual.storeHandle.Should().NotBe((uint)0);
+            actual.storeHandle.Should().NotBe((IntPtr)0);
             
         }
 
