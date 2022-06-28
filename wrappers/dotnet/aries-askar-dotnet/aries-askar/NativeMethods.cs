@@ -34,10 +34,10 @@ namespace aries_askar_dotnet.aries_askar
 
         #region Get
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int askar_key_get_public_bytes(IntPtr localKeyHandle, ref SecretBuffer secret);
+        internal static extern int askar_key_get_public_bytes(IntPtr localKeyHandle, ref ByteBuffer secret);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int askar_key_get_secret_bytes(IntPtr localKeyHandle, ref SecretBuffer secret);
+        internal static extern int askar_key_get_secret_bytes(IntPtr localKeyHandle, ref ByteBuffer secret);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int askar_key_get_algorithm(IntPtr localKeyHandle, ref string alg);
@@ -49,7 +49,7 @@ namespace aries_askar_dotnet.aries_askar
         internal static extern int askar_key_get_jwk_public(IntPtr inputHandle, FfiStr alg, ref string jwk);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int askar_key_get_jwk_secret(IntPtr localKeyHandle, ref SecretBuffer secret);
+        internal static extern int askar_key_get_jwk_secret(IntPtr localKeyHandle, ref ByteBuffer secret);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int askar_key_get_jwk_thumbprint(IntPtr localKeyHandle, FfiStr alg, ref string thumbprint);
@@ -57,7 +57,7 @@ namespace aries_askar_dotnet.aries_askar
 
         #region aead
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int askar_key_aead_random_nonce(IntPtr localKeyHandle, ref SecretBuffer secret);
+        internal static extern int askar_key_aead_random_nonce(IntPtr localKeyHandle, ref ByteBuffer secret);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int askar_key_aead_get_params(IntPtr localKeyHandle, ref AeadParams aeadparams);
@@ -69,24 +69,24 @@ namespace aries_askar_dotnet.aries_askar
         internal static extern int askar_key_aead_encrypt(IntPtr localKeyHandle, ByteBuffer message, ByteBuffer nonce, ByteBuffer aad, ref EncryptedBuffer encrypted);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int askar_key_aead_decrypt(IntPtr localKeyHandle, ByteBuffer ciphertext, ByteBuffer nonce, ByteBuffer tag, ByteBuffer aad, ref SecretBuffer aead);
+        internal static extern int askar_key_aead_decrypt(IntPtr localKeyHandle, ByteBuffer ciphertext, ByteBuffer nonce, ByteBuffer tag, ByteBuffer aad, ref ByteBuffer aead);
         #endregion
 
         #region Crypto
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int askar_key_crypto_box_random_nonce(ref SecretBuffer secret);
+        internal static extern int askar_key_crypto_box_random_nonce(ref ByteBuffer secret);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int askar_key_crypto_box(IntPtr recipKeyHandle, IntPtr senderKeyHandle, ByteBuffer message, ByteBuffer nonce, ref SecretBuffer secret);
+        internal static extern int askar_key_crypto_box(IntPtr recipKeyHandle, IntPtr senderKeyHandle, ByteBuffer message, ByteBuffer nonce, ref ByteBuffer secret);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int askar_key_crypto_box_open(IntPtr recipKeyHandle, IntPtr senderKeyHandle, ByteBuffer message, ByteBuffer nonce, ref SecretBuffer secret);
+        internal static extern int askar_key_crypto_box_open(IntPtr recipKeyHandle, IntPtr senderKeyHandle, ByteBuffer message, ByteBuffer nonce, ref ByteBuffer secret);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int askar_key_crypto_box_seal(IntPtr localKeyHandle, ByteBuffer message, ref SecretBuffer secret);
+        internal static extern int askar_key_crypto_box_seal(IntPtr localKeyHandle, ByteBuffer message, ref ByteBuffer secret);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int askar_key_crypto_box_seal_open(IntPtr localKeyHandle, ByteBuffer ciphertext, ref SecretBuffer secret);
+        internal static extern int askar_key_crypto_box_seal_open(IntPtr localKeyHandle, ByteBuffer ciphertext, ref ByteBuffer secret);
         #endregion
 
         #region Utils
@@ -97,7 +97,7 @@ namespace aries_askar_dotnet.aries_askar
         internal static extern int askar_key_free(IntPtr localKeyHandle);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int askar_key_sign_message(IntPtr localKeyHandle, ByteBuffer message, FfiStr sigType, ref SecretBuffer secret);
+        internal static extern int askar_key_sign_message(IntPtr localKeyHandle, ByteBuffer message, FfiStr sigType, ref ByteBuffer secret);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int askar_key_verify_signature(IntPtr localKeyHandle, ByteBuffer message, ByteBuffer signature, FfiStr sigType, ref byte verify);
@@ -150,7 +150,7 @@ namespace aries_askar_dotnet.aries_askar
         internal static extern int askar_entry_list_get_name(uint entryListHandle, int index, string name);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int askar_entry_list_get_value(uint entryListHandle, int index, ref SecretBuffer value);
+        internal static extern int askar_entry_list_get_value(uint entryListHandle, int index, ref ByteBuffer value);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int askar_entry_list_get_tags(uint entryListHandle, int index, string tags);
@@ -182,7 +182,7 @@ namespace aries_askar_dotnet.aries_askar
 
         #region Secret
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int askar_buffer_free(SecretBuffer buffer);
+        internal static extern int askar_buffer_free(ByteBuffer buffer);
         #endregion
 
         #region Store

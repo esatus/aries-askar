@@ -23,6 +23,10 @@ namespace aries_askar_dotnet_tests.aries_askar
             //Act
             foreach (KeyAlg keyAlg in Enum.GetValues(typeof(KeyAlg)))
             {
+                if (keyAlg == KeyAlg.NONE)
+                {
+                    continue;
+                }
                 IntPtr actual = await KeyApi.CreateKeyAsync(
                     keyAlg,
                     testEphemeral);
@@ -42,6 +46,10 @@ namespace aries_askar_dotnet_tests.aries_askar
             //Act
             foreach (KeyAlg keyAlg in Enum.GetValues(typeof(KeyAlg)))
             {
+                if(keyAlg == KeyAlg.NONE)
+                {
+                    continue;
+                }
                 IntPtr actual = await KeyApi.CreateKeyFromSeedAsync(
                     keyAlg,
                     seedJson,
@@ -82,7 +90,7 @@ namespace aries_askar_dotnet_tests.aries_askar
                     keyAlg,
                     seedJson,
                     method);
-            SecretBuffer publicBytes = await KeyApi.GetPublicBytesFromKeyAsync(
+            byte[] publicBytes = await KeyApi.GetPublicBytesFromKeyAsync(
                 pkHandle);
 
             //Act
@@ -105,7 +113,7 @@ namespace aries_askar_dotnet_tests.aries_askar
                     keyAlg,
                     seedJson,
                     method);
-            SecretBuffer secretBytes = await KeyApi.GetSecretBytesFromKeyAsync(
+            byte[] secretBytes = await KeyApi.GetSecretBytesFromKeyAsync(
                 skHandle);
 
             //Act
@@ -117,37 +125,36 @@ namespace aries_askar_dotnet_tests.aries_askar
             _ = actual.Should().NotBe(new IntPtr());
         }
 
-        /*[Test, TestCase(TestName = "CreateKeyFromKeyExchangeAsync call returns request handle.")]
+        [Test, TestCase(TestName = "CreateKeyFromKeyExchangeAsync call returns request handle.")]
         public async Task CreateKeyFromKeyExchangeAsyncWorks()
         {
             //Arrange
-            KeyAlg keyAlg = KeyAlg.A128CBC_HS256;
-
-            string pkSeedJson = "testseed000000000000000000000001";
+            KeyAlg keyAlg1 = KeyAlg.K256;
+            string seedJson = "testseed000000000000000000000001";
             SeedMethod method = SeedMethod.BlsKeyGen;
-            IntPtr pkHandle = await KeyApi.CreateKeyFromSeedAsync(
-                    keyAlg,
-                    pkSeedJson,
+            IntPtr secretKeyHandle1 = await KeyApi.CreateKeyFromSeedAsync(
+                    keyAlg1,
+                    seedJson,
                     method);
 
-            KeyAlg jwkKeyAlg = KeyAlg.BLS12_381_G1;
-            IntPtr skHandle = await KeyApi.CreateKeyFromJwkAsync(
-                JsonConvert.SerializeObject(new
-                {
-                    crv = jwkKeyAlg.ToJwkCrvString(),
-                    kty = "OKP",
-                    x = "h56eYI8Qkq5hitICb-ik8wRTzcn6Fd4iY8aDNVc9q1xoPS3lh4DB_B4wNtar1HrV"
-                }));
+            KeyAlg keyAlg2 = KeyAlg.K256;
+            string seedJson2 = "testseed000000000000000000000002";
+            IntPtr secretKeyHandle2 = await KeyApi.CreateKeyFromSeedAsync(
+                    keyAlg2,
+                    seedJson2,
+                    method);
+
+            KeyAlg keyAlg = KeyAlg.A128CBC_HS256;
 
             //Act
             IntPtr actual = await KeyApi.CreateKeyFromKeyExchangeAsync(
                 keyAlg,
-                skHandle,
-                pkHandle);
+                secretKeyHandle1,
+                secretKeyHandle2);
 
             //Assert
             _ = actual.Should().NotBe(new IntPtr());
-        }*/
+        }
         #endregion
 
         #region Get
@@ -164,11 +171,11 @@ namespace aries_askar_dotnet_tests.aries_askar
                     method);
 
             //Act
-            SecretBuffer actual = await KeyApi.GetPublicBytesFromKeyAsync(
+            byte[] actual = await KeyApi.GetPublicBytesFromKeyAsync(
                 handle);
 
             //Assert
-            _ = actual.len.Should().NotBe(0);
+            _ = ByteBuffer.Create(actual).len.Should().NotBe(0);
         }
 
         [Test, TestCase(TestName = "GetSecretBytesFromKeyAsync call returns request handle.")]
@@ -176,20 +183,19 @@ namespace aries_askar_dotnet_tests.aries_askar
         {
             //Arrange
             KeyAlg keyAlg = KeyAlg.BLS12_381_G1;
-            IntPtr keyHandle = await KeyApi.CreateKeyFromJwkAsync(
-                JsonConvert.SerializeObject(new
-                {
-                    crv = keyAlg.ToJwkCrvString(),
-                    kty = "OKP",
-                    x = "h56eYI8Qkq5hitICb-ik8wRTzcn6Fd4iY8aDNVc9q1xoPS3lh4DB_B4wNtar1HrV"
-                }));
+            string seedJson = "testseed000000000000000000000001";
+            SeedMethod method = SeedMethod.BlsKeyGen;
+            IntPtr secretKeyHandle = await KeyApi.CreateKeyFromSeedAsync(
+                    keyAlg,
+                    seedJson,
+                    method);
 
             //Act
-            SecretBuffer actual = await KeyApi.GetSecretBytesFromKeyAsync(
-                keyHandle);
+            byte[] actual = await KeyApi.GetSecretBytesFromKeyAsync(
+                secretKeyHandle);
 
             //Assert
-            _ = actual.len.Should().Be(0);
+            _ = ByteBuffer.Create(actual).len.Should().NotBe(0);
         }
 
         [Test, TestCase(TestName = "GetAlgorithmFromKeyAsync call returns request handle.")]
@@ -265,11 +271,11 @@ namespace aries_askar_dotnet_tests.aries_askar
                 }));
 
             //Act
-            SecretBuffer actual = await KeyApi.GetJwkSecretFromKeyAsync(
+            byte[] actual = await KeyApi.GetJwkSecretFromKeyAsync(
                 keyHandle);
 
             //Assert
-            _ = actual.len.Should().NotBe(0);
+            _ = ByteBuffer.Create(actual).len.Should().NotBe(0);
         }
 
         [Test, TestCase(TestName = "GetJwkThumbprintFromKeyAsync call returns request handle.")]
@@ -307,11 +313,11 @@ namespace aries_askar_dotnet_tests.aries_askar
                     testEphemeral);
 
             //Act
-            SecretBuffer actual = await KeyApi.GetAeadRandomNonceFromKeyAsync(
+            byte[] actual = await KeyApi.GetAeadRandomNonceFromKeyAsync(
                 testHandle);
 
             //Assert
-            _ = actual.len.Should().NotBe(0);
+            _ = ByteBuffer.Create(actual).len.Should().NotBe(0);
         }
 
         [Test, TestCase(TestName = "GetAeadParamsFromKeyAsync call returns request handle.")]
@@ -363,18 +369,18 @@ namespace aries_askar_dotnet_tests.aries_askar
                     keyAlg,
                     testEphemeral);
             string testMessage = "testMessage";
-            SecretBuffer testNonce = await KeyApi.CreateCryptoBoxRandomNonceAsync();
+            byte[] testNonce = await KeyApi.GetAeadRandomNonceFromKeyAsync(testHandle);
             string testAad = "testAad";
 
             //Act
-            EncryptedBuffer actual = await KeyApi.EncryptKeyWithAeadAsync(
+            (byte[] value, byte[] tag, byte[] nonce) = await KeyApi.EncryptKeyWithAeadAsync(
                 testHandle,
                 testMessage,
                 testNonce,
                 testAad);
 
             //Assert
-            _ = actual.buffer.len.Should().NotBe(0);
+            _ = value.Length.Should().NotBe(0);
         }
 
         [Test, TestCase(TestName = "DecryptKeyWithAeadAsync call returns request handle.")]
@@ -386,21 +392,105 @@ namespace aries_askar_dotnet_tests.aries_askar
             IntPtr testHandle = await KeyApi.CreateKeyAsync(
                     keyAlg,
                     testEphemeral);
-            string testCiphertext = "testCiphertext";
-            SecretBuffer testNonce = await KeyApi.CreateCryptoBoxRandomNonceAsync();
+            byte[] testNonce = await KeyApi.GetAeadRandomNonceFromKeyAsync(testHandle);
             string testTag = "testTag";
             string testAad = "testAad";
 
-            //Act
-            SecretBuffer actual = await KeyApi.DecryptKeyWithAeadAsync(
+            string testMessage = "testMessage";
+            (byte[] value, byte[] tag, byte[] nonce) = await KeyApi.EncryptKeyWithAeadAsync(
                 testHandle,
-                testCiphertext,
+                testMessage,
                 testNonce,
-                testTag,
+                testAad);
+
+            //Act
+            byte[] actual = await KeyApi.DecryptKeyWithAeadAsync(
+                testHandle,
+                value,
+                nonce,
+                tag,
                 testAad);
 
             //Assert
-            _ = actual.len.Should().NotBe(0);
+            _ = ByteBuffer.Create(actual).len.Should().NotBe(0);
+        }
+        #endregion
+
+        #region Crypto
+        [Test, TestCase(TestName = "CreateCryptoBoxRandomNonceAsync call returns request handle.")]
+        public async Task CreateCryptoBoxRandomNonceAsyncWorks()
+        {
+            //Arrange
+
+            //Act
+            byte[] actual = await KeyApi.CreateCryptoBoxRandomNonceAsync();
+
+            //Assert
+            _ = ByteBuffer.Create(actual).len.Should().NotBe(0);
+        }
+
+        [Test, TestCase(TestName = "CryptoBoxAsync call returns request handle.")]
+        public async Task CryptoBoxAsyncWorks()
+        {
+            KeyAlg keyRecipientAlg = KeyAlg.X25519;
+            byte testRecipientEphemeral = 5;
+            IntPtr testRecipientHandle = await KeyApi.CreateKeyAsync(
+                    keyRecipientAlg,
+                    testRecipientEphemeral);
+
+            KeyAlg keySenderAlg = KeyAlg.X25519;
+            byte testSenderEphemeral = 10;
+            IntPtr testSenderHandle = await KeyApi.CreateKeyAsync(
+                    keySenderAlg,
+                    testSenderEphemeral);
+
+            string testMessage = "testMessage";
+            byte[] testNonce = await KeyApi.CreateCryptoBoxRandomNonceAsync();
+
+            //Act
+            byte[] actual = await KeyApi.CryptoBoxAsync(
+                testRecipientHandle,
+                testSenderHandle,
+                testMessage,
+                testNonce);
+
+            //Assert
+            _ = ByteBuffer.Create(actual).len.Should().NotBe(0);
+        }
+
+        [Test, TestCase(TestName = "OpenCryptoBoxAsync call returns request handle.")]
+        public async Task OpenCryptoBoxAsyncWorks()
+        {
+            KeyAlg keyRecipientAlg = KeyAlg.X25519;
+            byte testRecipientEphemeral = 5;
+            IntPtr testRecipientHandle = await KeyApi.CreateKeyAsync(
+                    keyRecipientAlg,
+                    testRecipientEphemeral);
+
+            KeyAlg keySenderAlg = KeyAlg.X25519;
+            byte testSenderEphemeral = 10;
+            IntPtr testSenderHandle = await KeyApi.CreateKeyAsync(
+                    keySenderAlg,
+                    testSenderEphemeral);
+
+            string testMessage = "testMessage";
+            byte[] testNonce = await KeyApi.CreateCryptoBoxRandomNonceAsync();
+
+            byte[] encrypted = await KeyApi.CryptoBoxAsync(
+                testRecipientHandle,
+                testSenderHandle,
+                testMessage,
+                testNonce);
+
+            //Act
+            byte[] actual = await KeyApi.OpenCryptoBoxAsync(
+                testRecipientHandle,
+                testSenderHandle,
+                encrypted,
+                testNonce);
+
+            //Assert
+            _ = ByteBuffer.Create(actual).len.Should().NotBe(0);
         }
         #endregion
     }

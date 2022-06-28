@@ -61,11 +61,11 @@ namespace aries_askar_dotnet.aries_askar
             return name;
         }
 
-        public static async Task<SecretBuffer> EntryListGetValueAsync(
+        public static async Task<ByteBuffer> EntryListGetValueAsync(
             uint entryListHandle,
             int index)
         {
-            SecretBuffer value = new SecretBuffer();
+            ByteBuffer value = new ByteBuffer();
             int errorCode = NativeMethods.askar_entry_list_get_value(
                 entryListHandle,
                 index,
