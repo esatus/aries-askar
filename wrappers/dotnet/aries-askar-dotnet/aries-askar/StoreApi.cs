@@ -36,7 +36,18 @@ namespace aries_askar_dotnet.aries_askar
 
         public static async Task<bool> RemoveAsync(this Store store, string specUri)
         {
-            return await StoreRemoveAsync(specUri);
+            bool result = await StoreRemoveAsync(specUri);
+            if (result)
+            {
+                if (store.session != null)
+                {
+                    store.session.sessionHandle = new IntPtr();
+                    store.session.storeHandle = new IntPtr();
+                    store.session = null;
+                }
+                store.storeHandle = new IntPtr();
+            }
+            return result;
         }
 
         public static async Task<string> CreateProfileAsync(this Store store, string profile = null)
@@ -60,18 +71,32 @@ namespace aries_askar_dotnet.aries_askar
             return await StoreRekeyAsync(store.storeHandle, keyMethod, passKey);
         }
 
-        //Returns true if Store was removed else false
         public static async Task<bool> CloseAsync(this Store store, bool remove = false)
         {
-            store.session = null;
             if (store.storeHandle != new IntPtr())
             {
                 await StoreCloseAsync(store.storeHandle);
+                if (store.session != null) 
+                { 
+                    store.session.sessionHandle = new IntPtr();
+                    store.session.storeHandle = new IntPtr();
+                    store.session = null;
+                }
                 store.storeHandle = new IntPtr();
             }
             if (remove)
             {
-                return await StoreRemoveAsync(store.specUri);
+                bool res = await StoreRemoveAsync(store.specUri);
+                if (res)
+                {
+                    if (store.session != null)
+                    {
+                        store.session.sessionHandle = new IntPtr();
+                        store.session.storeHandle = new IntPtr();
+                        store.session = null;
+                    }
+                }
+                return res;
             }
             else return false;
         }
@@ -91,23 +116,35 @@ namespace aries_askar_dotnet.aries_askar
         {
             if (store.storeHandle == new IntPtr())
             {
-                //Error
+                throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Cannot start session from closed store");
             }
-            return await SessionStartAsync(store.storeHandle, profile, asTransactions);
+            if (store.session != null)
+            {
+                if (store.session.sessionHandle != new IntPtr()) 
+                    throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Session already opened");
+            }
+            Session session = await SessionStartAsync(store.storeHandle, profile, asTransactions);
+            store.session = session;
+            return session;
         }
 
         public static Session CreateSession(
             this Store store,
             string profile = null)
         {
-            return new Session(store.storeHandle, new IntPtr(), profile, false);
+            Session session = new Session(store.storeHandle, new IntPtr(), profile, false);
+            store.session = session;
+            return session;
         }
 
         public static Session CreateTransaction(
             this Store store,
             string profile = null)
         {
-            return new Session(store.storeHandle, new IntPtr(), profile, true);
+           
+            Session session = new Session(store.storeHandle, new IntPtr(), profile, true);
+            store.session = session;
+            return session;
         }
         #endregion
 
@@ -121,24 +158,45 @@ namespace aries_askar_dotnet.aries_askar
         {
             if (session.storeHandle == new IntPtr())
             {
-                //Error
+                throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Cannot start session from closed store");
             }
-            return await SessionStartAsync(session.storeHandle, session.sessionProfile, session.isTransaction);
+            if (session != null)
+            {
+                if (session.sessionHandle != new IntPtr())
+                    throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Session already opened");
+            }
+            //when starting session from session object, we need to return our input session object because it is known to our store.
+            //Otherwise we would return a new Session object but our store still has the old session without the right session handle.
+            Session tempSess = await SessionStartAsync(session.storeHandle, session.sessionProfile, session.isTransaction);
+            session.sessionHandle = tempSess.sessionHandle;
+            return session;
         }
         public static async Task<long> CountAsync(this Session session, string category, string tagFilter = null)
         {
+            if (session.sessionHandle == new IntPtr())
+            {
+                throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Cannot count from closed session");
+            }
             return await SessionCountAsync(session.sessionHandle, category, tagFilter);
         }
 
         //Return EntryListHandle
         public static async Task<IntPtr> FetchAsync(this Session session, string category, string name, bool forUpdate = false)
         {
+            if (session.sessionHandle == new IntPtr())
+            {
+                throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Cannot fetch from closed session");
+            }
             return await SessionFetchAsync(session.sessionHandle, category, name);
         }
 
         //Return EntryListHandle
         public static async Task<IntPtr> FetchAllAsync(this Session session, string category, string tagFilter = null , long limit = 0, bool forUpdate = false)
         {
+            if (session.sessionHandle == new IntPtr())
+            {
+                throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Cannot fetch from closed session");
+            }
             return await SessionFetchAllAsync(session.sessionHandle, category, tagFilter, limit, forUpdate);
         }
 
@@ -150,6 +208,10 @@ namespace aries_askar_dotnet.aries_askar
             string tags = null,
             long expiryMs = 0)
         {
+            if (session.sessionHandle == new IntPtr())
+            {
+                throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Cannot update closed session");
+            }
             return await SessionInsertAsync(session.sessionHandle, category, name, value, tags, expiryMs);
         }
 
@@ -161,6 +223,10 @@ namespace aries_askar_dotnet.aries_askar
             string tags = null,
             long expiryMs = 0)
         {
+            if (session.sessionHandle == new IntPtr())
+            {
+                throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Cannot update closed session");
+            }
             return await SessionReplaceAsync(session.sessionHandle, category, name, value, tags, expiryMs);
         }
 
@@ -169,12 +235,20 @@ namespace aries_askar_dotnet.aries_askar
             string category,
             string name)
         {
+            if (session.sessionHandle == new IntPtr())
+            {
+                throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Cannot remove for closed session");
+            }
             return await SessionRemoveAsync(session.sessionHandle, category, name);
         }
 
         //Return number of removed elements
         public static async Task<long> RemoveAllAsync(this Session session,string category, string tagFilter = null)
         {
+            if (session.sessionHandle == new IntPtr())
+            {
+                throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Cannot remove all for closed session");
+            }
             return await SessionRemoveAllAsync(session.sessionHandle, category, tagFilter);
         }
 
@@ -186,12 +260,20 @@ namespace aries_askar_dotnet.aries_askar
             string tags = null,
             long expiryMs = 0)
         {
+            if (session.sessionHandle == new IntPtr())
+            {
+                throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Cannot insert key with closed session");
+            }
             return await SessionInsertKeyAsync(session.sessionHandle, localKeyHandle, name, metaData, tags, expiryMs);
         }
 
         //Returns KeyEntryListHandle
         public static async Task<IntPtr> FetchKeyAsync(this Session session, string name, bool forUpdate = false)
         {
+            if (session.sessionHandle == new IntPtr())
+            {
+                throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Cannot fetch key from closed session");
+            }
             return await SessionFetchKeyAsync(session.sessionHandle, name, forUpdate);
         }
 
@@ -204,6 +286,10 @@ namespace aries_askar_dotnet.aries_askar
             long limit = 0,
             bool forUpdate = false)
         {
+            if (session.sessionHandle == new IntPtr())
+            {
+                throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Cannot fetch key from closed session");
+            }
             return await SessionFetchAllKeysAsync(session.sessionHandle, keyAlg, thumbprint, tagFilter, limit, forUpdate);
         }
 
@@ -214,6 +300,10 @@ namespace aries_askar_dotnet.aries_askar
             string tags = null,
             long expiryMs = 0)
         {
+            if (session.sessionHandle == new IntPtr())
+            {
+                throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Cannot update key with closed session");
+            }
             return await SessionUpdateKeyAsync(session.sessionHandle, name, metaData, tags, expiryMs);
         }
 
@@ -221,6 +311,10 @@ namespace aries_askar_dotnet.aries_askar
             this Session session,
             string name)
         {
+            if (session.sessionHandle == new IntPtr())
+            {
+                throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Cannot remove key with closed session");
+            }
             return await SessionRemoveKeyAsync(session.sessionHandle, name);
         }
 
@@ -229,11 +323,11 @@ namespace aries_askar_dotnet.aries_askar
         {
             if (!session.isTransaction)
             {
-                //ERROR
+                throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Session is not a transaction");
             }
             if (session.sessionHandle == new IntPtr())
             {
-                //ERROR
+                throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Cannot commit closed transaction");
             }
             bool res = await SessionCloseAndCommitAsync(session.sessionHandle);
             session.sessionHandle = new IntPtr();
@@ -245,11 +339,11 @@ namespace aries_askar_dotnet.aries_askar
         {
             if (!session.isTransaction)
             {
-                //ERROR
+                throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Session is not a transaction");
             }
             if (session.sessionHandle == new IntPtr())
             {
-                //ERROR
+                throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Cannot rollback closed transaction");
             }
             bool res = await SessionCloseAndRollbackAsync(session.sessionHandle);
             session.sessionHandle = new IntPtr();
