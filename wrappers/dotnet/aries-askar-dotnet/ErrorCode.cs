@@ -15,6 +15,7 @@
                 ErrorCode.NotFound => "NotFound",
                 ErrorCode.Unexpected => "Unexpected",
                 ErrorCode.Unsupported => "Unsupported",
+                ErrorCode.Wrapper => "Wrapper",
                 ErrorCode.Custom => "Custom",
                 _ => "Unknown error code"
             };
@@ -31,6 +32,7 @@
         NotFound = 6,
         Unexpected = 7,
         Unsupported = 8,
+        Wrapper = 99,
         Custom = 100,
     }
 }

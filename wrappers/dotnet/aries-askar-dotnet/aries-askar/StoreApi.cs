@@ -89,7 +89,7 @@ namespace aries_askar_dotnet.aries_askar
 
         public static async Task<Session> StartSessionAsync(this Store store, string profile = null, bool asTransactions = false)
         {
-            if (store.storeHandle == 0 || store.storeHandle == null)
+            if (store.storeHandle == 0)
             {
                 //Error
             }
@@ -119,7 +119,7 @@ namespace aries_askar_dotnet.aries_askar
         #region Session calls
         public static async Task<Session> StartAsync(this Session session)
         {
-            if (session.storeHandle == 0 || session.storeHandle == null)
+            if (session.storeHandle == 0)
             {
                 //Error
             }
@@ -231,7 +231,7 @@ namespace aries_askar_dotnet.aries_askar
             {
                 //ERROR
             }
-            if (session.sessionHandle == 0 || session.sessionHandle == null)
+            if (session.sessionHandle == 0)
             {
                 //ERROR
             }
@@ -247,7 +247,7 @@ namespace aries_askar_dotnet.aries_askar
             {
                 //ERROR
             }
-            if (session.sessionHandle == 0 || session.sessionHandle == null)
+            if (session.sessionHandle == 0)
             {
                 //ERROR
             }

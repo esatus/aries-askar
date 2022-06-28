@@ -1,4 +1,6 @@
-﻿namespace aries_askar_dotnet.Models
+﻿using System;
+
+namespace aries_askar_dotnet.Models
 {
     public class Session
     {
