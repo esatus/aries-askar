@@ -315,6 +315,7 @@ namespace aries_askar_dotnet_tests.aries_askar
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile, testRecreate);
 
             //Act
+            store.storeHandle = new IntPtr();
             bool actual = await store.CloseAsync(removeStore);
 
             //Assert
@@ -448,31 +449,220 @@ namespace aries_askar_dotnet_tests.aries_askar
             //Assert
             await actual.Should().ThrowAsync<AriesAskarException>().WithMessage("'Wrapper' error occured with ErrorCode '99' : Session already opened.");
         }
-        /**
-        [Test, TestCase(TestName = "InsertAsync works.")]
-        public async Task InsertAsyncWorks()
+
+        [Test, TestCase(TestName = "CountAsyncWorks works and returns counted number.")]
+        public async Task CountAsyncWorks()
         {
             //Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
-            Session session = await store.StartSessionAsync(testProfile, testAsTransactions);
+            Session session = await store.StartSessionAsync();
+            bool testInsert1 = await session.InsertAsync(testEntry["category"].ToString(), "testName1");
+            bool testInsert2 = await session.InsertAsync(testEntry["category"].ToString(), "testName2");
 
             //Act
-            bool actual = await session.InsertAsync(
-            testEntry["category"].ToString(),
-            testEntry["name"].ToString(),
-            testEntry["value"].ToString(),
-            null,
-            //testEntry["tags"].ToString(), //TODO
-            (long)999999);
+            long actual = await session.CountAsync(testEntry["category"].ToString());
 
             //Assert
-            actual.Should().Be(true);
-        }**/
+            actual.Should().Be(2);
+            Console.WriteLine(actual);
+        }
+
+        [Test, TestCase(TestName = "InsertAsync works for session.")]
+        public async Task SessionInsertAsyncWorks()
+        {
+            //Arrange
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync();
+            long initCount = await session.CountAsync(testEntry["category"].ToString());
+
+
+            //Act
+            bool actual = await session.InsertAsync(testEntry["category"].ToString(), "testName1");
+            long finalCount = await session.CountAsync(testEntry["category"].ToString());
+
+            //Assert
+            actual.Should().BeTrue();
+            initCount.Should().Be(0);
+            finalCount.Should().Be(1);
+        }
+
+        [Test, TestCase(TestName = "RemoveAsync works for session.")]
+        public async Task SessionRemoveAsyncWorks()
+        {
+            //Arrange
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync();
+            bool initInsert = await session.InsertAsync(testEntry["category"].ToString(), "testName1");
+            long initCount = await session.CountAsync(testEntry["category"].ToString());
+
+            //Act
+            bool actual = await session.RemoveAsync(testEntry["category"].ToString(), "testName1");
+            long finalCount = await session.CountAsync(testEntry["category"].ToString());
+
+            //Assert
+            actual.Should().BeTrue();
+            initCount.Should().Be(1);
+            finalCount.Should().Be(0);
+        }
+
+        [Test, TestCase(TestName = "RemoveAllAsync works for session.")]
+        public async Task SessionRemoveAllAsyncWorks()
+        {
+            //Arrange
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync();
+            bool initInsert1 = await session.InsertAsync(testEntry["category"].ToString(), "testName1");
+            bool initInsert2 = await session.InsertAsync(testEntry["category"].ToString(), "testName2");
+            long initCount = await session.CountAsync(testEntry["category"].ToString());
+
+            //Act
+            long actual = await session.RemoveAllAsync(testEntry["category"].ToString());
+            long finalCount = await session.CountAsync(testEntry["category"].ToString());
+
+            //Assert
+            actual.Should().Be(2);
+            initCount.Should().Be(2);
+            finalCount.Should().Be(0);
+        }
+
+        //TODO need Fetch method
+        [Test, TestCase(TestName = "ReplaceAsyncs works for session.")]
+        public async Task SessionReplaceAsyncWorks()
+        {
+            //Arrange
+            string testName = "testName";
+            string replacedTestName = "replacedTestName";
+            string testValue = "testValue";
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync();
+            bool initInsert1 = await session.InsertAsync(testEntry["category"].ToString(), testName, testValue);
+            bool initInsert2 = await session.InsertAsync(testEntry["category"].ToString(), "name", "val");
+            IntPtr entry1 = await session.FetchAsync(testEntry["category"].ToString(), testName);
+            
+            string entryName1 = await ResultListApi.EntryListGetNameAsync(entry1, 1);
+            string entryCat1 = await ResultListApi.EntryListGetCategoryAsync(entry1, 1);
+            //Act
+            /**
+            int entryListCount = await ResultListApi.EntryListCountAsync(entry1);
+            string entryName1 = await ResultListApi.EntryListGetNameAsync(entry1, 0);
+            bool actual = await session.ReplaceAsync(testEntry["category"].ToString(), replacedTestName);
+            IntPtr entry2 = await session.FetchAsync(testEntry["category"].ToString(), testName);
+            int entryListCount2 = await ResultListApi.EntryListCountAsync(entry2);
+            string entryName2 = await ResultListApi.EntryListGetNameAsync(entry2, 0);
+            **/
+            //Assert
+            //actual.Should().BeTrue();
+            //entryName1.Should().Be(testName);
+            //entryName2.Should().Be(replacedTestName);
+            //entry1.Should().NotBe(new IntPtr());
+            Console.WriteLine(entry1);
+        }
+
+        private static IEnumerable<TestCaseData> CreateCasesCloseAndCommitAsyncWorks()
+        {
+            yield return new TestCaseData(false)
+                .SetName("CloseAndCommitAsyncWorks works for session.");
+            yield return new TestCaseData(true)
+                .SetName("CloseAndCommitAsyncWorks works for transaction.");
+        }
+
+        [Test, TestCaseSource(nameof(CreateCasesCloseAndCommitAsyncWorks))]
+        public async Task CloseAndCommitAsyncWorks(bool isTxn)
+        {
+            //Arrange
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync(testProfile, isTxn);
+
+            //Act
+            bool actual = await session.CloseAndCommitAsync();
+
+            //Assert
+            actual.Should().BeTrue();
+            session.sessionHandle.Should().Be(new IntPtr());
+        }
+
+        [Test, TestCase(TestName = "CloseAndCommitAsyncThrows for session handle equals 0.")]
+        public async Task CloseAndCommitAsyncThrowsSessionHandle0()
+        {
+            //Arrange
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync(testProfile, true);
+            await session.CloseAndCommitAsync();
+
+            //Act
+            Func<Task> actual = async() => await session.CloseAndCommitAsync();
+
+            //Assert
+            await actual.Should().ThrowAsync<Exception>();
+        }
+
+        [Test, TestCase(TestName = "CloseAndCommitAsyncThrows for session equals null.")]
+        public async Task CloseAndCommitAsyncThrowsSessionNull()
+        {
+            //Arrange
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+
+            //Act
+            Func<Task> actual = async () => await store.session.CloseAndCommitAsync();
+
+            //Assert
+            await actual.Should().ThrowAsync<Exception>();
+        }
+
+        private static IEnumerable<TestCaseData> CreateCasesCloseAndRollbackAsyncWorks()
+        {
+            yield return new TestCaseData(false)
+                .SetName("CloseAndRollbackAsyncWorks works for session.");
+            yield return new TestCaseData(true)
+                .SetName("CloseAndRollbackAsyncWorks works for transaction.");
+        }
+
+        [Test, TestCaseSource(nameof(CreateCasesCloseAndRollbackAsyncWorks))]
+        public async Task CloseAndRollbackAsyncWorks(bool isTxn)
+        {
+            //Arrange
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync(testProfile, isTxn);
+
+            //Act
+            bool actual = await session.CloseAndRollbackAsync();
+
+            //Assert
+            actual.Should().BeTrue();
+            session.sessionHandle.Should().Be(new IntPtr());
+        }
+
+        [Test, TestCase(TestName = "CloseAndRollbackAsyncThrows for session handle equals 0.")]
+        public async Task CloseAndRollbackAsyncThrowsSessionHandle0()
+        {
+            //Arrange
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync(testProfile, true);
+            await session.CloseAndCommitAsync();
+
+            //Act
+            Func<Task> actual = async () => await session.CloseAndRollbackAsync();
+
+            //Assert
+            await actual.Should().ThrowAsync<Exception>();
+        }
+
+        [Test, TestCase(TestName = "CloseAndRollbackAsyncThrows for session equals null.")]
+        public async Task CloseAndRollbackAsyncThrowsSessionNull()
+        {
+            //Arrange
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+
+            //Act
+            Func<Task> actual = async () => await store.session.CloseAndRollbackAsync();
+
+            //Assert
+            await actual.Should().ThrowAsync<Exception>();
+        }
         #endregion
     }
 }
 /**
- 
  Store store = await StoreApi.OpenAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync(testProfile, testAsTransactions);
 

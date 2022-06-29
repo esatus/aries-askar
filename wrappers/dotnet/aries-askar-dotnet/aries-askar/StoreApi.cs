@@ -86,17 +86,7 @@ namespace aries_askar_dotnet.aries_askar
             }
             if (remove)
             {
-                bool res = await StoreRemoveAsync(store.specUri);
-                if (res)
-                {
-                    if (store.session != null)
-                    {
-                        store.session.sessionHandle = new IntPtr();
-                        store.session.storeHandle = new IntPtr();
-                        store.session = null;
-                    }
-                }
-                return res;
+                return await store.RemoveAsync(store.specUri);
             }
             else return false;
         }
@@ -318,52 +308,36 @@ namespace aries_askar_dotnet.aries_askar
             return await SessionRemoveKeyAsync(session.sessionHandle, name);
         }
 
-        public static async Task<bool> CommitAsync(
+        public static async Task<bool> CloseAndCommitAsync(
             this Session session)
         {
-            if (!session.isTransaction)
+            if (session != null)
             {
-                throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Session is not a transaction");
-            }
-            if (session.sessionHandle == new IntPtr())
-            {
-                throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Cannot commit closed transaction");
-            }
-            bool res = await SessionCloseAndCommitAsync(session.sessionHandle);
-            session.sessionHandle = new IntPtr();
-            return res;
-        }
-
-        public static async Task<bool> RollbackAsync(
-            this Session session)
-        {
-            if (!session.isTransaction)
-            {
-                throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Session is not a transaction");
-            }
-            if (session.sessionHandle == new IntPtr())
-            {
-                throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Cannot rollback closed transaction");
-            }
-            bool res = await SessionCloseAndRollbackAsync(session.sessionHandle);
-            session.sessionHandle = new IntPtr();
-            return res;
-        }
-
-        public static async Task<bool> CloseAsync(
-            this Session session)
-        {
-            if (session.sessionHandle != new IntPtr())
-            {
-                bool res = await SessionCloseAsync(session.sessionHandle, false);
+                if (session.sessionHandle == new IntPtr())
+                {
+                    throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Cannot close and commit already closed sessions or transactions");
+                }
+                bool res = await SessionCloseAndCommitAsync(session.sessionHandle);
                 session.sessionHandle = new IntPtr();
                 return res;
             }
-            else
+            else throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Session is null");
+        }
+
+        public static async Task<bool> CloseAndRollbackAsync(
+            this Session session)
+        {
+            if (session != null)
             {
-                //Error ? -> ALready closed
-                return false;
+                if (session.sessionHandle == new IntPtr())
+                {
+                    throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Cannot close and rollback already closed sessions or transactions");
+                }
+                bool res = await SessionCloseAndRollbackAsync(session.sessionHandle);
+                session.sessionHandle = new IntPtr();
+                return res;
             }
+            else throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Session is null");
         }
         #endregion
 
