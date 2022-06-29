@@ -36,6 +36,19 @@ namespace aries_askar_dotnet_tests.aries_askar
             }
         }
 
+        [Test, TestCase(TestName = "CreateKeyAsync fails if no key algorithm is provided.")]
+        public async Task CreateKeyAsyncFails()
+        {
+            //Arrange
+            byte testEphemeral = 5;
+            KeyAlg keyAlg = KeyAlg.NONE;
+            IntPtr actual = await KeyApi.CreateKeyAsync(
+                    keyAlg,
+                    testEphemeral);
+            //Assert
+            _ = actual.Should().Be(new IntPtr());
+        }
+
         [Test, TestCase(TestName = "CreateKeyFromSeedAsync call returns request handle.")]
         public async Task CreateKeyFromSeedAsyncWorks()
         {
@@ -60,6 +73,24 @@ namespace aries_askar_dotnet_tests.aries_askar
             }
         }
 
+        [Test, TestCase(TestName = "CreateKeyFromSeedAsync fails if no key algorithm is provided.")]
+        public async Task CreateKeyFromSeedAsyncFails()
+        {
+            //Arrange
+            string seedJson = "testseed000000000000000000000001";
+            SeedMethod method = SeedMethod.BlsKeyGen;
+            KeyAlg keyAlg = KeyAlg.NONE;
+
+            //Act
+            IntPtr actual = await KeyApi.CreateKeyFromSeedAsync(
+                    keyAlg,
+                    seedJson,
+                    method);
+
+            //Assert
+            _ = actual.Should().Be(new IntPtr());
+        }
+
         [Test, TestCase(TestName = "CreateKeyFromJwkAsync call returns request handle.")]
         public async Task CreateKeyFromJwkAsyncWorks()
         {
@@ -77,6 +108,25 @@ namespace aries_askar_dotnet_tests.aries_askar
 
             //Assert
             _ = actual.Should().NotBe(new IntPtr());
+        }
+
+        [Test, TestCase(TestName = "CreateKeyFromJwkAsync fails if the provided key algorithm is not BLS12_381_G1, BLS12_381_G2 or BLS12_381_G1G2.")]
+        public async Task CreateKeyFromJwkAsyncFails()
+        {
+            //Arrange
+            KeyAlg keyAlg = KeyAlg.A128CBC_HS256;
+
+            //Act
+            IntPtr actual = await KeyApi.CreateKeyFromJwkAsync(
+                JsonConvert.SerializeObject(new
+                {
+                    crv = keyAlg.ToJwkCrvString(),
+                    kty = "OKP",
+                    x = "h56eYI8Qkq5hitICb-ik8wRTzcn6Fd4iY8aDNVc9q1xoPS3lh4DB_B4wNtar1HrV"
+                }));
+
+            //Assert
+            _ = actual.Should().Be(new IntPtr());
         }
 
         [Test, TestCase(TestName = "CreateKeyFromPublicBytesAsync call returns request handle.")]
@@ -100,6 +150,30 @@ namespace aries_askar_dotnet_tests.aries_askar
 
             //Assert
             _ = actual.Should().NotBe(new IntPtr());
+        }
+
+        [Test, TestCase(TestName = "CreateKeyFromPublicBytesAsync fails if the provided key algorithm is not BLS12_381_G1, BLS12_381_G2, BLS12_381_G1G2, ED25519, X25519, P256 or K256.")]
+        public async Task CreateKeyFromPublicBytesAsyncFails()
+        {
+            //Arrange
+            KeyAlg keyAlg = KeyAlg.BLS12_381_G1;
+            string seedJson = "testseed000000000000000000000001";
+            SeedMethod method = SeedMethod.BlsKeyGen;
+            IntPtr pkHandle = await KeyApi.CreateKeyFromSeedAsync(
+                    keyAlg,
+                    seedJson,
+                    method);
+            byte[] publicBytes = await KeyApi.GetPublicBytesFromKeyAsync(
+                pkHandle);
+            KeyAlg keyAlg2 = KeyAlg.P256;
+
+            //Act
+            IntPtr actual = await KeyApi.CreateKeyFromPublicBytesAsync(
+                keyAlg2,
+                publicBytes);
+
+            //Assert
+            _ = actual.Should().Be(new IntPtr());
         }
 
         [Test, TestCase(TestName = "CreateKeyFromSecretBytesAsync call returns request handle.")]
