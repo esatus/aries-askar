@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace aries_askar_dotnet.aries_askar
+namespace aries_askar_dotnet.AriesAskar
 {
     public static class ErrorApi
     {

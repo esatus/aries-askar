@@ -3,10 +3,10 @@ using aries_askar_dotnet.utils;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using static aries_askar_dotnet.aries_askar.NativeMethods;
+using static aries_askar_dotnet.AriesAskar.NativeMethods;
 using static indy_vdr_dotnet.models.Structures;
 
-namespace aries_askar_dotnet.aries_askar
+namespace aries_askar_dotnet.AriesAskar
 {
     public static class StoreApi
     {

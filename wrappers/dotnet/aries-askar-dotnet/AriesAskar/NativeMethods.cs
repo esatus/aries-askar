@@ -2,7 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 using static indy_vdr_dotnet.models.Structures;
 
-namespace aries_askar_dotnet.aries_askar
+namespace aries_askar_dotnet.AriesAskar
 {
     internal static class NativeMethods
     {

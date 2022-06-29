@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using static indy_vdr_dotnet.models.Structures;
 
-namespace aries_askar_dotnet.aries_askar
+namespace aries_askar_dotnet.AriesAskar
 {
     public class SecretApi
     {
@@ -20,7 +17,9 @@ namespace aries_askar_dotnet.aries_askar
                 throw AriesAskarException.FromSdkError(error);
             }
             else
+            {
                 return true;
+            }
         }
     }
 }

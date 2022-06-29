@@ -3,7 +3,7 @@ using System;
 using System.Threading.Tasks;
 using static indy_vdr_dotnet.models.Structures;
 
-namespace aries_askar_dotnet.aries_askar
+namespace aries_askar_dotnet.AriesAskar
 {
     public class KeyApi
     {
