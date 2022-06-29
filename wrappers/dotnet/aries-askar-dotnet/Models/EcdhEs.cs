@@ -1,4 +1,4 @@
-﻿using aries_askar_dotnet.aries_askar;
+﻿using aries_askar_dotnet.AriesAskar;
 using System;
 using System.Threading.Tasks;
 using static indy_vdr_dotnet.models.Structures;

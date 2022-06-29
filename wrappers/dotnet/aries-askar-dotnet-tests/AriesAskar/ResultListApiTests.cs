@@ -1,4 +1,4 @@
-﻿using aries_askar_dotnet.aries_askar;
+﻿using aries_askar_dotnet.AriesAskar;
 using aries_askar_dotnet.Models;
 using FluentAssertions;
 using Newtonsoft.Json;
@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using static indy_vdr_dotnet.models.Structures;
 
-namespace aries_askar_dotnet_tests.aries_askar
+namespace aries_askar_dotnet_tests.AriesAskar
 {
     public class ResultListApiTests
     {

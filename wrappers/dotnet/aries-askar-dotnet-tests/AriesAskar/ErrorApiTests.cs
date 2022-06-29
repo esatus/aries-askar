@@ -1,9 +1,9 @@
-using aries_askar_dotnet.aries_askar;
+using aries_askar_dotnet.AriesAskar;
 using FluentAssertions;
 using NUnit.Framework;
 using System.Threading.Tasks;
 
-namespace aries_askar_dotnet_tests.aries_askar
+namespace aries_askar_dotnet_tests.AriesAskar
 {
     public class ErrorApiTests
     {
