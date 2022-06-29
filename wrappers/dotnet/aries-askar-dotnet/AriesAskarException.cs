@@ -14,6 +14,11 @@ namespace aries_askar_dotnet
         {
         }
 
+        public static AriesAskarException FromWrapperError(ErrorCode errorCode, string message)
+        {
+            return new AriesAskarException($"'{errorCode.ToErrorCodeString()}' error occured with ErrorCode '{(int)errorCode}' : {message}.");
+        }
+
         public static AriesAskarException FromSdkError(string message)
         {
             string msg = JsonConvert.DeserializeObject<Dictionary<string, string>>(message)["message"];
