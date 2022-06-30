@@ -6,6 +6,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using static indy_vdr_dotnet.models.Structures;
 
 namespace aries_askar_dotnet_tests.AriesAskar
 {
@@ -20,7 +21,6 @@ namespace aries_askar_dotnet_tests.AriesAskar
         bool testRecreate;
         bool testAsTransactions;
 
-        //Dictionary<string, object> testEntry;
         [OneTimeSetUp]
         public async Task OneTimeSetUp()
         {
@@ -64,6 +64,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             actual.Should().NotBe("");
         }
 
+        //Todo open
         #region provision and open
         private static IEnumerable<TestCaseData> CreateCasesStoreProvisioningWorks()
         {
@@ -402,10 +403,29 @@ namespace aries_askar_dotnet_tests.AriesAskar
         }
         #endregion
 
+        #region start scan
+        [Test, TestCase(TestName = "StartScanAsync works.")]
+        public async Task StartScanAsyncWorks()
+        {
+            //Arrange
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            int numStartScanInputs = 5;
+            //Act
+            Scan actual = await store.StartScanAsync(testEntry["category"].ToString());
+
+            //Assert
+            actual.parameters.Should().Contain(testEntry["category"].ToString());
+            actual.parameters.Count.Should().Be(numStartScanInputs);
+            actual.storeHandle.Should().Be(store.storeHandle);
+            actual.scanHandle.Should().NotBe(new IntPtr());
+        }
         #endregion
 
+        #endregion
 
         #region session
+
+        #region start session
         [Test, TestCase(TestName = "StartAsync of session works and returns active session with handle.")]
         public async Task StartAsyncWorks()
         {
@@ -449,6 +469,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             //Assert
             await actual.Should().ThrowAsync<AriesAskarException>().WithMessage("'Wrapper' error occured with ErrorCode '99' : Session already opened.");
         }
+        #endregion
 
         [Test, TestCase(TestName = "CountAsyncWorks works and returns counted number.")]
         public async Task CountAsyncWorks()
@@ -467,6 +488,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Console.WriteLine(actual);
         }
 
+        #region insert records
         [Test, TestCase(TestName = "InsertAsync works for session.")]
         public async Task SessionInsertAsyncWorks()
         {
@@ -486,6 +508,41 @@ namespace aries_askar_dotnet_tests.AriesAskar
             finalCount.Should().Be(1);
         }
 
+        [Test, TestCase(TestName = "InsertAsync throws with no name provided.")]
+        public async Task SessionInsertAsyncThrowsNoName()
+        {
+            //Arrange
+
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync();
+
+            //Act
+            Func<Task> actual = async() => await session.InsertAsync(testEntry["category"].ToString(), null, "testValue");
+
+            //Assert
+            await actual.Should().ThrowAsync<Exception>();
+        }
+
+        [Test, TestCase(TestName = "InsertAsync callback throws with inserting a duplicate record.")]
+        public async Task SessionInsertAsyncThrowsDuplicateRecord()
+        {
+            //Arrange
+            string testName = "testName";
+            string testValue = "testValue";
+
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync();
+            bool initialInsert = await session.InsertAsync(testEntry["category"].ToString(), testName, testValue);
+
+            //Act
+            Func<Task> actual = async () => await session.InsertAsync(testEntry["category"].ToString(), testName, testValue);
+
+            //Assert
+            await actual.Should().ThrowAsync<Exception>();
+        }
+        #endregion
+
+        #region remove / remove all records
         [Test, TestCase(TestName = "RemoveAsync works for session.")]
         public async Task SessionRemoveAsyncWorks()
         {
@@ -503,6 +560,38 @@ namespace aries_askar_dotnet_tests.AriesAskar
             actual.Should().BeTrue();
             initCount.Should().Be(1);
             finalCount.Should().Be(0);
+        }
+
+        [Test, TestCase(TestName = "RemoveAsync callback for session throws with trying to remove an non existing record.")]
+        public async Task SessionRemoveAsyncThrowsNoName()
+        {
+            //Arrange
+            string testName = "testName";
+
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync();
+
+            //Act
+            Func<Task> actual = async () => await session.RemoveAsync(testEntry["category"].ToString(), testName);
+
+            //Assert
+            await actual.Should().ThrowAsync<Exception>();
+        }
+
+        [Test, TestCase(TestName = "RemoveAsync for session throws with no category provided.")]
+        public async Task SessionRemoveAsyncThrowsNoCategory()
+        {
+            //Arrange
+            string testName = "testName"; 
+
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync();
+
+            //Act
+            Func<Task> actual = async () => await session.RemoveAsync(null, testName);
+
+            //Assert
+            await actual.Should().ThrowAsync<Exception>();
         }
 
         [Test, TestCase(TestName = "RemoveAllAsync works for session.")]
@@ -524,40 +613,98 @@ namespace aries_askar_dotnet_tests.AriesAskar
             initCount.Should().Be(2);
             finalCount.Should().Be(0);
         }
+        #endregion
 
+        #region replace records
         //TODO need Fetch method
         [Test, TestCase(TestName = "ReplaceAsyncs works for session.")]
         public async Task SessionReplaceAsyncWorks()
         {
             //Arrange
             string testName = "testName";
-            string replacedTestName = "replacedTestName";
             string testValue = "testValue";
+            string replacedTestValue = "newTestValue";
+
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
             bool initInsert1 = await session.InsertAsync(testEntry["category"].ToString(), testName, testValue);
-            bool initInsert2 = await session.InsertAsync(testEntry["category"].ToString(), "name", "val");
-            IntPtr entry1 = await session.FetchAsync(testEntry["category"].ToString(), testName);
-            
-            string entryName1 = await ResultListApi.EntryListGetNameAsync(entry1, 1);
-            string entryCat1 = await ResultListApi.EntryListGetCategoryAsync(entry1, 1);
-            //Act
-            /**
-            int entryListCount = await ResultListApi.EntryListCountAsync(entry1);
+
+            /** Todo : Check if value of the entries has changed. 
+            IntPtr entry1 = await session.FetchAsync(testEntry["category"].ToString(), testName, true);
             string entryName1 = await ResultListApi.EntryListGetNameAsync(entry1, 0);
-            bool actual = await session.ReplaceAsync(testEntry["category"].ToString(), replacedTestName);
-            IntPtr entry2 = await session.FetchAsync(testEntry["category"].ToString(), testName);
-            int entryListCount2 = await ResultListApi.EntryListCountAsync(entry2);
-            string entryName2 = await ResultListApi.EntryListGetNameAsync(entry2, 0);
+            ByteBuffer entryVal1 = await ResultListApi.EntryListGetValueAsync(entry1, 0);
+            int entryListCount1 = await ResultListApi.EntryListCountAsync(entry1);
             **/
+
+            //Act
+            bool actual = await session.ReplaceAsync(testEntry["category"].ToString(), testName, replacedTestValue);
+            /**
+            IntPtr entry2 = await session.FetchAsync(testEntry["category"].ToString(), testName);
+            string entryName2 = await ResultListApi.EntryListGetNameAsync(entry2, 0);
+            ByteBuffer entryVal2 = await ResultListApi.EntryListGetValueAsync(entry2, 0);
+            int entryListCount2 = await ResultListApi.EntryListCountAsync(entry2);
+            **/
+            
             //Assert
-            //actual.Should().BeTrue();
-            //entryName1.Should().Be(testName);
-            //entryName2.Should().Be(replacedTestName);
-            //entry1.Should().NotBe(new IntPtr());
-            Console.WriteLine(entry1);
+            actual.Should().BeTrue();
+            //entryVal1.Should().NotBe(entryVal2);
+            //Console.WriteLine(entry1);
+            //Console.WriteLine(entry2);
         }
 
+        [Test, TestCase(TestName = "ReplaceAsyncs callback throws with trying to replace value in an non existing record.")]
+        public async Task SessionReplaceAsyncThrowsRecordNotExisting()
+        {
+            //Arrange
+            string testName = "testName";
+            string newTestName = "newTestName";
+
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync();
+            bool initInsert1 = await session.InsertAsync(testEntry["category"].ToString(), testName);
+
+            //Act
+            Func<Task> actual = async() => await session.ReplaceAsync(testEntry["category"].ToString(), newTestName);
+          
+            //Assert
+            await actual.Should().ThrowAsync<Exception>();
+        }
+
+        [Test, TestCase(TestName = "ReplaceAsyncs throws with no category name provided.")]
+        public async Task SessionReplaceAsyncThrowsNoCategory()
+        {
+            //Arrange
+            string testName = "testName";
+
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync();
+            bool initInsert1 = await session.InsertAsync(testEntry["category"].ToString(), testName);
+
+            //Act
+            Func<Task> actual = async () => await session.ReplaceAsync(null, testName);
+
+            //Assert
+            await actual.Should().ThrowAsync<Exception>();
+        }
+        #endregion
+
+        //Todo
+        #region fetch / fetch all records
+        #endregion
+
+        //Todo
+        #region insert / update key
+        #endregion
+
+        //Todo
+        #region remove key
+        #endregion
+
+        //Todo
+        #region fetch key / fetch all keys
+        #endregion
+
+        #region close and commit session
         private static IEnumerable<TestCaseData> CreateCasesCloseAndCommitAsyncWorks()
         {
             yield return new TestCaseData(false)
@@ -608,7 +755,9 @@ namespace aries_askar_dotnet_tests.AriesAskar
             //Assert
             await actual.Should().ThrowAsync<Exception>();
         }
+        #endregion
 
+        #region close and rollback session
         private static IEnumerable<TestCaseData> CreateCasesCloseAndRollbackAsyncWorks()
         {
             yield return new TestCaseData(false)
@@ -660,20 +809,57 @@ namespace aries_askar_dotnet_tests.AriesAskar
             await actual.Should().ThrowAsync<Exception>();
         }
         #endregion
-    }
-}
-/**
- Store store = await StoreApi.OpenAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
-            Session session = await store.StartSessionAsync(testProfile, testAsTransactions);
+
+        #endregion
+
+        //Todo
+        #region scan
+
+        //Todo
+        #region next scan
+        [Test, TestCase(TestName = "NextScanAsync works.")]
+        public async Task NextScanAsyncWorks()
+        {
+            //Arrange
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync();
+            bool insert1 = await session.InsertAsync(testEntry["category"].ToString(), "name1");
+            bool insert2 = await session.InsertAsync(testEntry["category"].ToString(), "name2");
+            bool insert3 = await session.InsertAsync(testEntry["category"].ToString(), "name3");
+            Scan scan = await store.StartScanAsync(testEntry["category"].ToString());
+            Scan scan2 = await store.StartScanAsync(testEntry["category"].ToString());
+            Scan scan3 = await store.StartScanAsync(testEntry["category"].ToString());
 
             //Act
-            bool actual = await session.InsertAsync(
-                testEntry["category"].ToString(),
-                testEntry["name"].ToString(),
-                testEntry["value"].ToString(),
-                null,
-                //testEntry["tags"].ToString(), //TODO
-                (long)999999);
+            //EntryListHandle
+            IntPtr actual = await scan.NextAsync();
 
             //Assert
-            actual.Should().Be(true);**/
+            actual.Should().NotBe(new IntPtr());
+            Console.WriteLine(scan.scanHandle);
+            Console.WriteLine(actual);
+        }
+        #endregion
+
+        #region free scan
+        [Test, TestCase(TestName = "FreeScanAsync works.")]
+        public async Task FreeScanAsyncWorks()
+        {
+            //Arrange
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Scan scan = await store.StartScanAsync(testEntry["category"].ToString());
+
+            //Act
+            bool actual = await scan.FreeAsync();
+
+            //Assert
+            actual.Should().BeTrue();
+            scan.scanHandle.Should().Be(new IntPtr());
+            scan.storeHandle.Should().Be(new IntPtr());
+            scan.parameters.Should().BeNullOrEmpty();
+        }
+        #endregion
+
+        #endregion
+    }
+}

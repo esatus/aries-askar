@@ -139,8 +139,23 @@ namespace aries_askar_dotnet.AriesAskar
         #endregion
 
         #region Scan calls
-       
 
+        public static async Task<IntPtr> NextAsync(this Scan scan)
+        {
+            return await ScanNextAsync(scan.scanHandle);
+        }
+
+        public static async Task<bool> FreeAsync(this Scan scan)
+        {
+            bool result = await ScanFreeAsync(scan.scanHandle);
+            if (result)
+            {
+                scan.scanHandle = new IntPtr();
+                scan.storeHandle = new IntPtr();
+                scan.parameters = null;
+            }
+            return result;
+        }
         #endregion
 
         #region Session calls
@@ -574,12 +589,8 @@ namespace aries_askar_dotnet.AriesAskar
             return new Scan(await taskCompletionSource.Task, storeHandle, parameters);
         }
 
-        private static async Task<Entry> NextScanAsync(this Scan scan)
-        {
-            return await ScanNextAsync(scan.scanHandle);
-        }
         //Returns an entryListHandle
-        private static async Task<Entry> ScanNextAsync(IntPtr scanHandle)
+        private static async Task<IntPtr> ScanNextAsync(IntPtr scanHandle)
         {
             var taskCompletionSource = new TaskCompletionSource<IntPtr>();
             var callbackId = PendingCallbacks.Add(taskCompletionSource);
@@ -596,7 +607,7 @@ namespace aries_askar_dotnet.AriesAskar
                 throw AriesAskarException.FromSdkError(error);
             }
 
-            return new Entry(await taskCompletionSource.Task);
+            return await taskCompletionSource.Task;
         }
 
         private static async Task<bool> ScanFreeAsync(IntPtr scanHandle)
