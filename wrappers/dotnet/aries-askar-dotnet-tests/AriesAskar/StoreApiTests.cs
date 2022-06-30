@@ -6,7 +6,6 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using static indy_vdr_dotnet.models.Structures;
 
 namespace aries_askar_dotnet_tests.AriesAskar
 {
@@ -817,6 +816,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
         //Todo
         #region next scan
+        /**
         [Test, TestCase(TestName = "NextScanAsync works.")]
         public async Task NextScanAsyncWorks()
         {
@@ -838,7 +838,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             actual.Should().NotBe(new IntPtr());
             Console.WriteLine(scan.scanHandle);
             Console.WriteLine(actual);
-        }
+        }**/
         #endregion
 
         #region free scan
