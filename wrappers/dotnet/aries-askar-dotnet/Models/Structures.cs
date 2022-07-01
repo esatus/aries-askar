@@ -83,6 +83,10 @@ namespace indy_vdr_dotnet.models
 
             return managedArray;
         }
+        public unsafe static string DecodeToString(this ByteBuffer buffer)
+        {
+            return Marshal.PtrToStringUTF8(new IntPtr(buffer.value), (int)buffer.len);
+        }
 
         public unsafe static (byte[], byte[], byte[]) Decode(this EncryptedBuffer encryptedBuffer)
         {

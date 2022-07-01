@@ -31,7 +31,7 @@ namespace aries_askar_dotnet.AriesAskar
             int errorCode = NativeMethods.askar_entry_list_get_category(
                 entryListHandle,
                 index,
-                category);
+                ref category);
 
             if (errorCode != (int)ErrorCode.Success)
             {
@@ -50,7 +50,7 @@ namespace aries_askar_dotnet.AriesAskar
             int errorCode = NativeMethods.askar_entry_list_get_name(
                 entryListHandle,
                 index,
-                name);
+                ref name);
 
             if (errorCode != (int)ErrorCode.Success)
             {
@@ -88,7 +88,7 @@ namespace aries_askar_dotnet.AriesAskar
             int errorCode = NativeMethods.askar_entry_list_get_tags(
                 entryListHandle,
                 index,
-                tags);
+                ref tags);
 
             if (errorCode != (int)ErrorCode.Success)
             {
@@ -156,7 +156,7 @@ namespace aries_askar_dotnet.AriesAskar
             int errorCode = NativeMethods.askar_key_entry_list_get_algorithm(
                 keyEntryListHandle,
                 index,
-                alg);
+                ref alg);
 
             if (errorCode != (int)ErrorCode.Success)
             {
@@ -175,7 +175,7 @@ namespace aries_askar_dotnet.AriesAskar
             int errorCode = NativeMethods.askar_key_entry_list_get_name(
                 keyEntryListHandle,
                 index,
-                name);
+                ref name);
 
             if (errorCode != (int)ErrorCode.Success)
             {
@@ -194,7 +194,7 @@ namespace aries_askar_dotnet.AriesAskar
             int errorCode = NativeMethods.askar_key_entry_list_get_metadata(
                 keyEntryListHandle,
                 index,
-                metadata);
+                ref metadata);
 
             if (errorCode != (int)ErrorCode.Success)
             {
@@ -213,7 +213,7 @@ namespace aries_askar_dotnet.AriesAskar
             int errorCode = NativeMethods.askar_key_entry_list_get_tags(
                 keyEntryListHandle,
                 index,
-                tags);
+                ref tags);
 
             if (errorCode != (int)ErrorCode.Success)
             {

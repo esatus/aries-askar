@@ -6,6 +6,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using static indy_vdr_dotnet.models.Structures;
 
 namespace aries_askar_dotnet_tests.AriesAskar
 {
@@ -28,16 +29,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
                 { "name", "testName" },
                 { "category", "testCategory" },
                 { "value", "testValue" },
-                {"tags", new Dictionary<string, object>
-                    {
-                        { "~plaintag", "a" },
-                        { "enctag", new Dictionary<string, string>
-                            {
-                                { "b", "c" }
-                            }
-                        }
-                    }
-                },
+                { "tags", $"{{ \"~plaintag\": \"a\", \"enctag\": \"b\"}}" },
             };
 
             testSpecUri = "sqlite://:memory:";
@@ -130,13 +122,13 @@ namespace aries_askar_dotnet_tests.AriesAskar
         }
 
         //Todo fix test
-        /**
+       /**
         [Test, TestCase(TestName = "OpenAsync call works.")]
         public async Task OpenAsyncWorks()
         {
             //Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile, true);
-            await store.CloseAsync();
+            Store store2 = await StoreApi.OpenAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
 
             //Act
             //Todo we need to create a database with a store config?
@@ -615,8 +607,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         #endregion
 
         #region replace records
-        //TODO need Fetch method
-        [Test, TestCase(TestName = "ReplaceAsyncs works for session.")]
+        [Test, TestCase(TestName = "ReplaceAsync works for session.")]
         public async Task SessionReplaceAsyncWorks()
         {
             //Arrange
@@ -628,30 +619,28 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Session session = await store.StartSessionAsync();
             bool initInsert1 = await session.InsertAsync(testEntry["category"].ToString(), testName, testValue);
 
-            /** Todo : Check if value of the entries has changed. 
-            IntPtr entry1 = await session.FetchAsync(testEntry["category"].ToString(), testName, true);
-            string entryName1 = await ResultListApi.EntryListGetNameAsync(entry1, 0);
-            ByteBuffer entryVal1 = await ResultListApi.EntryListGetValueAsync(entry1, 0);
-            int entryListCount1 = await ResultListApi.EntryListCountAsync(entry1);
-            **/
+            ByteBuffer entryVal1 = await ResultListApi.EntryListGetValueAsync(
+                await session.FetchAsync(
+                    testEntry["category"].ToString(), 
+                    testName), 
+                0);
 
             //Act
             bool actual = await session.ReplaceAsync(testEntry["category"].ToString(), testName, replacedTestValue);
-            /**
-            IntPtr entry2 = await session.FetchAsync(testEntry["category"].ToString(), testName);
-            string entryName2 = await ResultListApi.EntryListGetNameAsync(entry2, 0);
-            ByteBuffer entryVal2 = await ResultListApi.EntryListGetValueAsync(entry2, 0);
-            int entryListCount2 = await ResultListApi.EntryListCountAsync(entry2);
-            **/
+
+            ByteBuffer entryVal2 = await ResultListApi.EntryListGetValueAsync(
+                await session.FetchAsync(
+                    testEntry["category"].ToString(), 
+                    testName),
+                0);
             
             //Assert
             actual.Should().BeTrue();
-            //entryVal1.Should().NotBe(entryVal2);
-            //Console.WriteLine(entry1);
-            //Console.WriteLine(entry2);
+            entryVal1.DecodeToString().Should().Be(testValue);
+            entryVal2.DecodeToString().Should().Be(replacedTestValue);
         }
 
-        [Test, TestCase(TestName = "ReplaceAsyncs callback throws with trying to replace value in an non existing record.")]
+        [Test, TestCase(TestName = "ReplaceAsync callback throws with trying to replace value in an non existing record.")]
         public async Task SessionReplaceAsyncThrowsRecordNotExisting()
         {
             //Arrange
@@ -669,7 +658,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             await actual.Should().ThrowAsync<Exception>();
         }
 
-        [Test, TestCase(TestName = "ReplaceAsyncs throws with no category name provided.")]
+        [Test, TestCase(TestName = "ReplaceAsync throws with no category name provided.")]
         public async Task SessionReplaceAsyncThrowsNoCategory()
         {
             //Arrange
@@ -689,6 +678,98 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
         //Todo
         #region fetch / fetch all records
+        private static IEnumerable<TestCaseData> CreateCasesFetchAsyncWorks()
+        {
+            yield return new TestCaseData(false, true)
+                .SetName("FetchAsync works for session with forUpdate equals true and returns an entryListHandle unequals null.");
+            yield return new TestCaseData(false, false)
+                .SetName("FetchAsync works for session with forUpdate equals false and returns an entryListHandle unequals null.");
+            yield return new TestCaseData(true, true)
+                .SetName("FetchAsync works for transaction with forUpdate equals true and returns an entryListHandle unequals null.");
+            yield return new TestCaseData(true, false)
+                .SetName("FetchAsync works for transaction with forUpdate equals false and returns an entryListHandle unequals null.");
+        }
+        [Test, TestCaseSource(nameof(CreateCasesFetchAsyncWorks))]
+        public async Task SessionFetchAsyncWorks(bool asTxn, bool forUpdate)
+        {
+            //Arrange
+            string testName = "testName";
+            string testValue = "testValue";
+
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync(asTransactions: asTxn);
+            bool initInsert1 = await session.InsertAsync(testEntry["category"].ToString(), testName, testValue);
+
+            //Act
+            IntPtr actual = await session.FetchAsync(testEntry["category"].ToString(), testName, forUpdate);
+            ByteBuffer testVal = await ResultListApi.EntryListGetValueAsync(actual, 0);
+
+            //Assert
+            actual.Should().NotBe(new IntPtr());
+            testVal.DecodeToString().Should().Be(testValue);
+        }
+
+        private static IEnumerable<TestCaseData> CreateCasesFetchAsyncThrows()
+        {
+            yield return new TestCaseData("testCategory", null)
+                .SetName("FetchAsync throws for session with not providing record name.");
+            yield return new TestCaseData(null, "testName")
+                .SetName("FetchAsync throws for session with not providing record category.");
+        }
+        [Test, TestCaseSource(nameof(CreateCasesFetchAsyncThrows))]
+        public async Task SessionFetchAsyncThrows(string category, string name)
+        {
+            //Arrange
+            string testName = "testName";
+            string testValue = "testValue";
+
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync();
+            bool initInsert1 = await session.InsertAsync(testEntry["category"].ToString(), testName, testValue);
+
+            //Act
+            Func<Task> actual = async() => await session.FetchAsync(category, name);
+
+            //Assert
+            await actual.Should().ThrowAsync<Exception>();
+        }
+
+        /**
+        private static IEnumerable<TestCaseData> CreateCasesFetchAllAsyncWorks()
+        {
+            yield return new TestCaseData(false, true)
+                .SetName("FetchAllAsync works for session with forUpdate equals true and returns an entryListHandle unequals null.");
+            yield return new TestCaseData(false, false)
+                .SetName("FetchAllAsync works for session with forUpdate equals false and returns an entryListHandle unequals null.");
+            yield return new TestCaseData(true, true)
+                .SetName("FetchAllAsync works for transaction with forUpdate equals true and returns an entryListHandle unequals null.");
+            yield return new TestCaseData(true, false)
+                .SetName("FetchAllAsync works for transaction with forUpdate equals false and returns an entryListHandle unequals null.");
+        }
+        [Test, TestCaseSource(nameof(CreateCasesFetchAllAsyncWorks))]
+        public async Task SessionFetchAllAsyncWorks(bool asTxn, bool forUpdate)
+        {
+            //Arrange
+            string testName1 = "testName1";
+            string testName2 = "testName2";
+            string testName3 = "testName3";
+            string testValue = "testValue";
+
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync(asTransactions: asTxn);
+            bool initInsert1 = await session.InsertAsync(testEntry["category"].ToString(), testName1, testValue, testEntry["tags"].ToString());
+            //bool initInsert2 = await session.InsertAsync(testEntry["category"].ToString(), testName2, testValue);
+            //bool initInsert3 = await session.InsertAsync(testEntry["category"].ToString(), testName3, testValue);
+
+            //Act
+            IntPtr actual = await session.FetchAllAsync(testEntry["category"].ToString(), testEntry["tags"].ToString(), 0, forUpdate);
+            //IntPtr actual = await session.FetchAsync(testEntry["category"].ToString(), testName1);
+            ByteBuffer testVal = await ResultListApi.EntryListGetValueAsync(actual, 1);
+            string d = testVal.DecodeToString();
+            //Assert
+            actual.Should().NotBe(new IntPtr());
+            testVal.DecodeToString().Should().Be(testValue);
+        }**/
         #endregion
 
         //Todo
