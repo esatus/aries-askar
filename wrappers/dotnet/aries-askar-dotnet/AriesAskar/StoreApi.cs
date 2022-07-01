@@ -11,7 +11,7 @@ namespace aries_askar_dotnet.AriesAskar
     public static class StoreApi
     {
         #region Store calls
-        public static async Task<string> GenerateRawKeyAsync(this Store store, string seed)
+        public static async Task<string> GenerateRawKeyAsync(string seed)
         {
             return await StoreGenerateRawKeyAsync(seed);
         }
@@ -259,7 +259,7 @@ namespace aries_askar_dotnet.AriesAskar
 
         public static async Task<bool> InsertKeyAsync(
             this Session session,
-            IntPtr localKeyHandle, //TODO Key key  -> key.localKeyHandle
+            IntPtr localKeyHandle,
             string name,
             string metaData = null,
             string tags = null,

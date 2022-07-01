@@ -12,7 +12,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
 {
     public class StoreApiTests
     {
-        Dictionary<string, object> testEntry;
+        Dictionary<string, string> testEntry;
         string testSpecUri;
         KeyMethod testKeyMethod;
         string testPassKey;
@@ -42,19 +42,6 @@ namespace aries_askar_dotnet_tests.AriesAskar
         }
 
         #region store
-
-        [Test, TestCase(TestName = "StoreGenerateRawKey call returns result string.")]
-        public async Task StoreGenerateRawKeyWorks()
-        {
-            //Arrange
-
-            //Act
-            string actual = await StoreApi.StoreGenerateRawKeyAsync(testSeed);
-
-            //Assert
-            actual.Should().NotBe("");
-        }
-
         //Todo open
         #region provision and open
         private static IEnumerable<TestCaseData> CreateCasesStoreProvisioningWorks()
@@ -93,7 +80,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             //Assert
             actual.storeHandle.Should().NotBe((IntPtr)0);
-            
+
         }
 
         private static IEnumerable<TestCaseData> CreateCasesStoreProvisioningThrows()
@@ -122,21 +109,66 @@ namespace aries_askar_dotnet_tests.AriesAskar
         }
 
         //Todo fix test
-       /**
+        /**
         [Test, TestCase(TestName = "OpenAsync call works.")]
         public async Task OpenAsyncWorks()
         {
             //Arrange
-            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile, true);
-            Store store2 = await StoreApi.OpenAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            //Need to set up a postgre database
+            string customSpecUri = "postgres://postgres:mysecretpassword@localhost:5432/askar-test";
+
+            Store store = await StoreApi.ProvisionAsync(customSpecUri, testKeyMethod, testPassKey, testProfile, true);
+            Session session = await store.StartSessionAsync();
+            bool res = await session.InsertAsync(
+                testEntry["category"],
+                testEntry["name"],
+                testEntry["value"],
+                testEntry["tags"]);
+            await session.CloseAndCommitAsync();
+            //string profile = await store.CreateProfileAsync();
+           
+            //Session sessionWithProfile = await store.StartSessionAsync(profile);
+            //long count = await sessionWithProfile.CountAsync(
+            //    testEntry["category"],
+            //    testEntry["tags"]);
+            //count.Should().Be(0);
+
+            //bool res2 = await sessionWithProfile.InsertAsync(
+            //    testEntry["category"],
+            //    testEntry["name"],
+            //    testEntry["value"],
+            //    testEntry["tags"]);
+            //long count2 = await sessionWithProfile.CountAsync(
+            //    testEntry["category"],
+            //    testEntry["tags"]);
+            //count2.Should().Be(1);
+            //await store.CloseAsync();
 
             //Act
             //Todo we need to create a database with a store config?
-            Store actual = await StoreApi.OpenAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Store actual = await StoreApi.OpenAsync(customSpecUri, testKeyMethod, testPassKey, testProfile);
 
             //Assert
             actual.storeHandle.Should().NotBe((IntPtr)0);
         }**/
+        private static IEnumerable<TestCaseData> CreateCasesOpenAsyncThrows()
+        {
+            yield return new TestCaseData(null)
+                .SetName("OpenAsync throws with specUri equals null.");
+            yield return new TestCaseData("unknown:uri")
+                .SetName("OpenAsync throws with wrong specUri.");
+        }
+
+        [Test, TestCaseSource(nameof(CreateCasesOpenAsyncThrows))]
+        public async Task OpenAsyncThrows(string specUri)
+        {
+            //Arrange
+            //Act
+            Func<Task> actual = async() => await StoreApi.OpenAsync(specUri);
+  
+            //Assert
+            await actual.Should().ThrowAsync<Exception>();
+        }
         #endregion
 
         #region remove
@@ -145,6 +177,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             //Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile, true);
+            await store.StartSessionAsync();
 
             //Act
             bool actual = await store.RemoveAsync(testSpecUri);
@@ -317,6 +350,31 @@ namespace aries_askar_dotnet_tests.AriesAskar
         }
         #endregion
 
+        [Test, TestCase(TestName = "GenerateRawKey call returns result string.")]
+        public async Task StoreGenerateRawKeyWorks()
+        {
+            //Arrange
+
+            //Act
+            string actual = await StoreApi.GenerateRawKeyAsync(testSeed);
+
+            //Assert
+            actual.Should().NotBe("");
+        }
+
+        [Test, TestCase(TestName = "GenerateRawKey throws with wrong seed format provided.")]
+        public async Task StoreGenerateRawKeyThrows()
+        {
+            //Arrange
+
+            //Act
+            Func<Task> actual = async () => await StoreApi.GenerateRawKeyAsync("wrongSeed");
+
+            //Assert
+            await actual.Should().ThrowAsync<Exception>();
+        }
+
+
         #region start session
         [Test, TestCase(TestName = "StartSessionAsync works.")]
         public async Task StartSessionAsyncWorks()
@@ -480,14 +538,20 @@ namespace aries_askar_dotnet_tests.AriesAskar
         }
 
         #region insert records
-        [Test, TestCase(TestName = "InsertAsync works for session.")]
-        public async Task SessionInsertAsyncWorks()
+        private static IEnumerable<TestCaseData> CreateCasesInsertAsyncWorks()
+        {
+            yield return new TestCaseData(false)
+                .SetName("InsertAsync works for session.");
+            yield return new TestCaseData(true)
+                .SetName("InsertAsync works for transaction.");
+        }
+        [Test, TestCaseSource(nameof(CreateCasesInsertAsyncWorks))]
+        public async Task SessionInsertAsyncWorks(bool asTxn)
         {
             //Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
-            Session session = await store.StartSessionAsync();
+            Session session = await store.StartSessionAsync(asTransactions: asTxn);
             long initCount = await session.CountAsync(testEntry["category"].ToString());
-
 
             //Act
             bool actual = await session.InsertAsync(testEntry["category"].ToString(), "testName1");
@@ -676,7 +740,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         }
         #endregion
 
-        //Todo
+        //TODO improve fetch all
         #region fetch / fetch all records
         private static IEnumerable<TestCaseData> CreateCasesFetchAsyncWorks()
         {
@@ -734,7 +798,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             await actual.Should().ThrowAsync<Exception>();
         }
 
-        /**
+        //TODO improve test with different inputs-> need ResultListApi.EntryListGetValueAsync(..)
         private static IEnumerable<TestCaseData> CreateCasesFetchAllAsyncWorks()
         {
             yield return new TestCaseData(false, true)
@@ -758,30 +822,301 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync(asTransactions: asTxn);
             bool initInsert1 = await session.InsertAsync(testEntry["category"].ToString(), testName1, testValue, testEntry["tags"].ToString());
-            //bool initInsert2 = await session.InsertAsync(testEntry["category"].ToString(), testName2, testValue);
-            //bool initInsert3 = await session.InsertAsync(testEntry["category"].ToString(), testName3, testValue);
+            bool initInsert2 = await session.InsertAsync(testEntry["category"].ToString(), testName2, testValue);
+            bool initInsert3 = await session.InsertAsync(testEntry["category"].ToString(), testName3, testValue);
 
             //Act
-            IntPtr actual = await session.FetchAllAsync(testEntry["category"].ToString(), testEntry["tags"].ToString(), 0, forUpdate);
+            IntPtr actual = await session.FetchAllAsync(testEntry["category"].ToString());
             //IntPtr actual = await session.FetchAsync(testEntry["category"].ToString(), testName1);
-            ByteBuffer testVal = await ResultListApi.EntryListGetValueAsync(actual, 1);
-            string d = testVal.DecodeToString();
+            //ByteBuffer testVal = await ResultListApi.EntryListGetValueAsync(actual, 1);
+
             //Assert
             actual.Should().NotBe(new IntPtr());
-            testVal.DecodeToString().Should().Be(testValue);
-        }**/
+            //testVal.DecodeToString().Should().Be(testValue);
+        }
         #endregion
 
-        //Todo
-        #region insert / update key
+        #region insert key
+        private static IEnumerable<TestCaseData> CreateCasesInsertKeyAsyncWorks()
+        {
+            yield return new TestCaseData(false)
+                .SetName("InsertKeyAsync works for session.");
+            yield return new TestCaseData(true)
+                .SetName("InsertKeyAsync works for transaction.");
+        }
+        [Test, TestCaseSource(nameof(CreateCasesInsertKeyAsyncWorks))]
+        public async Task SessionInsertKeyAsyncWorks(bool asTxn)
+        {
+            //Arrange
+            string testKeyName = "testKeyName";
+            IntPtr keyHandle = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, 1);
+
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync(asTransactions: asTxn);
+            IntPtr initialKeyHandle = await session.FetchKeyAsync(testKeyName);
+
+            //Act
+            bool actual = await session.InsertKeyAsync(keyHandle, testKeyName);
+
+            IntPtr fetchedKeyHandle = await session.FetchKeyAsync(testKeyName);
+            string fetchedKeyName = await ResultListApi.KeyEntryListGetNameAsync(fetchedKeyHandle, 0);
+            
+            //Assert
+            actual.Should().BeTrue();
+            initialKeyHandle.Should().Be(new IntPtr());
+            fetchedKeyHandle.Should().NotBe(new IntPtr());
+            fetchedKeyName.Should().Be(testKeyName);
+        }
+        private static IEnumerable<TestCaseData> CreateCasesInsertKeyAsyncThrows()
+        {
+            string testName = "testName";
+            IntPtr validKeyHandle = KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, 1).GetAwaiter().GetResult();
+
+            yield return new TestCaseData(validKeyHandle, null, false)
+                .SetName("InsertKeyAsync throws with no name provided.");
+            yield return new TestCaseData(new IntPtr(), testName, false)
+                .SetName("InsertKeyAsync throws with invalid keyHandle.");
+            yield return new TestCaseData(validKeyHandle, testName, true)
+                .SetName("InsertKeyAsync callback throws with inserting duplicate key.");
+        }
+        [Test, TestCaseSource(nameof(CreateCasesInsertKeyAsyncThrows))]
+        public async Task SessionInsertKeyAsyncThrows(IntPtr keyHandle, string testName, bool doubleInsert)
+        {
+            //Arrange
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync();
+            if (doubleInsert)
+                await session.InsertKeyAsync(keyHandle, testName);
+
+            //Act
+            Func<Task> actual = async () => await session.InsertKeyAsync(keyHandle, testName);
+
+            //Assert
+            await actual.Should().ThrowAsync<Exception>();
+        }
         #endregion
 
-        //Todo
+        #region update key
+        private static IEnumerable<TestCaseData> CreateCasesUpdateKeyAsyncWorks()
+        {
+            yield return new TestCaseData(false)
+                .SetName("UpdateKeyAsync works for session resulting in changed metadata and tags.");
+            yield return new TestCaseData(true)
+                .SetName("UpdateKeyAsync works for transaction resulting in changed metadata and tags.");
+        }
+        [Test, TestCaseSource(nameof(CreateCasesUpdateKeyAsyncWorks))]
+        public async Task SessionUpdateKeyAsyncWorks(bool asTxn)
+        {
+            //Arrange
+            string testKeyName = "testKeyName";
+            string testMetadata = "testKeyMetadata";
+            string testTag = $"{{\"~plaintag\":\"plainKeyTag\"}}";
+            string newTestMetadata = "newTestKeyMetadata";
+            string newTestTag = $"{{\"~plaintag\":\"newPlainKeyTag\"}}";
+            IntPtr keyHandle = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, 1);
+
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync(asTransactions: asTxn);
+            bool insertResult = await session.InsertKeyAsync(keyHandle, testKeyName, testMetadata, testTag);
+            IntPtr initialKeyHandle = await session.FetchKeyAsync(testKeyName);
+            string initialKeyMetadata = await ResultListApi.KeyEntryListGetMetadataAsync(initialKeyHandle, 0);
+            string initialKeyTags = await ResultListApi.KeyEntryListGetTagsAsync(initialKeyHandle, 0);
+
+            //Act
+            bool actual = await session.UpdateKeyAsync(testKeyName, newTestMetadata, newTestTag);
+
+            IntPtr fetchedKeyHandle = await session.FetchKeyAsync(testKeyName);
+            string fetchedKeyMetadata = await ResultListApi.KeyEntryListGetMetadataAsync(fetchedKeyHandle, 0);
+            string fetchedKeyTags = await ResultListApi.KeyEntryListGetTagsAsync(fetchedKeyHandle, 0);
+
+            //Assert
+            actual.Should().BeTrue();
+            insertResult.Should().BeTrue();
+            fetchedKeyHandle.Should().NotBe(new IntPtr());
+            fetchedKeyMetadata.Should().Be(newTestMetadata);
+            fetchedKeyTags.Should().Be(newTestTag);
+        }
+        
+        private static IEnumerable<TestCaseData> CreateCasesUpdateKeyAsyncThrows()
+        {
+            yield return new TestCaseData(null)
+                .SetName("UpdateKeyAsync throws with no key name provided.");
+            yield return new TestCaseData("")
+                .SetName("UpdateKeyAsync callback throws with providing wrong keyName to non existing key.");
+        }
+        [Test, TestCaseSource(nameof(CreateCasesUpdateKeyAsyncThrows))]
+        public async Task SessionUpdateKeyAsyncThrows(string testCaseKeyName)
+        {
+            //Arrange
+            string testKeyName = "testKeyName";
+            string testMetadata = "testKeyMetadata";
+            string testTag = $"{{\"~plaintag\":\"plainKeyTag\"}}";
+            IntPtr keyHandle = KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, 1).GetAwaiter().GetResult();
+
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync();
+            bool insertResult = await session.InsertKeyAsync(keyHandle, testKeyName, testMetadata, testTag);
+
+            //Act
+            Func<Task> actual = async() => await session.UpdateKeyAsync(testCaseKeyName);
+
+            //Assert
+            await actual.Should().ThrowAsync<Exception>();
+        }
+        #endregion
+
         #region remove key
+        private static IEnumerable<TestCaseData> CreateCasesRemoveKeyAsyncWorks()
+        {
+            yield return new TestCaseData(false)
+                .SetName("RemoveKeyAsync works for session.");
+            yield return new TestCaseData(true)
+                .SetName("RemoveKeyAsync works for transaction.");
+        }
+        [Test, TestCaseSource(nameof(CreateCasesRemoveKeyAsyncWorks))]
+        public async Task SessionRemoveKeyAsyncWorks(bool asTxn)
+        {
+            //Arrange
+            string testKeyName = "testKeyName";
+            IntPtr keyHandle = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, 1);
+
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync(asTransactions: asTxn);
+            await session.InsertKeyAsync(keyHandle, testKeyName);
+            IntPtr initialKeyHandle = await session.FetchKeyAsync(testKeyName);
+
+            //Act
+            bool actual = await session.RemoveKeyAsync(testKeyName);
+            IntPtr fetchedKeyHandle = await session.FetchKeyAsync(testKeyName);
+
+            //Assert
+            actual.Should().BeTrue();
+            initialKeyHandle.Should().NotBe(new IntPtr());
+            fetchedKeyHandle.Should().Be(new IntPtr());
+        }
+
+        private static IEnumerable<TestCaseData> CreateCasesRemoveKeyAsyncThrows()
+        {
+            string testCaseKeyName = "testKeyName";
+            yield return new TestCaseData(false, null, false)
+                .SetName("RemoveKeyAsync throws for session with invalid keyName.");
+            yield return new TestCaseData(true, null,false)
+                .SetName("RemoveKeyAsync throws for transaction with invalid keyName.");
+            yield return new TestCaseData(false, testCaseKeyName, true)
+                .SetName("RemoveKeyAsync callback throws for session with trying to remove a already removed key.");
+            yield return new TestCaseData(true, testCaseKeyName, true)
+                .SetName("RemoveKeyAsync callback throws for transaction with trying to remove a already removed key.");
+        }
+        [Test, TestCaseSource(nameof(CreateCasesRemoveKeyAsyncThrows))]
+        public async Task SessionRemoveKeyAsyncThrows(bool asTxn, string testCaseInputKeyName, bool doubleRemove)
+        {
+            //Arrange
+            string testKeyName = "testKeyName";
+            IntPtr keyHandle = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, 1);
+
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync(asTransactions: asTxn);
+            await session.InsertKeyAsync(keyHandle, testKeyName);
+            if(doubleRemove)
+                await session.RemoveKeyAsync(testCaseInputKeyName);
+
+            //Act
+            Func<Task> actual = async() => await session.RemoveKeyAsync(testCaseInputKeyName);
+
+            //Assert
+            await actual.Should().ThrowAsync<Exception>();
+        }
         #endregion
 
-        //Todo
+        //TODO improve fetch all keys
         #region fetch key / fetch all keys
+        private static IEnumerable<TestCaseData> CreateCasesFetchKeyAsyncWorks()
+        {
+            yield return new TestCaseData(false, true)
+                .SetName("FetchKeyAsync works for session with forUpdate equals true and returns the inserted key.");
+            yield return new TestCaseData(false, false)
+                .SetName("FetchKeyAsync works for session with forUpdate equals false and returns the inserted key.");
+            yield return new TestCaseData(true, true)
+                .SetName("FetchKeyAsync works for transaction with forUpdate equals true and returns the inserted key.");
+            yield return new TestCaseData(true, false)
+                .SetName("FetchKeyAsync works for transaction with forUpdate equals false and returns the inserted key.");
+        }
+        [Test, TestCaseSource(nameof(CreateCasesFetchKeyAsyncWorks))]
+        public async Task SessionFetchKeyAsyncWorks(bool asTxn, bool forUpdate)
+        {
+            //Arrange
+            string testKeyName = "testKeyName";
+            IntPtr keyHandle = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, 1);
+
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync(asTransactions: asTxn);
+            bool initInsert1 = await session.InsertKeyAsync(keyHandle, testKeyName);
+
+            //Act
+            IntPtr actual = await session.FetchKeyAsync(testKeyName, forUpdate);
+            string fetchedKeyName = await ResultListApi.KeyEntryListGetNameAsync(actual,0);
+
+            //Assert
+            actual.Should().NotBe(new IntPtr());
+            fetchedKeyName.Should().Be(testKeyName);
+        }
+
+        private static IEnumerable<TestCaseData> CreateCasesFetchKeyAsyncThrows()
+        {
+            yield return new TestCaseData(null)
+                .SetName("FetchKeyAsync throws for session with not providing key name.");
+        }
+        [Test, TestCaseSource(nameof(CreateCasesFetchKeyAsyncThrows))]
+        public async Task SessionFetchKeyAsyncThrows(string testCaseKeyName)
+        {
+            //Arrange
+            string testKeyName = "testKeyName";
+            IntPtr keyHandle = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, 1);
+
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync();
+            bool initInsert1 = await session.InsertKeyAsync(keyHandle, testKeyName);
+
+            //Act
+            Func<Task> actual = async () => await session.FetchKeyAsync(testCaseKeyName);
+
+            //Assert
+            await actual.Should().ThrowAsync<Exception>();
+        }
+
+        //TODO improve test with different inputs-> need ResultListApi.KeyEntryListGetNameAsync(..)
+        private static IEnumerable<TestCaseData> CreateCasesFetchAllKeyAsyncWorks()
+        {
+            yield return new TestCaseData(false)
+                .SetName("FetchAllKeyAsync works for session.");
+            yield return new TestCaseData(true)
+                .SetName("FetchAllKeyAsync works for transaction.");
+        }
+        [Test, TestCaseSource(nameof(CreateCasesFetchAllKeyAsyncWorks))]
+        public async Task SessionFetchAllKeyAsyncWorks(bool asTxn)
+        {
+            //Arrange
+            string testKeyName1 = "testKeyName1_A128CBC";
+            string testKeyName2 = "testKeyName2_A128CBC";
+            string testKeyName3 = "testKeyNameC20P";
+            IntPtr keyHandle1 = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, 1);
+            IntPtr keyHandle2 = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, 1);
+            IntPtr keyHandle3 = await KeyApi.CreateKeyAsync(KeyAlg.C20P, 1);
+
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync(asTransactions: asTxn);
+            bool initInsert1 = await session.InsertKeyAsync(keyHandle1, testKeyName1);
+            bool initInsert2 = await session.InsertKeyAsync(keyHandle2, testKeyName2);
+            bool initInsert3 = await session.InsertKeyAsync(keyHandle3, testKeyName3);
+
+            //Act
+            IntPtr actual = await session.FetchAllKeysAsync(KeyAlg.A128CBC_HS256);
+            //string fetchedKeyName = await ResultListApi.KeyEntryListGetNameAsync(actual, 1);
+
+            //Assert
+            actual.Should().NotBe(new IntPtr());
+            //fetchedKeyName.Should().Be(testKeyName);
+        }
         #endregion
 
         #region close and commit session
