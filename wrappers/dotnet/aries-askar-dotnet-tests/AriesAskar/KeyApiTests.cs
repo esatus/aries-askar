@@ -1,4 +1,5 @@
-﻿using aries_askar_dotnet.AriesAskar;
+﻿using aries_askar_dotnet;
+using aries_askar_dotnet.AriesAskar;
 using aries_askar_dotnet.Models;
 using FluentAssertions;
 using Newtonsoft.Json;
@@ -13,113 +14,226 @@ namespace aries_askar_dotnet_tests.AriesAskar
     public class KeyApiTests
     {
         #region Create
+        #region CreateKeyAsync
         [Test, TestCaseSource(nameof(CreateKeyAsyncCases))]
-        public async Task CreateKeyAsyncTests(KeyAlg testKeyAlg, bool shouldWork)
+        public async Task CreateKeyAsyncTests(KeyAlg testKeyAlg)
         {
             //Arrange
             byte testEphemeral = 1;
 
             //Act
             IntPtr actual = await KeyApi.CreateKeyAsync(
-                testKeyAlg,
-                testEphemeral);
+                    testKeyAlg,
+                    testEphemeral);
 
             //Assert
-            if (shouldWork)
-            {
-                _ = actual.Should().NotBe(new IntPtr());
-            }
-            else
-            {
-                _ = actual.Should().Be(new IntPtr());
-            }
+            _ = actual.Should().NotBe(new IntPtr());
         }
 
         private static IEnumerable<TestCaseData> CreateKeyAsyncCases()
         {
-            yield return new TestCaseData(KeyAlg.A128CBC_HS256, true)
-                .SetName("CreateKeyAsync returns the handle of the created key.");
-            yield return new TestCaseData(KeyAlg.NONE, false)
-                .SetName("CreateKeyAsync fails if no key algorithm is provided.");
+            yield return new TestCaseData(KeyAlg.A128CBC_HS256)
+                .SetName("CreateKeyAsync returns the handle of the created key with A128CBC_HS256.");
+            yield return new TestCaseData(KeyAlg.A128GCM)
+                .SetName("CreateKeyAsync returns the handle of the created key with A128GCM.");
+            yield return new TestCaseData(KeyAlg.A128KW)
+                .SetName("CreateKeyAsync returns the handle of the created key with A128KW.");
+            yield return new TestCaseData(KeyAlg.A256CBC_HS512)
+                .SetName("CreateKeyAsync returns the handle of the created key with A256CBC_HS512.");
+            yield return new TestCaseData(KeyAlg.A256GCM)
+                .SetName("CreateKeyAsync returns the handle of the created key with A256GCM.");
+            yield return new TestCaseData(KeyAlg.A256KW)
+                .SetName("CreateKeyAsync returns the handle of the created key with A256KW.");
+            yield return new TestCaseData(KeyAlg.BLS12_381_G1)
+                .SetName("CreateKeyAsync returns the handle of the created key with BLS12_381_G1.");
+            yield return new TestCaseData(KeyAlg.BLS12_381_G1G2)
+                .SetName("CreateKeyAsync returns the handle of the created key with BLS12_381_G1G2.");
+            yield return new TestCaseData(KeyAlg.BLS12_381_G2)
+                .SetName("CreateKeyAsync returns the handle of the created key with BLS12_381_G2.");
+            yield return new TestCaseData(KeyAlg.C20P)
+                .SetName("CreateKeyAsync returns the handle of the created key with C20P.");
+            yield return new TestCaseData(KeyAlg.ED25519)
+                .SetName("CreateKeyAsync returns the handle of the created key with ED25519.");
+            yield return new TestCaseData(KeyAlg.K256)
+                .SetName("CreateKeyAsync returns the handle of the created key with K256.");
+            yield return new TestCaseData(KeyAlg.P256)
+                .SetName("CreateKeyAsync returns the handle of the created key with P256.");
+            yield return new TestCaseData(KeyAlg.X25519)
+                .SetName("CreateKeyAsync returns the handle of the created key with X25519.");
+            yield return new TestCaseData(KeyAlg.XC20P)
+                .SetName("CreateKeyAsync returns the handle of the created key with XC20P.");
         }
 
-        [Test, TestCaseSource(nameof(CreateKeyFromSeedAsyncCases))]
-        public async Task CreateKeyFromSeedAsyncTests(KeyAlg testKeyAlg, bool shouldWork)
+        [Test, TestCaseSource(nameof(CreateKeyAsyncErrorCases))]
+        public async Task CreateKeyAsyncErrorTests(KeyAlg testKeyAlg)
         {
             //Arrange
-            string testSeedJson = "testseed000000000000000000000001";
+            byte testEphemeral = 1;
+
+            //Act
+            Func<Task> action = async () =>
+            {
+                await KeyApi.CreateKeyAsync(
+                    testKeyAlg,
+                    testEphemeral);
+            };
+
+            //Assert
+            _ = action.Should().ThrowAsync<AriesAskarException>();
+        }
+
+        private static IEnumerable<TestCaseData> CreateKeyAsyncErrorCases()
+        {
+            yield return new TestCaseData(KeyAlg.NONE)
+                .SetName("CreateKeyAsync throws an AriesAskarException if no key algorithm is provided.");
+        }
+        #endregion
+
+        #region CreateKeyFromSeedAsync
+        [Test, TestCaseSource(nameof(CreateKeyFromSeedAsyncCases))]
+        public async Task CreateKeyFromSeedAsyncTests(KeyAlg testKeyAlg)
+        {
+            //Arrange
+            string testSeed = "testseed000000000000000000000001";
             SeedMethod testSeedMethod = SeedMethod.BlsKeyGen;
 
             //Act
             IntPtr actual = await KeyApi.CreateKeyFromSeedAsync(
                     testKeyAlg,
-                    testSeedJson,
+                    testSeed,
                     testSeedMethod);
 
             //Assert
-            if (shouldWork)
-            {
-                _ = actual.Should().NotBe(new IntPtr());
-            }
-            else
-            {
-                _ = actual.Should().Be(new IntPtr());
-            }
+            _ = actual.Should().NotBe(new IntPtr());
         }
 
         private static IEnumerable<TestCaseData> CreateKeyFromSeedAsyncCases()
         {
-            yield return new TestCaseData(KeyAlg.A128CBC_HS256, true)
-                .SetName("CreateKeyFromSeedAsync returns the handle of the created key.");
-            yield return new TestCaseData(KeyAlg.NONE, false)
-                .SetName("CreateKeyFromSeedAsync fails if no key algorithm is provided.");
+            yield return new TestCaseData(KeyAlg.A128CBC_HS256)
+                .SetName("CreateKeyFromSeedAsync returns the handle of the created key with A128CBC_HS256.");
+            yield return new TestCaseData(KeyAlg.A128GCM)
+                .SetName("CreateKeyFromSeedAsync returns the handle of the created key with A128GCM.");
+            yield return new TestCaseData(KeyAlg.A128KW)
+                .SetName("CreateKeyFromSeedAsync returns the handle of the created key with A128KW.");
+            yield return new TestCaseData(KeyAlg.A256CBC_HS512)
+                .SetName("CreateKeyFromSeedAsync returns the handle of the created key with A256CBC_HS512.");
+            yield return new TestCaseData(KeyAlg.A256GCM)
+                .SetName("CreateKeyFromSeedAsync returns the handle of the created key with A256GCM.");
+            yield return new TestCaseData(KeyAlg.A256KW)
+                .SetName("CreateKeyFromSeedAsync returns the handle of the created key with A256KW.");
+            yield return new TestCaseData(KeyAlg.BLS12_381_G1)
+                .SetName("CreateKeyFromSeedAsync returns the handle of the created key with BLS12_381_G1.");
+            yield return new TestCaseData(KeyAlg.BLS12_381_G1G2)
+                .SetName("CreateKeyFromSeedAsync returns the handle of the created key with BLS12_381_G1G2.");
+            yield return new TestCaseData(KeyAlg.BLS12_381_G2)
+                .SetName("CreateKeyFromSeedAsync returns the handle of the created key with BLS12_381_G2.");
+            yield return new TestCaseData(KeyAlg.C20P)
+                .SetName("CreateKeyFromSeedAsync returns the handle of the created key with C20P.");
+            yield return new TestCaseData(KeyAlg.ED25519)
+                .SetName("CreateKeyFromSeedAsync returns the handle of the created key with ED25519.");
+            yield return new TestCaseData(KeyAlg.K256)
+                .SetName("CreateKeyFromSeedAsync returns the handle of the created key with K256.");
+            yield return new TestCaseData(KeyAlg.P256)
+                .SetName("CreateKeyFromSeedAsync returns the handle of the created key with P256.");
+            yield return new TestCaseData(KeyAlg.X25519)
+                .SetName("CreateKeyFromSeedAsync returns the handle of the created key with X25519.");
+            yield return new TestCaseData(KeyAlg.XC20P)
+                .SetName("CreateKeyFromSeedAsync returns the handle of the created key with XC20P.");
         }
 
+        [Test, TestCaseSource(nameof(CreateKeyFromSeedAsyncErrorCases))]
+        public async Task CreateKeyFromSeedAsyncErrorTests(KeyAlg testKeyAlg)
+        {
+            //Arrange
+            string testSeed = "testseed";
+            SeedMethod testSeedMethod = SeedMethod.BlsKeyGen;
+
+            //Act
+            Func<Task> action = async () => await KeyApi.CreateKeyFromSeedAsync(
+                    testKeyAlg,
+                    testSeed,
+                    testSeedMethod);
+
+            //Assert
+            _ = action.Should().ThrowAsync<Exception>();
+        }
+
+        private static IEnumerable<TestCaseData> CreateKeyFromSeedAsyncErrorCases()
+        {
+            yield return new TestCaseData(KeyAlg.NONE)
+                .SetName("CreateKeyFromSeedAsync throws an AriesAskarException if the seed length is not exactly 32.");
+        }
+        #endregion
+
+        #region CreateKeyFromJwkAsync
         [Test, TestCaseSource(nameof(CreateKeyFromJwkAsyncCases))]
-        public async Task CreateKeyFromJwkAsyncTests(KeyAlg testKeyAlg, bool shouldWork)
+        public async Task CreateKeyFromJwkAsyncTests(KeyAlg testKeyAlg, string testX)
         {
             //Arrange
 
             //Act
-            IntPtr actual = await KeyApi.CreateKeyFromJwkAsync(
-                JsonConvert.SerializeObject(new
-                {
-                    crv = testKeyAlg.ToJwkCrvString(),
-                    kty = "OKP",
-                    x = "h56eYI8Qkq5hitICb-ik8wRTzcn6Fd4iY8aDNVc9q1xoPS3lh4DB_B4wNtar1HrV"
-                }));
+            IntPtr actual = await KeyApi.CreateKeyFromJwkAsync(JsonConvert.SerializeObject(new
+            {
+                crv = testKeyAlg.ToJwkCrvString(),
+                kty = "OKP",
+                x = testX
+            }));
 
             //Assert
-            if (shouldWork)
-            {
-                _ = actual.Should().NotBe(new IntPtr());
-            }
-            else
-            {
-                _ = actual.Should().Be(new IntPtr());
-            }
+            _ = actual.Should().NotBe(new IntPtr());
         }
 
         private static IEnumerable<TestCaseData> CreateKeyFromJwkAsyncCases()
         {
-            yield return new TestCaseData(KeyAlg.BLS12_381_G1, true)
-                .SetName("CreateKeyFromJwkAsync returns the handle of the created key.");
-            yield return new TestCaseData(KeyAlg.A128CBC_HS256, false)
-                .SetName("CreateKeyFromJwkAsync fails if the provided key algorithm is not BLS12_381_G1, BLS12_381_G2 or BLS12_381_G1G2.");
+            yield return new TestCaseData(KeyAlg.BLS12_381_G1, 
+                "h56eYI8Qkq5hitICb-ik8wRTzcn6Fd4iY8aDNVc9q1xoPS3lh4DB_B4wNtar1HrV")
+                .SetName("CreateKeyFromJwkAsync returns the handle of the created key for BLS12_381_G1.");
+            yield return new TestCaseData(KeyAlg.BLS12_381_G2,
+                "iZIOsO6BgLV72zCrBE2ym3DEhDYcghnUMO4O8IVVD8yS-C_zu6OA3L-ny-AO4rbkAo-" +
+                "WuApZEjn83LY98UtoKpTufn4PCUFVQZzJNH_gXWHR3oDspJaCbOajBfm5qj6d")
+                .SetName("CreateKeyFromJwkAsync returns the handle of the created key for BLS12_381_G2.");
+            yield return new TestCaseData(KeyAlg.BLS12_381_G1G2,
+                "h56eYI8Qkq5hitICb-ik8wRTzcn6Fd4iY8aDNVc9q1xoPS3lh4DB_B4wNtar1HrVi" +
+                "ZIOsO6BgLV72zCrBE2ym3DEhDYcghnUMO4O8IVVD8yS-C_zu6OA3L-ny-AO4rbkAo-WuA" +
+                "pZEjn83LY98UtoKpTufn4PCUFVQZzJNH_gXWHR3oDspJaCbOajBfm5qj6d")
+                .SetName("CreateKeyFromJwkAsync returns the handle of the created key for BLS12_381_G1G2.");
         }
 
-        [Test, TestCaseSource(nameof(CreateKeyFromPublicBytesAsyncCases))]
-        public async Task CreateKeyFromPublicBytesAsyncTests(KeyAlg testKeyAlg, bool shouldWork)
+        [Test, TestCaseSource(nameof(CreateKeyFromJwkAsyncErrorCases))]
+        public async Task CreateKeyFromJwkAsyncErrorTests(KeyAlg testKeyAlg, string testX)
         {
             //Arrange
-            string testSeedJson = "testseed000000000000000000000001";
-            SeedMethod testSeedMethod = SeedMethod.BlsKeyGen;
-            IntPtr testPkHandle = await KeyApi.CreateKeyFromSeedAsync(
-                    testKeyAlg,
-                    testSeedJson,
-                    testSeedMethod);
-            byte[] testPublicBytes = await KeyApi.GetPublicBytesFromKeyAsync(
-                testPkHandle);
+
+            //Act
+            Func<Task> action = async () => await KeyApi.CreateKeyFromJwkAsync(JsonConvert.SerializeObject(new
+            {
+                crv = testKeyAlg.ToJwkCrvString(),
+                kty = "OKP",
+                x = testX
+            }));
+
+            //Assert
+            _ = action.Should().ThrowAsync<AriesAskarException>();
+        }
+
+        private static IEnumerable<TestCaseData> CreateKeyFromJwkAsyncErrorCases()
+        {
+            yield return new TestCaseData(KeyAlg.A128CBC_HS256,
+                "h56eYI8Qkq5hitICb-ik8wRTzcn6Fd4iY8aDNVc9q1xoPS3lh4DB_B4wNtar1HrV")
+                .SetName("CreateKeyFromJwkAsync throws an AriesAskarException if the provided key algorithm is not BLS12_381_G1, BLS12_381_G2 or BLS12_381_G1G2.");
+            yield return new TestCaseData(KeyAlg.BLS12_381_G1,
+                "iZIOsO6BgLV72zCrBE2ym3DEhDYcghnUMO4O8IVVD8yS-C_zu6OA3L-ny-AO4rbkAo-" +
+                "WuApZEjn83LY98UtoKpTufn4PCUFVQZzJNH_gXWHR3oDspJaCbOajBfm5qj6d")
+                .SetName("CreateKeyFromJwkAsync throws an AriesAskarException if the provided json does not fit the used algorithm.");
+        }
+        #endregion
+
+        #region CreateKeyFromPublicBytesAsync
+        [Test, TestCaseSource(nameof(CreateKeyFromPublicBytesAsyncCases))]
+        public async Task CreateKeyFromPublicBytesAsyncTests(KeyAlg testKeyAlg)
+        {
+            //Arrange
+            byte[] testPublicBytes = new byte[48] { 135, 158, 158, 96, 143, 16, 146, 174, 97, 138, 210, 2, 111, 232, 164, 243, 4, 83, 205, 201, 250, 21, 222, 34, 99, 198, 131, 53, 87, 61, 171, 92, 104, 61, 45, 229, 135, 128, 193, 252, 30, 48, 54, 214, 171, 212, 122, 213 };
 
             //Act
             IntPtr actual = await KeyApi.CreateKeyFromPublicBytesAsync(
@@ -127,26 +241,54 @@ namespace aries_askar_dotnet_tests.AriesAskar
                 testPublicBytes);
 
             //Assert
-            if (shouldWork)
-            {
-                _ = actual.Should().NotBe(new IntPtr());
-            }
-            else
-            {
-                _ = actual.Should().Be(new IntPtr());
-            }
+            _ = actual.Should().NotBe(new IntPtr());
         }
 
         private static IEnumerable<TestCaseData> CreateKeyFromPublicBytesAsyncCases()
         {
-            yield return new TestCaseData(KeyAlg.BLS12_381_G1, true)
+            yield return new TestCaseData(KeyAlg.BLS12_381_G1)
                 .SetName("CreateKeyFromPublicBytesAsync returns the handle of the created key.");
-            yield return new TestCaseData(KeyAlg.A128CBC_HS256, false)
-                .SetName("CreateKeyFromPublicBytesAsync fails if the provided key algorithm is not BLS12_381_G1, BLS12_381_G2, BLS12_381_G1G2, ED25519, X25519, P256 or K256.");
         }
 
+        [Test, TestCaseSource(nameof(CreateKeyFromPublicBytesAsyncErrorCases))]
+        public async Task CreateKeyFromPublicBytesAsyncErrorTests(KeyAlg testKeyAlg)
+        {
+            //Arrange
+            byte[] testPublicBytes = new byte[48] { 135, 158, 158, 96, 143, 16, 146, 174, 97, 138, 210, 2, 111, 232, 164, 243, 4, 83, 205, 201, 250, 21, 222, 34, 99, 198, 131, 53, 87, 61, 171, 92, 104, 61, 45, 229, 135, 128, 193, 252, 30, 48, 54, 214, 171, 212, 122, 213 };
+
+            //Act
+            Func<Task> action = async () => await KeyApi.CreateKeyFromPublicBytesAsync(
+                testKeyAlg,
+                testPublicBytes);
+
+            //Assert
+            _ = action.Should().ThrowAsync<Exception>();
+        }
+
+        private static IEnumerable<TestCaseData> CreateKeyFromPublicBytesAsyncErrorCases()
+        {
+            yield return new TestCaseData(KeyAlg.A128CBC_HS256)
+                .SetName("CreateKeyFromPublicBytesAsync throws an AriesAskarException if the provided key algorithm is A128CBC_HS256.");
+            yield return new TestCaseData(KeyAlg.A128GCM)
+                .SetName("CreateKeyFromPublicBytesAsync throws an AriesAskarException if the provided key algorithm is A128GCM.");
+            yield return new TestCaseData(KeyAlg.A128KW)
+                .SetName("CreateKeyFromPublicBytesAsync throws an AriesAskarException if the provided key algorithm is A128KW.");
+            yield return new TestCaseData(KeyAlg.A256CBC_HS512)
+                .SetName("CreateKeyFromPublicBytesAsync throws an AriesAskarException if the provided key algorithm is A256CBC_HS512.");
+            yield return new TestCaseData(KeyAlg.A256GCM)
+                .SetName("CreateKeyFromPublicBytesAsync throws an AriesAskarException if the provided key algorithm is A256GCM.");
+            yield return new TestCaseData(KeyAlg.A256KW)
+                .SetName("CreateKeyFromPublicBytesAsync throws an AriesAskarException if the provided key algorithm is A256KW.");
+            yield return new TestCaseData(KeyAlg.C20P)
+                .SetName("CreateKeyFromPublicBytesAsync throws an AriesAskarException if the provided key algorithm is C20P.");
+            yield return new TestCaseData(KeyAlg.XC20P)
+                .SetName("CreateKeyFromPublicBytesAsync throws an AriesAskarException if the provided key algorithm is XC20P.");
+        }
+        #endregion
+
+        #region CreateKeyFromSecretBytesAsync
         [Test, TestCaseSource(nameof(CreateKeyFromSecretBytesAsyncCases))]
-        public async Task CreateKeyFromSecretBytesAsyncTests(KeyAlg testKeyAlg, byte[] testSecretBytes, bool shouldWork)
+        public async Task CreateKeyFromSecretBytesAsyncTests(KeyAlg testKeyAlg, byte[] testSecretBytes)
         {
             //Act
             IntPtr actual = await KeyApi.CreateKeyFromSecretBytesAsync(
@@ -154,39 +296,50 @@ namespace aries_askar_dotnet_tests.AriesAskar
                 testSecretBytes);
 
             //Assert
-            if (shouldWork)
-            {
-                _ = actual.Should().NotBe(new IntPtr());
-            }
-            else
-            {
-                _ = actual.Should().Be(new IntPtr());
-            }
+            _ = actual.Should().NotBe(new IntPtr());
         }
 
         private static IEnumerable<TestCaseData> CreateKeyFromSecretBytesAsyncCases()
         {
-            yield return new TestCaseData(KeyAlg.A128GCM, new byte[] { 188, 199, 70, 37, 50, 103, 100, 241, 231, 16, 97, 18, 220, 249, 108, 76 }, true)
+            yield return new TestCaseData(KeyAlg.A128GCM, new byte[] { 188, 199, 70, 37, 50, 103, 100, 241, 231, 16, 97, 18, 220, 249, 108, 76 })
                 .SetName("CreateKeyFromSecretBytesAsync returns the handle of the created key.");
-            yield return new TestCaseData(KeyAlg.BLS12_381_G1, new byte[] { 188, 199, 70, 37, 50, 103, 100, 241, 231, 16, 97, 18, 220, 249, 108, 76 }, false)
-                .SetName("CreateKeyFromSecretBytesAsync fails if the key algorithm does not fit the provided secret bytes.");
         }
 
+        [Test, TestCaseSource(nameof(CreateKeyFromSecretBytesAsyncErrorCases))]
+        public async Task CreateKeyFromSecretBytesAsyncErrorTests(KeyAlg testKeyAlg, byte[] testSecretBytes)
+        {
+            //Act
+            Func<Task> action = async () => await KeyApi.CreateKeyFromSecretBytesAsync(
+                testKeyAlg,
+                testSecretBytes);
+
+            //Assert
+            _ = action.Should().ThrowAsync<Exception>();
+        }
+
+        private static IEnumerable<TestCaseData> CreateKeyFromSecretBytesAsyncErrorCases()
+        {
+            yield return new TestCaseData(KeyAlg.BLS12_381_G1, new byte[] { 188, 199, 70, 37, 50, 103, 100, 241, 231, 16, 97, 18, 220, 249, 108, 76 })
+                .SetName("CreateKeyFromSecretBytesAsync throws an AriesAskarException if the key algorithm does not fit the provided secret bytes.");
+        }
+        #endregion
+
+        #region CreateKeyFromKeyExchangeAsync
         [Test, TestCaseSource(nameof(CreateKeyFromKeyExchangeAsyncCases))]
-        public async Task CreateKeyFromKeyExchangeAsyncTests(KeyAlg testKeyAlg1, KeyAlg testKeyAlg2, bool shouldWork)
+        public async Task CreateKeyFromKeyExchangeAsyncTests(KeyAlg testKeyAlg1, KeyAlg testKeyAlg2)
         {
             //Arrange
-            string testSeedJson1 = "testseed000000000000000000000001";
+            string testSeed1 = "testseed000000000000000000000001";
             SeedMethod testSeedMethod = SeedMethod.BlsKeyGen;
             IntPtr secretKeyHandle1 = await KeyApi.CreateKeyFromSeedAsync(
                     testKeyAlg1,
-                    testSeedJson1,
+                    testSeed1,
                     testSeedMethod);
 
-            string testSeedJson2 = "testseed000000000000000000000002";
+            string testSeed2 = "testseed000000000000000000000002";
             IntPtr secretKeyHandle2 = await KeyApi.CreateKeyFromSeedAsync(
                     testKeyAlg2,
-                    testSeedJson2,
+                    testSeed2,
                     testSeedMethod);
 
             KeyAlg testKeyAlg3 = KeyAlg.A128CBC_HS256;
@@ -198,179 +351,298 @@ namespace aries_askar_dotnet_tests.AriesAskar
                 secretKeyHandle2);
 
             //Assert
-            if (shouldWork)
-            {
-                _ = actual.Should().NotBe(new IntPtr());
-            }
-            else
-            {
-                _ = actual.Should().Be(new IntPtr());
-            }
+            _ = actual.Should().NotBe(new IntPtr());
         }
 
         private static IEnumerable<TestCaseData> CreateKeyFromKeyExchangeAsyncCases()
         {
-            yield return new TestCaseData(KeyAlg.K256, KeyAlg.K256, true)
+            yield return new TestCaseData(KeyAlg.K256, KeyAlg.K256)
                 .SetName("CreateKeyFromKeyExchangeAsync returns the handle of the created key.");
-            yield return new TestCaseData(KeyAlg.P256, KeyAlg.K256, false)
-                .SetName("CreateKeyFromKeyExchangeAsync fails if the provided keys did not use the same key algorithm.");
         }
+
+        [Test, TestCaseSource(nameof(CreateKeyFromKeyExchangeAsyncErrorCases))]
+        public async Task CreateKeyFromKeyExchangeAsyncErrorTests(KeyAlg testKeyAlg1, KeyAlg testKeyAlg2)
+        {
+            //Arrange
+            string testSeed1 = "testseed000000000000000000000001";
+            SeedMethod testSeedMethod = SeedMethod.BlsKeyGen;
+            IntPtr secretKeyHandle1 = await KeyApi.CreateKeyFromSeedAsync(
+                    testKeyAlg1,
+                    testSeed1,
+                    testSeedMethod);
+
+            string testSeed2 = "testseed000000000000000000000002";
+            IntPtr secretKeyHandle2 = await KeyApi.CreateKeyFromSeedAsync(
+                    testKeyAlg2,
+                    testSeed2,
+                    testSeedMethod);
+
+            KeyAlg testKeyAlg3 = KeyAlg.A128CBC_HS256;
+
+            //Act
+            Func<Task> action = async () => await KeyApi.CreateKeyFromKeyExchangeAsync(
+                testKeyAlg3,
+                secretKeyHandle1,
+                secretKeyHandle2);
+
+            //Assert
+            _ = action.Should().ThrowAsync<Exception>();
+        }
+
+        private static IEnumerable<TestCaseData> CreateKeyFromKeyExchangeAsyncErrorCases()
+        {
+            yield return new TestCaseData(KeyAlg.P256, KeyAlg.K256)
+                .SetName("CreateKeyFromKeyExchangeAsync throws an AriesAskarException if the provided keys did not use the same key algorithm.");
+        }
+        #endregion
         #endregion
 
         #region Get
+        #region GetPublicBytesFromKeyAsync
         [Test, TestCaseSource(nameof(GetPublicBytesFromKeyAsyncCases))]
-        public async Task GetPublicBytesFromKeyAsyncWorks(KeyAlg testKeyAlg, int expectedLength)
+        public async Task GetPublicBytesFromKeyAsyncWorks(KeyAlg testKeyAlg)
         {
             //Arrange
             byte testEphemeral = 1;
-            IntPtr handle = await KeyApi.CreateKeyAsync(
+            IntPtr testKeyHandle = await KeyApi.CreateKeyAsync(
                 testKeyAlg,
                 testEphemeral);
 
             //Act
             byte[] actual = await KeyApi.GetPublicBytesFromKeyAsync(
-                handle);
+                testKeyHandle);
 
-            _ = actual.Length.Should().Be(expectedLength);
+            _ = actual.Length.Should().Be(48);
         }
 
         private static IEnumerable<TestCaseData> GetPublicBytesFromKeyAsyncCases()
         {
-            yield return new TestCaseData(KeyAlg.BLS12_381_G1, 48)
-                .SetName("GetPublicBytesFromKeyAsync returns the handle of the created key.");
-            yield return new TestCaseData(KeyAlg.A128GCM, 0)
-                .SetName("GetPublicBytesFromKeyAsync fails if the key was created with one of " +
-                "the following algorithms: A128GCM, A256GCM, A128CBC_HS256, A256CBC_HS512, A128KW," +
-                "A256KW, C20P, XC20P.");
+            yield return new TestCaseData(KeyAlg.BLS12_381_G1)
+                .SetName("GetPublicBytesFromKeyAsync returns the public bytes of a given key.");
         }
 
-        [Test, TestCaseSource(nameof(GetSecretBytesFromKeyAsyncCases))]
-        public async Task GetSecretBytesFromKeyAsyncWorks(KeyAlg testKeyAlg, int expectedLength)
+        [Test, TestCaseSource(nameof(GetPublicBytesFromKeyAsyncErrorCases))]
+        public async Task GetPublicBytesFromKeyAsyncErrorWorks(KeyAlg testKeyAlg)
         {
             //Arrange
-            string testSeedJson = "testseed000000000000000000000001";
+            byte testEphemeral = 1;
+            IntPtr testKeyHandle = await KeyApi.CreateKeyAsync(
+                testKeyAlg,
+                testEphemeral);
+
+            //Act
+            Func<Task> action = async () => await KeyApi.GetPublicBytesFromKeyAsync(
+                testKeyHandle);
+
+            _ = action.Should().ThrowAsync<Exception>();
+        }
+
+        private static IEnumerable<TestCaseData> GetPublicBytesFromKeyAsyncErrorCases()
+        {
+            yield return new TestCaseData(KeyAlg.A128CBC_HS256)
+                .SetName("GetPublicBytesFromKeyAsync throws an AriesAskarException if the key was created with A128CBC_HS256.");
+            yield return new TestCaseData(KeyAlg.A128GCM)
+                .SetName("GetPublicBytesFromKeyAsync throws an AriesAskarException if the key was created with A128GCM.");
+            yield return new TestCaseData(KeyAlg.A128KW)
+                .SetName("GetPublicBytesFromKeyAsync throws an AriesAskarException if the key was created with A128KW.");
+            yield return new TestCaseData(KeyAlg.A256CBC_HS512)
+                .SetName("GetPublicBytesFromKeyAsync throws an AriesAskarException if the key was created with A256CBC_HS512.");
+            yield return new TestCaseData(KeyAlg.A256GCM)
+                .SetName("GetPublicBytesFromKeyAsync throws an AriesAskarException if the key was created with A256GCM.");
+            yield return new TestCaseData(KeyAlg.A256KW)
+                .SetName("GetPublicBytesFromKeyAsync throws an AriesAskarException if the key was created with A256KW.");
+            yield return new TestCaseData(KeyAlg.C20P)
+                .SetName("GetPublicBytesFromKeyAsync throws an AriesAskarException if the key was created with C20P.");
+            yield return new TestCaseData(KeyAlg.XC20P)
+                .SetName("GetPublicBytesFromKeyAsync throws an AriesAskarException if the key was created with XC20P.");
+        }
+        #endregion
+
+        #region GetSecretBytesFromKeyAsync
+        [Test, TestCaseSource(nameof(GetSecretBytesFromKeyAsyncCases))]
+        public async Task GetSecretBytesFromKeyAsyncWorks(KeyAlg testKeyAlg)
+        {
+            //Arrange
+            string testSeed = "testseed000000000000000000000001";
             SeedMethod testSeedMethod = SeedMethod.BlsKeyGen;
-            IntPtr secretKeyHandle = await KeyApi.CreateKeyFromSeedAsync(
+            IntPtr testKeyHandle = await KeyApi.CreateKeyFromSeedAsync(
                     testKeyAlg,
-                    testSeedJson,
+                    testSeed,
                     testSeedMethod);
 
             //Act
             byte[] actual = await KeyApi.GetSecretBytesFromKeyAsync(
-                secretKeyHandle);
+                testKeyHandle);
 
             //Assert
-            _ = actual.Length.Should().Be(expectedLength);
+            _ = actual.Length.Should().Be(32);
         }
 
         private static IEnumerable<TestCaseData> GetSecretBytesFromKeyAsyncCases()
         {
-            yield return new TestCaseData(KeyAlg.BLS12_381_G1, 32)
-                .SetName("GetSecretBytesFromKeyAsync returns the handle of the created key.");
-            yield return new TestCaseData(KeyAlg.NONE, 0)
-                .SetName("GetSecretBytesFromKeyAsync fails if the key handle points to invalid data.");
+            yield return new TestCaseData(KeyAlg.BLS12_381_G1)
+                .SetName("GetSecretBytesFromKeyAsync returns the secret bytes of a given key.");
         }
 
-        [Test, TestCase(TestName = "GetAlgorithmFromKeyAsync call returns request handle.")]
-        public async Task GetAlgorithmFromKeyAsyncWorks()
+        [Test, TestCaseSource(nameof(GetSecretBytesFromKeyAsyncErrorCases))]
+        public async Task GetSecretBytesFromKeyAsyncErrorWorks(KeyAlg testKeyAlg)
         {
             //Arrange
-            KeyAlg keyAlg = KeyAlg.BLS12_381_G1;
-            string seedJson = "testseed000000000000000000000001";
-            SeedMethod method = SeedMethod.BlsKeyGen;
-            IntPtr handle = await KeyApi.CreateKeyFromSeedAsync(
-                    keyAlg,
-                    seedJson,
-                    method);
+            string testSeed = "testseed000000000000000000000001";
+            SeedMethod testSeedMethod = SeedMethod.BlsKeyGen;
+            IntPtr testKeyHandle = await KeyApi.CreateKeyFromSeedAsync(
+                    testKeyAlg,
+                    testSeed,
+                    testSeedMethod);
+
+            //Act
+            Func<Task> action = async () => await KeyApi.GetSecretBytesFromKeyAsync(
+                testKeyHandle);
+
+            //Assert
+            _ = action.Should().ThrowAsync<Exception>();
+        }
+
+        private static IEnumerable<TestCaseData> GetSecretBytesFromKeyAsyncErrorCases()
+        {
+            yield return new TestCaseData(KeyAlg.NONE)
+                .SetName("GetSecretBytesFromKeyAsync throws an AriesAskarException if the key handle points to invalid data.");
+        }
+        #endregion
+        [Test, TestCaseSource(nameof(GetAlgorithmFromKeyAsyncCases))]
+        public async Task GetAlgorithmFromKeyAsyncWorks(KeyAlg testKeyAlg, string expectedName)
+        {
+            //Arrange
+            string testSeed = "testseed000000000000000000000001";
+            SeedMethod testSeedMethod = SeedMethod.BlsKeyGen;
+            IntPtr testKeyHandle = await KeyApi.CreateKeyFromSeedAsync(
+                    testKeyAlg,
+                    testSeed,
+                    testSeedMethod);
 
             //Act
             string actual = await KeyApi.GetAlgorithmFromKeyAsync(
-                handle);
+                testKeyHandle);
 
             //Assert
-            _ = actual.Should().Be(keyAlg.ToKeyAlgString());
+            _ = actual.Should().Be(expectedName);
         }
 
-        [Test, TestCase(TestName = "GetEphemeralFromKeyAsync call returns request handle.")]
-        public async Task GetEphemeralFromKeyAsyncWorks()
+        private static IEnumerable<TestCaseData> GetAlgorithmFromKeyAsyncCases()
+        {
+            yield return new TestCaseData(KeyAlg.BLS12_381_G1, "bls12381g1")
+                .SetName("GetAlgorithmFromKeyAsync returns a string with the name of an algorithm for a given key.");
+            yield return new TestCaseData(KeyAlg.NONE, "")
+                .SetName("GetAlgorithmFromKeyAsync throws an AriesAskarException if the key handle points to invalid data.");
+        }
+
+        [Test, TestCaseSource(nameof(GetEphemeralFromKeyAsyncCases))]
+        public async Task GetEphemeralFromKeyAsyncWorks(KeyAlg testKeyAlg, byte testEphemeral)
         {
             //Arrange
-            KeyAlg keyAlg = KeyAlg.A128GCM;
-            byte testEphemeral = 5;
-            IntPtr keyHandle = await KeyApi.CreateKeyAsync(
-                    keyAlg,
+            IntPtr testKeyHandle = await KeyApi.CreateKeyAsync(
+                    testKeyAlg,
                     testEphemeral);
 
             //Act
             byte actual = await KeyApi.GetEphemeralFromKeyAsync(
-                keyHandle);
+                testKeyHandle);
 
             //Assert
-            _ = actual.Should().NotBe(0);
+            _ = actual.Should().Be(testEphemeral);
         }
 
-        [Test, TestCase(TestName = "GetJwkPublicFromKeyAsync call returns request handle.")]
-        public async Task GetJwkPublicFromKeyAsyncWorks()
+        private static IEnumerable<TestCaseData> GetEphemeralFromKeyAsyncCases()
+        {
+            yield return new TestCaseData(KeyAlg.A128GCM, (byte)1)
+                .SetName("GetEphemeralFromKeyAsync returns the ephemeral as a byte for a given key.");
+            yield return new TestCaseData(KeyAlg.NONE, (byte)0)
+                .SetName("GetEphemeralFromKeyAsync throws an AriesAskarException if the key handle points to invalid data.");
+        }
+
+        [Test, TestCaseSource(nameof(GetJwkPublicFromKeyAsyncCases))]
+        public async Task GetJwkPublicFromKeyAsyncWorks(KeyAlg testKeyAlg, string jwkPublic)
         {
             //Arrange
-            KeyAlg keyAlg = KeyAlg.BLS12_381_G1;
-            string seedJson = "testseed000000000000000000000001";
-            SeedMethod method = SeedMethod.BlsKeyGen;
-            IntPtr handle = await KeyApi.CreateKeyFromSeedAsync(
-                    keyAlg,
-                    seedJson,
-                    method);
+            string testSeed = "testseed000000000000000000000001";
+            SeedMethod testSeedMethod = SeedMethod.BlsKeyGen;
+            IntPtr testKeyHandle = await KeyApi.CreateKeyFromSeedAsync(
+                    testKeyAlg,
+                    testSeed,
+                    testSeedMethod);
 
             //Act
             string actual = await KeyApi.GetJwkPublicFromKeyAsync(
-                handle,
-                keyAlg);
+                testKeyHandle,
+                testKeyAlg);
 
             //Assert
-            _ = actual.Should().NotBe("");
+            _ = actual.Should().Be(jwkPublic);
         }
 
-        [Test, TestCase(TestName = "GetJwkSecretFromKeyAsync call returns request handle.")]
-        public async Task GetJwkSecretFromKeyAsyncWorks()
+        private static IEnumerable<TestCaseData> GetJwkPublicFromKeyAsyncCases()
+        {
+            yield return new TestCaseData(KeyAlg.BLS12_381_G1, "{\"crv\":\"BLS12381_G1\",\"kty\":\"OKP\",\"x\":\"h56eYI8Qkq5hitICb-ik8wRTzcn6Fd4iY8aDNVc9q1xoPS3lh4DB_B4wNtar1HrV\"}")
+                .SetName("GetJwkPublicFromKeyAsync returns a string with the jwk public for a given key.");
+            yield return new TestCaseData(KeyAlg.A128GCM, "")
+                .SetName("GetJwkPublicFromKeyAsync throws an AriesAskarException if the algorithm is not BLS12_381_G1,BLS12_381_G2 or BLS12_381_G1G2.");
+        }
+
+        [Test, TestCaseSource(nameof(GetJwkSecretFromKeyAsyncCases))]
+        public async Task GetJwkSecretFromKeyAsyncWorks(KeyAlg testKeyAlg, int secretLength)
         {
             //Arrange
-            KeyAlg keyAlg = KeyAlg.BLS12_381_G1;
-            IntPtr keyHandle = await KeyApi.CreateKeyFromJwkAsync(
+            IntPtr testKeyHandle = await KeyApi.CreateKeyFromJwkAsync(
                 JsonConvert.SerializeObject(new
                 {
-                    crv = keyAlg.ToJwkCrvString(),
+                    crv = testKeyAlg.ToJwkCrvString(),
                     kty = "OKP",
                     x = "h56eYI8Qkq5hitICb-ik8wRTzcn6Fd4iY8aDNVc9q1xoPS3lh4DB_B4wNtar1HrV"
                 }));
 
             //Act
             byte[] actual = await KeyApi.GetJwkSecretFromKeyAsync(
-                keyHandle);
+                testKeyHandle);
 
             //Assert
-            _ = ByteBuffer.Create(actual).len.Should().NotBe(0);
+            _ = ByteBuffer.Create(actual).len.Should().Be(secretLength);
         }
 
-        [Test, TestCase(TestName = "GetJwkThumbprintFromKeyAsync call returns request handle.")]
-        public async Task GetJwkThumbprintFromKeyAsyncWorks()
+        private static IEnumerable<TestCaseData> GetJwkSecretFromKeyAsyncCases()
+        {
+            yield return new TestCaseData(KeyAlg.BLS12_381_G1, 104)
+                .SetName("GetJwkSecretFromKeyAsync returns a byte array with the jwk secret for a given key.");
+            yield return new TestCaseData(KeyAlg.A128GCM, 0)
+                .SetName("GetJwkSecretFromKeyAsync throws an AriesAskarException if the algorithm is not BLS12_381_G1,BLS12_381_G2 or BLS12_381_G1G2.");
+        }
+
+        [Test, TestCaseSource(nameof(GetJwkThumbprintFromKeyAsyncCases))]
+        public async Task GetJwkThumbprintFromKeyAsyncWorks(KeyAlg testKeyAlg, string thumbprint)
         {
             //Arrange
-            KeyAlg keyAlg = KeyAlg.BLS12_381_G1;
-            IntPtr keyHandle = await KeyApi.CreateKeyFromJwkAsync(
+            IntPtr testKeyHandle = await KeyApi.CreateKeyFromJwkAsync(
                 JsonConvert.SerializeObject(new
                 {
-                    crv = keyAlg.ToJwkCrvString(),
+                    crv = testKeyAlg.ToJwkCrvString(),
                     kty = "OKP",
                     x = "h56eYI8Qkq5hitICb-ik8wRTzcn6Fd4iY8aDNVc9q1xoPS3lh4DB_B4wNtar1HrV"
                 }));
 
             //Act
             string actual = await KeyApi.GetJwkThumbprintFromKeyAsync(
-                keyHandle,
-                keyAlg);
+                testKeyHandle,
+                testKeyAlg);
 
             //Assert
-            _ = actual.Should().NotBe("");
+            _ = actual.Should().Be(thumbprint);
+        }
+
+        private static IEnumerable<TestCaseData> GetJwkThumbprintFromKeyAsyncCases()
+        {
+            yield return new TestCaseData(KeyAlg.BLS12_381_G1, "CEHoH9pekaE1pelnkF_goAxKl2K7HVgBHr7tW8lUkDI")
+                .SetName("GetJwkThumbprintFromKeyAsync returns a string with the thumbprint for a given key.");
+            yield return new TestCaseData(KeyAlg.A128GCM, "")
+                .SetName("GetJwkThumbprintFromKeyAsync throws an AriesAskarException if the algorithm is not BLS12_381_G1,BLS12_381_G2 or BLS12_381_G1G2.");
         }
         #endregion
 
