@@ -86,22 +86,24 @@ namespace aries_askar_dotnet_tests.AriesAskar
         private static IEnumerable<TestCaseData> CreateCasesStoreProvisioningThrows()
         {
             string seed = "testseed000000000000000000000001";
-            string passKey = StoreApi.StoreGenerateRawKeyAsync(seed).GetAwaiter().GetResult();
+            string specUri = "sqlite://:memory:";
 
-            yield return new TestCaseData(KeyMethod.RAW, null, "testProfile", true)
-                .SetName("StoreProvision call throws with keyMethod 'raw' and no passkey and recreate true.");
-            yield return new TestCaseData(KeyMethod.RAW, null, "testProfile", false)
-                            .SetName("StoreProvision call throws with keyMethod 'raw' and no passkey and recreate false.");
-            yield return new TestCaseData(KeyMethod.KDF_ARGON2I, null, "testProfile", true)
-                .SetName("StoreProvision call throws with keyMethod 'kdf_argon2i' and given passkey and recreate true.");
+            yield return new TestCaseData(specUri, KeyMethod.RAW, null, "testProfile", true)
+                .SetName("StoreProvision callback throws with keyMethod 'raw' and no passkey and recreate true.");
+            yield return new TestCaseData(specUri, KeyMethod.RAW, null, "testProfile", false)
+                            .SetName("StoreProvision callback throws with keyMethod 'raw' and no passkey and recreate false.");
+            yield return new TestCaseData(specUri, KeyMethod.KDF_ARGON2I, null, "testProfile", true)
+                .SetName("StoreProvision callback throws with keyMethod 'kdf_argon2i' and given passkey and recreate true.");
+            yield return new TestCaseData(null, KeyMethod.KDF_ARGON2I, null, "testProfile", true)
+                .SetName("StoreProvision throws with specUri equals null.");
         }
 
         [Test, TestCaseSource(nameof(CreateCasesStoreProvisioningThrows))]
-        public async Task ProvisionAsyncThrows(KeyMethod keyMethod, string passKey, string profile, bool recreate)
+        public async Task ProvisionAsyncThrows(string specUri, KeyMethod keyMethod, string passKey, string profile, bool recreate)
         {
             //Arrange
             //Act
-            Func<Task> actual = async() => await StoreApi.ProvisionAsync(testSpecUri, keyMethod, passKey, profile, recreate);
+            Func<Task> actual = async() => await StoreApi.ProvisionAsync(specUri, keyMethod, passKey, profile, recreate);
 
             //Assert
             await actual.Should().ThrowAsync<Exception>();
@@ -468,6 +470,19 @@ namespace aries_askar_dotnet_tests.AriesAskar
             actual.storeHandle.Should().Be(store.storeHandle);
             actual.scanHandle.Should().NotBe(new IntPtr());
         }
+
+        [Test, TestCase(TestName = "StartScanAsync throws with category equals null.")]
+        public async Task StartScanAsyncThrows()
+        {
+            //Arrange
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+
+            //Act
+            Func<Task> actual = async() => await store.StartScanAsync(null);
+
+            //Assert
+            await actual.Should().ThrowAsync<Exception>();
+        }
         #endregion
 
         #endregion
@@ -520,7 +535,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         }
         #endregion
 
-        [Test, TestCase(TestName = "CountAsyncWorks works and returns counted number.")]
+        [Test, TestCase(TestName = "CountAsync works and returns counted number.")]
         public async Task CountAsyncWorks()
         {
             //Arrange
@@ -535,6 +550,53 @@ namespace aries_askar_dotnet_tests.AriesAskar
             //Assert
             actual.Should().Be(2);
             Console.WriteLine(actual);
+        }
+
+        [Test, TestCase(TestName = "CountAsync throws with category equals null.")]
+        public async Task CountAsyncThrows()
+        {
+            //Arrange
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync();
+            bool testInsert1 = await session.InsertAsync(testEntry["category"].ToString(), "testName1");
+            bool testInsert2 = await session.InsertAsync(testEntry["category"].ToString(), "testName2");
+
+            //Act
+            Func<Task> actual = async() => await session.CountAsync(null);
+
+            //Assert
+            await actual.Should().ThrowAsync<Exception>();
+        }
+
+        [Test, TestCase(TestName = "CountAsync throws with session handle equals 0.")]
+        public async Task CountAsyncThrowsNoHandle()
+        {
+            //Arrange
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync();
+            bool testInsert1 = await session.InsertAsync(testEntry["category"].ToString(), "testName1");
+            await store.CloseAsync();
+            //Act
+            Func<Task> actual = async () => await session.CountAsync(testEntry["category"].ToString());
+
+            //Assert
+            await actual.Should().ThrowAsync<Exception>();
+        }
+
+        [Test, TestCase(TestName = "CountAsync callback throws with invalid sessionHandle.")]
+        public async Task CountAsyncThrowsInvalidHandle()
+        {
+            //Arrange
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync();
+            bool testInsert1 = await session.InsertAsync(testEntry["category"].ToString(), "testName1");
+            bool testInsert2 = await session.InsertAsync(testEntry["category"].ToString(), "testName2");
+            session.sessionHandle = (IntPtr)99;
+            //Act
+            Func<Task> actual = async () => await session.CountAsync(testEntry["category"].ToString());
+
+            //Assert
+            await actual.Should().ThrowAsync<Exception>();
         }
 
         #region insert records
@@ -563,34 +625,32 @@ namespace aries_askar_dotnet_tests.AriesAskar
             finalCount.Should().Be(1);
         }
 
-        [Test, TestCase(TestName = "InsertAsync throws with no name provided.")]
-        public async Task SessionInsertAsyncThrowsNoName()
+        private static IEnumerable<TestCaseData> CreateCasesSessionInsertAsyncThrows()
         {
-            //Arrange
-
-            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
-            Session session = await store.StartSessionAsync();
-
-            //Act
-            Func<Task> actual = async() => await session.InsertAsync(testEntry["category"].ToString(), null, "testValue");
-
-            //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            yield return new TestCaseData("testCategory", "testName", true, true)
+                .SetName("InsertAsync callback throws with inserting a duplicate record.");
+            yield return new TestCaseData(null, "testName", false, true)
+                .SetName("InsertAsync throws with no category provided.");
+            yield return new TestCaseData("testCategory", null, false, true)
+                .SetName("InsertAsync throws with no name provided.");
+            yield return new TestCaseData("testCategory", "testName", false, false)
+                .SetName("InsertAsync throws wrapper error with session handle equals 0.");
         }
 
-        [Test, TestCase(TestName = "InsertAsync callback throws with inserting a duplicate record.")]
-        public async Task SessionInsertAsyncThrowsDuplicateRecord()
+        [Test, TestCaseSource(nameof(CreateCasesSessionInsertAsyncThrows))]
+        public async Task SessionInsertAsyncThrows(string category, string name, bool doubleInsert, bool sessionHandleExisting)
         {
             //Arrange
-            string testName = "testName";
-            string testValue = "testValue";
 
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
-            bool initialInsert = await session.InsertAsync(testEntry["category"].ToString(), testName, testValue);
+            if(doubleInsert)
+                await session.InsertAsync(category, name, "testValue");
+            if (!sessionHandleExisting)
+                await store.CloseAsync();
 
             //Act
-            Func<Task> actual = async () => await session.InsertAsync(testEntry["category"].ToString(), testName, testValue);
+            Func<Task> actual = async() => await session.InsertAsync(category, name, "testValue");
 
             //Assert
             await actual.Should().ThrowAsync<Exception>();
@@ -617,33 +677,31 @@ namespace aries_askar_dotnet_tests.AriesAskar
             finalCount.Should().Be(0);
         }
 
-        [Test, TestCase(TestName = "RemoveAsync callback for session throws with trying to remove an non existing record.")]
-        public async Task SessionRemoveAsyncThrowsNoName()
+        private static IEnumerable<TestCaseData> CreateCasesSessionRemoveAsyncThrows()
         {
-            //Arrange
+            string testCategory = "testCategory";
             string testName = "testName";
-
-            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
-            Session session = await store.StartSessionAsync();
-
-            //Act
-            Func<Task> actual = async () => await session.RemoveAsync(testEntry["category"].ToString(), testName);
-
-            //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            yield return new TestCaseData(null, testName, true)
+                .SetName("RemoveAsync throws for session when providing category equals null.");
+            yield return new TestCaseData(testCategory, null, true)
+                .SetName("RemoveAsync throws for session when providing name equals null.");
+            yield return new TestCaseData(testCategory, testName, true)
+                .SetName("RemoveAsync callback for session throws with trying to remove an non existing record.");
+            yield return new TestCaseData(testCategory, testName, false)
+                .SetName("RemoveAsync throws wrapper error for session with sessionHandle equals 0.");
         }
 
-        [Test, TestCase(TestName = "RemoveAsync for session throws with no category provided.")]
-        public async Task SessionRemoveAsyncThrowsNoCategory()
+        [Test, TestCaseSource(nameof(CreateCasesSessionRemoveAsyncThrows))]
+        public async Task SessionRemoveAsyncThrows(string category, string name, bool sessionHandleExisting)
         {
             //Arrange
-            string testName = "testName"; 
-
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
+            if (!sessionHandleExisting)
+                await store.CloseAsync();
 
             //Act
-            Func<Task> actual = async () => await session.RemoveAsync(null, testName);
+            Func<Task> actual = async () => await session.RemoveAsync(category, name);
 
             //Assert
             await actual.Should().ThrowAsync<Exception>();
@@ -667,6 +725,35 @@ namespace aries_askar_dotnet_tests.AriesAskar
             actual.Should().Be(2);
             initCount.Should().Be(2);
             finalCount.Should().Be(0);
+        }
+
+        [Test, TestCase(TestName = "RemoveAllAsync throws with no category provided.")]
+        public async Task SessionRemoveAllAsyncThrowsNoCategory()
+        {
+            //Arrange
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync();
+
+            //Act
+            Func<Task> actual = async () => await session.RemoveAllAsync(null);
+
+            //Assert
+            await actual.Should().ThrowAsync<Exception>();
+        }
+
+        [Test, TestCase(TestName = "RemoveAllAsync throws wrapper error with session handle equals 0.")]
+        public async Task SessionRemoveAllAsyncThrowsNoHandle()
+        {
+            //Arrange
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync();
+            await store.CloseAsync();
+
+            //Act
+            Func<Task> actual = async () => await session.RemoveAllAsync("testCategory");
+
+            //Assert
+            await actual.Should().ThrowAsync<Exception>();
         }
         #endregion
 
@@ -704,19 +791,32 @@ namespace aries_askar_dotnet_tests.AriesAskar
             entryVal2.DecodeToString().Should().Be(replacedTestValue);
         }
 
-        [Test, TestCase(TestName = "ReplaceAsync callback throws with trying to replace value in an non existing record.")]
-        public async Task SessionReplaceAsyncThrowsRecordNotExisting()
+        private static IEnumerable<TestCaseData> CreateCasesSessionReplaceAsyncThrows()
+        {
+            yield return new TestCaseData("testCategory", "newTestName", true)
+                .SetName("ReplaceAsync callback throws with trying to replace value in an non existing record.");
+            yield return new TestCaseData(null, "testName", true)
+                .SetName("ReplaceAsync throws with no category provided.");
+            yield return new TestCaseData("testCategory", null, true)
+                .SetName("ReplaceAsync throws with no name provided.");
+            yield return new TestCaseData("testCategory", "testName", false)
+                .SetName("ReplaceAsync throws wrapper error with session handle equals 0.");
+        }
+
+        [Test, TestCaseSource(nameof(CreateCasesSessionReplaceAsyncThrows))]
+        public async Task SessionReplaceAsyncThrows(string category, string name, bool sessionHandleExisting)
         {
             //Arrange
             string testName = "testName";
-            string newTestName = "newTestName";
-
+            string testCategory = "testCategory";
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
-            bool initInsert1 = await session.InsertAsync(testEntry["category"].ToString(), testName);
+            bool initInsert1 = await session.InsertAsync(testCategory, testName);
+            if (!sessionHandleExisting)
+                await store.CloseAsync();
 
             //Act
-            Func<Task> actual = async() => await session.ReplaceAsync(testEntry["category"].ToString(), newTestName);
+            Func<Task> actual = async() => await session.ReplaceAsync(category, name);
           
             //Assert
             await actual.Should().ThrowAsync<Exception>();
@@ -775,13 +875,15 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
         private static IEnumerable<TestCaseData> CreateCasesFetchAsyncThrows()
         {
-            yield return new TestCaseData("testCategory", null)
+            yield return new TestCaseData("testCategory", null, true)
                 .SetName("FetchAsync throws for session with not providing record name.");
-            yield return new TestCaseData(null, "testName")
+            yield return new TestCaseData(null, "testName", true)
                 .SetName("FetchAsync throws for session with not providing record category.");
+            yield return new TestCaseData("testCategory", "testName", false)
+                .SetName("FetchAsync throws wrapper error for session with session handle equals 0.");
         }
         [Test, TestCaseSource(nameof(CreateCasesFetchAsyncThrows))]
-        public async Task SessionFetchAsyncThrows(string category, string name)
+        public async Task SessionFetchAsyncThrows(string category, string name, bool sessionHandleExisting)
         {
             //Arrange
             string testName = "testName";
@@ -790,6 +892,8 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
             bool initInsert1 = await session.InsertAsync(testEntry["category"].ToString(), testName, testValue);
+            if (!sessionHandleExisting)
+                await store.CloseAsync();
 
             //Act
             Func<Task> actual = async() => await session.FetchAsync(category, name);
@@ -834,6 +938,27 @@ namespace aries_askar_dotnet_tests.AriesAskar
             actual.Should().NotBe(new IntPtr());
             //testVal.DecodeToString().Should().Be(testValue);
         }
+        private static IEnumerable<TestCaseData> CreateCasesFetchAllAsyncThrows()
+        {
+            yield return new TestCaseData(null, true)
+                .SetName("FetchAllAsync throws with category equals null.");
+            yield return new TestCaseData("testCategory", false)
+                .SetName("FetchAllAsync throws wrapper error for session with session handle equals 0.");
+        }
+        [Test, TestCaseSource(nameof(CreateCasesFetchAllAsyncThrows))]
+        public async Task SessionFetchAllAsyncThrows(string category, bool sessionHandleExisting)
+        {
+            //Arrange
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync();
+            if (!sessionHandleExisting)
+                await store.CloseAsync();
+            //Act
+            Func<Task> actual = async() => await session.FetchAllAsync(category);
+
+            //Assert
+            await actual.Should().ThrowAsync<Exception>();
+        }
         #endregion
 
         #region insert key
@@ -872,21 +997,25 @@ namespace aries_askar_dotnet_tests.AriesAskar
             string testName = "testName";
             IntPtr validKeyHandle = KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, 1).GetAwaiter().GetResult();
 
-            yield return new TestCaseData(validKeyHandle, null, false)
+            yield return new TestCaseData(validKeyHandle, null, false, true)
                 .SetName("InsertKeyAsync throws with no name provided.");
-            yield return new TestCaseData(new IntPtr(), testName, false)
+            yield return new TestCaseData(new IntPtr(), testName, false, true)
                 .SetName("InsertKeyAsync throws with invalid keyHandle.");
-            yield return new TestCaseData(validKeyHandle, testName, true)
+            yield return new TestCaseData(validKeyHandle, testName, true, true)
                 .SetName("InsertKeyAsync callback throws with inserting duplicate key.");
+            yield return new TestCaseData(validKeyHandle, testName, false, false)
+                .SetName("InsertKeyAsync throws wrapper erro with session handle equals 0.");
         }
         [Test, TestCaseSource(nameof(CreateCasesInsertKeyAsyncThrows))]
-        public async Task SessionInsertKeyAsyncThrows(IntPtr keyHandle, string testName, bool doubleInsert)
+        public async Task SessionInsertKeyAsyncThrows(IntPtr keyHandle, string testName, bool doubleInsert, bool sessionHandleExisting)
         {
             //Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
             if (doubleInsert)
                 await session.InsertKeyAsync(keyHandle, testName);
+            if (!sessionHandleExisting)
+                await store.CloseAsync();
 
             //Act
             Func<Task> actual = async () => await session.InsertKeyAsync(keyHandle, testName);
@@ -939,13 +1068,15 @@ namespace aries_askar_dotnet_tests.AriesAskar
         
         private static IEnumerable<TestCaseData> CreateCasesUpdateKeyAsyncThrows()
         {
-            yield return new TestCaseData(null)
+            yield return new TestCaseData(null, true)
                 .SetName("UpdateKeyAsync throws with no key name provided.");
-            yield return new TestCaseData("")
+            yield return new TestCaseData("", true)
                 .SetName("UpdateKeyAsync callback throws with providing wrong keyName to non existing key.");
+            yield return new TestCaseData("testKeyName", false)
+                .SetName("UpdateKeyAsync throws wrapper error with session handle equals 0.");
         }
         [Test, TestCaseSource(nameof(CreateCasesUpdateKeyAsyncThrows))]
-        public async Task SessionUpdateKeyAsyncThrows(string testCaseKeyName)
+        public async Task SessionUpdateKeyAsyncThrows(string testCaseKeyName, bool sessionHandleExisting)
         {
             //Arrange
             string testKeyName = "testKeyName";
@@ -956,6 +1087,8 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
             bool insertResult = await session.InsertKeyAsync(keyHandle, testKeyName, testMetadata, testTag);
+            if (!sessionHandleExisting)
+                await store.CloseAsync();
 
             //Act
             Func<Task> actual = async() => await session.UpdateKeyAsync(testCaseKeyName);
@@ -998,17 +1131,19 @@ namespace aries_askar_dotnet_tests.AriesAskar
         private static IEnumerable<TestCaseData> CreateCasesRemoveKeyAsyncThrows()
         {
             string testCaseKeyName = "testKeyName";
-            yield return new TestCaseData(false, null, false)
+            yield return new TestCaseData(false, null, false, true)
                 .SetName("RemoveKeyAsync throws for session with invalid keyName.");
-            yield return new TestCaseData(true, null,false)
+            yield return new TestCaseData(true, null, false, true)
                 .SetName("RemoveKeyAsync throws for transaction with invalid keyName.");
-            yield return new TestCaseData(false, testCaseKeyName, true)
+            yield return new TestCaseData(false, testCaseKeyName, true, true)
                 .SetName("RemoveKeyAsync callback throws for session with trying to remove a already removed key.");
-            yield return new TestCaseData(true, testCaseKeyName, true)
+            yield return new TestCaseData(true, testCaseKeyName, true, true)
                 .SetName("RemoveKeyAsync callback throws for transaction with trying to remove a already removed key.");
+            yield return new TestCaseData(false, testCaseKeyName, false, false)
+                .SetName("RemoveKeyAsync throws wrapper error with session handle equals 0.");
         }
         [Test, TestCaseSource(nameof(CreateCasesRemoveKeyAsyncThrows))]
-        public async Task SessionRemoveKeyAsyncThrows(bool asTxn, string testCaseInputKeyName, bool doubleRemove)
+        public async Task SessionRemoveKeyAsyncThrows(bool asTxn, string testCaseInputKeyName, bool doubleRemove, bool sessionHandleExisting)
         {
             //Arrange
             string testKeyName = "testKeyName";
@@ -1019,6 +1154,8 @@ namespace aries_askar_dotnet_tests.AriesAskar
             await session.InsertKeyAsync(keyHandle, testKeyName);
             if(doubleRemove)
                 await session.RemoveKeyAsync(testCaseInputKeyName);
+            if (!sessionHandleExisting)
+                await store.CloseAsync();
 
             //Act
             Func<Task> actual = async() => await session.RemoveKeyAsync(testCaseInputKeyName);
@@ -1063,19 +1200,22 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
         private static IEnumerable<TestCaseData> CreateCasesFetchKeyAsyncThrows()
         {
-            yield return new TestCaseData(null)
+            yield return new TestCaseData(null, true)
                 .SetName("FetchKeyAsync throws for session with not providing key name.");
+            yield return new TestCaseData("testKeyName", false)
+                .SetName("FetchKeyAsync throws wrapper error for session with session handle equals 0.");
         }
         [Test, TestCaseSource(nameof(CreateCasesFetchKeyAsyncThrows))]
-        public async Task SessionFetchKeyAsyncThrows(string testCaseKeyName)
+        public async Task SessionFetchKeyAsyncThrows(string testCaseKeyName, bool sessionHandleExisting)
         {
             //Arrange
             string testKeyName = "testKeyName";
-            IntPtr keyHandle = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, 1);
-
+            IntPtr keyHandle = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, 1);            
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
             bool initInsert1 = await session.InsertKeyAsync(keyHandle, testKeyName);
+            if (!sessionHandleExisting)
+                await store.CloseAsync();
 
             //Act
             Func<Task> actual = async () => await session.FetchKeyAsync(testCaseKeyName);
@@ -1116,6 +1256,31 @@ namespace aries_askar_dotnet_tests.AriesAskar
             //Assert
             actual.Should().NotBe(new IntPtr());
             //fetchedKeyName.Should().Be(testKeyName);
+        }
+
+        private static IEnumerable<TestCaseData> CreateCasesFetchAllKeyAsyncThrows()
+        {
+            yield return new TestCaseData(false)
+                .SetName("FetchAllKeyAsync throws wrapper error for session with session handle equals 0.");
+        }
+        [Test, TestCaseSource(nameof(CreateCasesFetchAllKeyAsyncThrows))]
+        public async Task SessionFetchAllKeyAsyncThrows(bool sessionHandleExisting)
+        {
+            //Arrange
+            string testKeyName1 = "testKeyName1_A128CBC";
+            IntPtr keyHandle1 = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, 1);
+
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync();
+            bool initInsert1 = await session.InsertKeyAsync(keyHandle1, testKeyName1);
+            if (!sessionHandleExisting)
+                await store.CloseAsync();
+
+            //Act
+            Func<Task> actual = async() => await session.FetchAllKeysAsync(KeyAlg.A128CBC_HS256);
+
+            //Assert
+            await actual.Should().ThrowAsync<Exception>();
         }
         #endregion
 
@@ -1230,31 +1395,57 @@ namespace aries_askar_dotnet_tests.AriesAskar
         //Todo
         #region scan
 
-        //Todo
         #region next scan
-        /**
-        [Test, TestCase(TestName = "NextScanAsync works.")]
-        public async Task NextScanAsyncWorks()
+        private static IEnumerable<TestCaseData> CreateCasesNextScanAsyncWorks()
+        {
+            string testProfile = "testProfile";
+            string testTag = $"{{ \"~plaintag\": \"a\", \"enctag\": \"b\"}}";
+
+            yield return new TestCaseData(testTag, 0, -1, testProfile, 3)
+                .SetName("NextScanAsync works with no offset and limit and returns entryListHandle to scanned records.");
+            yield return new TestCaseData(testTag, 1, -1, testProfile, 2)
+                .SetName("NextScanAsync works with offset of 1 and returns entryListHandle to the scanned records (2 of 3 elements).");
+            yield return new TestCaseData(testTag, 0, 1, testProfile, 1)
+                .SetName("NextScanAsync works with offset 0 and limit of 1 and returns entryListHandle to the scanned records (1 of 3 elements).");
+        }
+        [Test, TestCaseSource(nameof(CreateCasesNextScanAsyncWorks))]
+        public async Task NextScanAsyncWorks(string tag, long offset, long limit, string profile, int expected)
         {
             //Arrange
+            List<string> testNames = new() { "testName1", "testName2", "testName3" };
+            List<string> testValues = new() { "testVal1", "testVal2", "testVal3" };
+            long maxElements = testNames.Count;
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
-            bool insert1 = await session.InsertAsync(testEntry["category"].ToString(), "name1");
-            bool insert2 = await session.InsertAsync(testEntry["category"].ToString(), "name2");
-            bool insert3 = await session.InsertAsync(testEntry["category"].ToString(), "name3");
-            Scan scan = await store.StartScanAsync(testEntry["category"].ToString());
-            Scan scan2 = await store.StartScanAsync(testEntry["category"].ToString());
-            Scan scan3 = await store.StartScanAsync(testEntry["category"].ToString());
+            bool insert1 = await session.InsertAsync(testEntry["category"].ToString(), testNames[0], testValues[0], tag);
+            bool insert2 = await session.InsertAsync(testEntry["category"].ToString(), testNames[1], testValues[1], tag);
+            bool insert3 = await session.InsertAsync(testEntry["category"].ToString(), testNames[2], testValues[2], tag);
+            Scan scan = await store.StartScanAsync(testEntry["category"].ToString(), tag, offset, limit, profile);
 
             //Act
-            //EntryListHandle
             IntPtr actual = await scan.NextAsync();
+            
+            int max = (int)limit;
+            if (limit == -1)
+            {
+                max = (int)(maxElements-offset);
+            }
+            List<string> names = new();
+            List<string> values = new();
 
+            for (int n = 0; n < max; n++) {
+                string name = await ResultListApi.EntryListGetNameAsync(actual, n);
+                string value = (await ResultListApi.EntryListGetValueAsync(actual, n)).DecodeToString();
+                names.Add(name);
+                values.Add(value);
+            }
+    
             //Assert
             actual.Should().NotBe(new IntPtr());
-            Console.WriteLine(scan.scanHandle);
-            Console.WriteLine(actual);
-        }**/
+            names.Count.Should().Be(expected);
+            values.Count.Should().Be(expected);
+
+        }
         #endregion
 
         #region free scan

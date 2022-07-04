@@ -96,7 +96,7 @@ namespace aries_askar_dotnet.AriesAskar
             string category,
             string tagFilter = null,
             long offset = 0,
-            long limit = 0,
+            long limit = -1, //None
             string profile = null)
         {
             return await StartScanAsync(store.storeHandle, category, tagFilter, offset, limit, profile);
