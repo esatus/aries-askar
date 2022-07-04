@@ -99,22 +99,12 @@ namespace aries_askar_dotnet.AriesAskar
             return tags;
         }
 
-        public static async Task<bool> EntryListFreeAsync(
+        public static async Task EntryListFreeAsync(
             IntPtr entryListHandle)
         {
-            int errorCode = NativeMethods.askar_entry_list_free(
+            NativeMethods.askar_entry_list_free(
                 entryListHandle);
-
-            if (errorCode != (int)ErrorCode.Success)
-            {
-                string error = await ErrorApi.GetCurrentErrorAsync();
-                Console.WriteLine(error);
-                throw AriesAskarException.FromSdkError(error);
-            }
-            else
-                return true;
         }
-
         public static async Task<int> KeyEntryListCountAsync(
             IntPtr keyEntryListHandle)
         {
@@ -132,20 +122,12 @@ namespace aries_askar_dotnet.AriesAskar
             return count;
         }
 
-        public static async Task<bool> KeyEntryListFreeAsync(
+        public static async Task KeyEntryListFreeAsync(
             IntPtr keyEntryListHandle)
         {
-            int errorCode = NativeMethods.askar_key_entry_list_free(
+            NativeMethods.askar_key_entry_list_free(
                 keyEntryListHandle);
 
-            if (errorCode != (int)ErrorCode.Success)
-            {
-                string error = await ErrorApi.GetCurrentErrorAsync();
-                Console.WriteLine(error);
-                throw AriesAskarException.FromSdkError(error);
-            }
-            else
-                return true;
         }
 
         public static async Task<string> KeyEntryListGetAlgorithmAsync(
@@ -224,7 +206,7 @@ namespace aries_askar_dotnet.AriesAskar
             return tags;
         }
 
-        public static async Task<IntPtr> KeyEntryListLoadLocalAsync(
+        public static async Task<IntPtr> LoadLocalKeyHandleFromKeyEntryListAsync(
             IntPtr keyEntryListHandle,
             int index)
         {
