@@ -196,7 +196,12 @@ namespace aries_askar_dotnet.AriesAskar
         }
 
         //Return EntryListHandle
-        public static async Task<IntPtr> FetchAllAsync(this Session session, string category, string tagFilter = null , long limit = 0, bool forUpdate = false)
+        public static async Task<IntPtr> FetchAllAsync(
+            this Session session, 
+            string category, 
+            string tagFilter = null , 
+            long limit = -1, //None
+            bool forUpdate = false)
         {
             if (session.sessionHandle == new IntPtr())
             {
@@ -211,7 +216,8 @@ namespace aries_askar_dotnet.AriesAskar
             string name,
             string value = null,
             string tags = null,
-            long expiryMs = 0)
+            long expiryMs = -1 //None
+            )
         {
             if (session.sessionHandle == new IntPtr())
             {
@@ -226,7 +232,8 @@ namespace aries_askar_dotnet.AriesAskar
             string name,
             string value = null,
             string tags = null,
-            long expiryMs = 0)
+            long expiryMs = -1 //None
+            )
         {
             if (session.sessionHandle == new IntPtr())
             {
@@ -263,7 +270,8 @@ namespace aries_askar_dotnet.AriesAskar
             string name,
             string metaData = null,
             string tags = null,
-            long expiryMs = 0)
+            long expiryMs = -1 //None
+            )
         {
             if (session.sessionHandle == new IntPtr())
             {
@@ -288,7 +296,7 @@ namespace aries_askar_dotnet.AriesAskar
             KeyAlg keyAlg = KeyAlg.NONE,
             string thumbprint = null,
             string tagFilter = null,
-            long limit = 0,
+            long limit = -1, //None
             bool forUpdate = false)
         {
             if (session.sessionHandle == new IntPtr())
@@ -303,7 +311,8 @@ namespace aries_askar_dotnet.AriesAskar
             string name,
             string metaData = null,
             string tags = null,
-            long expiryMs = 0)
+            long expiryMs = -1 //None
+            )
         {
             if (session.sessionHandle == new IntPtr())
             {
@@ -563,7 +572,7 @@ namespace aries_askar_dotnet.AriesAskar
             string category, 
             string tagFilter = null, 
             long offset = 0, 
-            long limit = 0,
+            long limit = -1, //None 
             string profile = null)
         {
             var taskCompletionSource = new TaskCompletionSource<IntPtr>();
@@ -700,7 +709,7 @@ namespace aries_askar_dotnet.AriesAskar
             IntPtr sessionHandle, 
             string category, 
             string tagFilter = null, 
-            long limit = 0, 
+            long limit = -1, //None 
             bool forUpdate = false)
         {
             var taskCompletionSource = new TaskCompletionSource<IntPtr>();
@@ -752,7 +761,8 @@ namespace aries_askar_dotnet.AriesAskar
             string name,
             string value = null,
             string tags = null,
-            long expiryMs = 0)
+            long expiryMs = -1 //None
+            )
         {
             bool res = await SessionUpdateAsync(
                 sessionHandle,
@@ -772,7 +782,8 @@ namespace aries_askar_dotnet.AriesAskar
             string name,
             string value = null,
             string tags = null,
-            long expiryMs = 0)
+            long expiryMs = -1 //None
+            )
         {
             bool res = await SessionUpdateAsync(
                 sessionHandle,
@@ -807,7 +818,8 @@ namespace aries_askar_dotnet.AriesAskar
             string name, 
             string value = null, 
             string tags = null, 
-            long expiryMs = 0)
+            long expiryMs = -1 //None
+            )
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
             var callbackId = PendingCallbacks.Add(taskCompletionSource);
@@ -839,7 +851,8 @@ namespace aries_askar_dotnet.AriesAskar
             string name, 
             string metaData = null, 
             string tags = null,
-            long expiryMs = 0)
+            long expiryMs = -1 //None
+            )
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
             var callbackId = PendingCallbacks.Add(taskCompletionSource);
@@ -893,7 +906,7 @@ namespace aries_askar_dotnet.AriesAskar
             KeyAlg keyAlg = KeyAlg.NONE, 
             string thumbprint = null, 
             string tagFilter = null, 
-            long limit = 0, 
+            long limit = -1, //None 
             bool forUpdate = false)
         {
             var taskCompletionSource = new TaskCompletionSource<IntPtr>();
@@ -924,7 +937,8 @@ namespace aries_askar_dotnet.AriesAskar
             string name, 
             string metaData = null, 
             string tags = null, 
-            long expiryMs = 0)
+            long expiryMs = -1 //None
+            )
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
             var callbackId = PendingCallbacks.Add(taskCompletionSource);

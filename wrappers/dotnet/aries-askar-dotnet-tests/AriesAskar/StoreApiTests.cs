@@ -41,7 +41,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             testAsTransactions = true;
         }
 
-        #region store
+        #region STORE
         //Todo open
         #region provision and open
         private static IEnumerable<TestCaseData> CreateCasesStoreProvisioningWorks()
@@ -352,6 +352,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         }
         #endregion
 
+        #region generate raw key
         [Test, TestCase(TestName = "GenerateRawKey call returns result string.")]
         public async Task StoreGenerateRawKeyWorks()
         {
@@ -375,7 +376,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             //Assert
             await actual.Should().ThrowAsync<Exception>();
         }
-
+        #endregion
 
         #region start session
         [Test, TestCase(TestName = "StartSessionAsync works.")]
@@ -487,7 +488,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
         #endregion
 
-        #region session
+        #region SESSION
 
         #region start session
         [Test, TestCase(TestName = "StartAsync of session works and returns active session with handle.")]
@@ -535,6 +536,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         }
         #endregion
 
+        #region count records
         [Test, TestCase(TestName = "CountAsync works and returns counted number.")]
         public async Task CountAsyncWorks()
         {
@@ -598,6 +600,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             //Assert
             await actual.Should().ThrowAsync<Exception>();
         }
+        #endregion
 
         #region insert records
         private static IEnumerable<TestCaseData> CreateCasesInsertAsyncWorks()
@@ -902,7 +905,6 @@ namespace aries_askar_dotnet_tests.AriesAskar
             await actual.Should().ThrowAsync<Exception>();
         }
 
-        //TODO improve test with different inputs-> need ResultListApi.EntryListGetValueAsync(..)
         private static IEnumerable<TestCaseData> CreateCasesFetchAllAsyncWorks()
         {
             yield return new TestCaseData(false, true)
@@ -920,23 +922,27 @@ namespace aries_askar_dotnet_tests.AriesAskar
             //Arrange
             string testName1 = "testName1";
             string testName2 = "testName2";
-            string testName3 = "testName3";
             string testValue = "testValue";
 
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync(asTransactions: asTxn);
             bool initInsert1 = await session.InsertAsync(testEntry["category"].ToString(), testName1, testValue, testEntry["tags"].ToString());
             bool initInsert2 = await session.InsertAsync(testEntry["category"].ToString(), testName2, testValue);
-            bool initInsert3 = await session.InsertAsync(testEntry["category"].ToString(), testName3, testValue);
 
             //Act
             IntPtr actual = await session.FetchAllAsync(testEntry["category"].ToString());
-            //IntPtr actual = await session.FetchAsync(testEntry["category"].ToString(), testName1);
-            //ByteBuffer testVal = await ResultListApi.EntryListGetValueAsync(actual, 1);
+            string val1 = (await ResultListApi.EntryListGetValueAsync(actual, 0)).DecodeToString();
+            string val2 = (await ResultListApi.EntryListGetValueAsync(actual, 1)).DecodeToString();
+            string name1 = (await ResultListApi.EntryListGetNameAsync(actual, 0));
+            string name2 = (await ResultListApi.EntryListGetNameAsync(actual, 1));
+            List<string> names = new() { name1, name2 };
 
             //Assert
             actual.Should().NotBe(new IntPtr());
-            //testVal.DecodeToString().Should().Be(testValue);
+            val1.Should().Be(testValue);
+            val2.Should().Be(testValue);
+            names.Should().Contain(testName1);
+            names.Should().Contain(testName2);
         }
         private static IEnumerable<TestCaseData> CreateCasesFetchAllAsyncThrows()
         {
@@ -1224,7 +1230,6 @@ namespace aries_askar_dotnet_tests.AriesAskar
             await actual.Should().ThrowAsync<Exception>();
         }
 
-        //TODO improve test with different inputs-> need ResultListApi.KeyEntryListGetNameAsync(..)
         private static IEnumerable<TestCaseData> CreateCasesFetchAllKeyAsyncWorks()
         {
             yield return new TestCaseData(false)
@@ -1251,11 +1256,15 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             //Act
             IntPtr actual = await session.FetchAllKeysAsync(KeyAlg.A128CBC_HS256);
-            //string fetchedKeyName = await ResultListApi.KeyEntryListGetNameAsync(actual, 1);
+            string fetchedKeyName1 = await ResultListApi.KeyEntryListGetNameAsync(actual, 0);
+            string fetchedKeyName2 = await ResultListApi.KeyEntryListGetNameAsync(actual, 1);
+            List<string> names = new() { fetchedKeyName1, fetchedKeyName2 };
 
             //Assert
             actual.Should().NotBe(new IntPtr());
-            //fetchedKeyName.Should().Be(testKeyName);
+            names.Should().Contain(testKeyName1);
+            names.Should().Contain(testKeyName2);
+            names.Should().NotContain(testKeyName3);
         }
 
         private static IEnumerable<TestCaseData> CreateCasesFetchAllKeyAsyncThrows()
@@ -1392,8 +1401,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
         #endregion
 
-        //Todo
-        #region scan
+        #region SCAN
 
         #region next scan
         private static IEnumerable<TestCaseData> CreateCasesNextScanAsyncWorks()
