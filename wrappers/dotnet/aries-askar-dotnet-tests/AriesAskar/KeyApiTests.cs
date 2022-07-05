@@ -485,15 +485,10 @@ namespace aries_askar_dotnet_tests.AriesAskar
         }
 
         [Test, TestCaseSource(nameof(GetSecretBytesFromKeyAsyncErrorCases))]
-        public async Task GetSecretBytesFromKeyAsyncErrorWorks(KeyAlg testKeyAlg)
+        public async Task GetSecretBytesFromKeyAsyncErrorWorks()
         {
             //Arrange
-            string testSeed = "testseed000000000000000000000001";
-            SeedMethod testSeedMethod = SeedMethod.BlsKeyGen;
-            IntPtr testKeyHandle = await KeyApi.CreateKeyFromSeedAsync(
-                    testKeyAlg,
-                    testSeed,
-                    testSeedMethod);
+            IntPtr testKeyHandle = new();
 
             //Act
             Func<Task> action = async () => await KeyApi.GetSecretBytesFromKeyAsync(
@@ -505,12 +500,14 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
         private static IEnumerable<TestCaseData> GetSecretBytesFromKeyAsyncErrorCases()
         {
-            yield return new TestCaseData(KeyAlg.NONE)
+            yield return new TestCaseData()
                 .SetName("GetSecretBytesFromKeyAsync throws an AriesAskarException if the key handle points to invalid data.");
         }
         #endregion
+
+        #region GetAlgorithmFromKeyAsync
         [Test, TestCaseSource(nameof(GetAlgorithmFromKeyAsyncCases))]
-        public async Task GetAlgorithmFromKeyAsyncWorks(KeyAlg testKeyAlg, string expectedName)
+        public async Task GetAlgorithmFromKeyAsyncWorks(KeyAlg testKeyAlg)
         {
             //Arrange
             string testSeed = "testseed000000000000000000000001";
@@ -525,17 +522,37 @@ namespace aries_askar_dotnet_tests.AriesAskar
                 testKeyHandle);
 
             //Assert
-            _ = actual.Should().Be(expectedName);
+            _ = actual.Should().Be(testKeyAlg.ToKeyAlgString());
         }
 
         private static IEnumerable<TestCaseData> GetAlgorithmFromKeyAsyncCases()
         {
-            yield return new TestCaseData(KeyAlg.BLS12_381_G1, "bls12381g1")
+            yield return new TestCaseData(KeyAlg.BLS12_381_G1)
                 .SetName("GetAlgorithmFromKeyAsync returns a string with the name of an algorithm for a given key.");
-            yield return new TestCaseData(KeyAlg.NONE, "")
-                .SetName("GetAlgorithmFromKeyAsync throws an AriesAskarException if the key handle points to invalid data.");
         }
 
+        [Test, TestCaseSource(nameof(GetAlgorithmFromKeyAsyncErrorCases))]
+        public async Task GetAlgorithmFromKeyAsyncErrorWorks()
+        {
+            //Arrange
+            IntPtr testKeyHandle = new();
+
+            //Act
+            Func<Task> action = async () => await KeyApi.GetAlgorithmFromKeyAsync(
+                testKeyHandle);
+
+            //Assert
+            _ = action.Should().ThrowAsync<Exception>();
+        }
+
+        private static IEnumerable<TestCaseData> GetAlgorithmFromKeyAsyncErrorCases()
+        {
+            yield return new TestCaseData()
+                .SetName("GetAlgorithmFromKeyAsync throws an AriesAskarException if the key handle points to invalid data.");
+        }
+        #endregion
+
+        #region GetEphemeralFromKeyAsync
         [Test, TestCaseSource(nameof(GetEphemeralFromKeyAsyncCases))]
         public async Task GetEphemeralFromKeyAsyncWorks(KeyAlg testKeyAlg, byte testEphemeral)
         {
@@ -556,10 +573,30 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             yield return new TestCaseData(KeyAlg.A128GCM, (byte)1)
                 .SetName("GetEphemeralFromKeyAsync returns the ephemeral as a byte for a given key.");
-            yield return new TestCaseData(KeyAlg.NONE, (byte)0)
-                .SetName("GetEphemeralFromKeyAsync throws an AriesAskarException if the key handle points to invalid data.");
         }
 
+        [Test, TestCaseSource(nameof(GetEphemeralFromKeyAsyncErrorCases))]
+        public async Task GetEphemeralFromKeyAsyncErrorWorks()
+        {
+            //Arrange
+            IntPtr testKeyHandle = new();
+
+            //Act
+            Func<Task> action = async () => await KeyApi.GetEphemeralFromKeyAsync(
+                testKeyHandle);
+
+            //Assert
+            _ = action.Should().ThrowAsync<Exception>();
+        }
+
+        private static IEnumerable<TestCaseData> GetEphemeralFromKeyAsyncErrorCases()
+        {
+            yield return new TestCaseData()
+                .SetName("GetEphemeralFromKeyAsync throws an AriesAskarException if the key handle points to invalid data.");
+        }
+        #endregion
+
+        #region GetJwkPublicFromKeyAsync
         [Test, TestCaseSource(nameof(GetJwkPublicFromKeyAsyncCases))]
         public async Task GetJwkPublicFromKeyAsyncWorks(KeyAlg testKeyAlg, string jwkPublic)
         {
@@ -584,10 +621,58 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             yield return new TestCaseData(KeyAlg.BLS12_381_G1, "{\"crv\":\"BLS12381_G1\",\"kty\":\"OKP\",\"x\":\"h56eYI8Qkq5hitICb-ik8wRTzcn6Fd4iY8aDNVc9q1xoPS3lh4DB_B4wNtar1HrV\"}")
                 .SetName("GetJwkPublicFromKeyAsync returns a string with the jwk public for a given key.");
-            yield return new TestCaseData(KeyAlg.A128GCM, "")
-                .SetName("GetJwkPublicFromKeyAsync throws an AriesAskarException if the algorithm is not BLS12_381_G1,BLS12_381_G2 or BLS12_381_G1G2.");
         }
 
+        [Test, TestCaseSource(nameof(GetJwkPublicFromKeyAsyncErrorCases))]
+        public async Task GetJwkPublicFromKeyAsyncErrorWorks(KeyAlg testKeyAlg)
+        {
+            //Arrange
+            string testSeed = "testseed000000000000000000000001";
+            SeedMethod testSeedMethod = SeedMethod.BlsKeyGen;
+            IntPtr testKeyHandle = await KeyApi.CreateKeyFromSeedAsync(
+                    testKeyAlg,
+                    testSeed,
+                    testSeedMethod);
+
+            //Act
+            Func<Task> action = async () => await KeyApi.GetJwkPublicFromKeyAsync(
+                testKeyHandle,
+                testKeyAlg);
+
+            //Assert
+            _ = action.Should().ThrowAsync<Exception>();
+        }
+
+        private static IEnumerable<TestCaseData> GetJwkPublicFromKeyAsyncErrorCases()
+        {
+            yield return new TestCaseData(KeyAlg.A128CBC_HS256)
+                .SetName("GetJwkPublicFromKeyAsync throws an AriesAskarException if the key was created with A128CBC_HS256.");
+            yield return new TestCaseData(KeyAlg.A128GCM)
+                .SetName("GetJwkPublicFromKeyAsync throws an AriesAskarException if the key was created with A128GCM.");
+            yield return new TestCaseData(KeyAlg.A128KW)
+                .SetName("GetJwkPublicFromKeyAsync throws an AriesAskarException if the key was created with A128KW.");
+            yield return new TestCaseData(KeyAlg.A256CBC_HS512)
+                .SetName("GetJwkPublicFromKeyAsync throws an AriesAskarException if the key was created with A256CBC_HS512.");
+            yield return new TestCaseData(KeyAlg.A256GCM)
+                .SetName("GetJwkPublicFromKeyAsync throws an AriesAskarException if the key was created with A256GCM.");
+            yield return new TestCaseData(KeyAlg.A256KW)
+                .SetName("GetJwkPublicFromKeyAsync throws an AriesAskarException if the key was created with A256KW.");
+            yield return new TestCaseData(KeyAlg.C20P)
+                .SetName("GetJwkPublicFromKeyAsync throws an AriesAskarException if the key was created with C20P.");
+            yield return new TestCaseData(KeyAlg.XC20P)
+                .SetName("GetJwkPublicFromKeyAsync throws an AriesAskarException if the key was created with XC20P.");
+            yield return new TestCaseData(KeyAlg.ED25519)
+                .SetName("GetJwkPublicFromKeyAsync throws an AriesAskarException if the key was created with ED25519.");
+            yield return new TestCaseData(KeyAlg.X25519)
+                .SetName("GetJwkPublicFromKeyAsync throws an AriesAskarException if the key was created with X25519.");
+            yield return new TestCaseData(KeyAlg.K256)
+                .SetName("GetJwkPublicFromKeyAsync throws an AriesAskarException if the key was created with K256.");
+            yield return new TestCaseData(KeyAlg.P256)
+                .SetName("GetJwkPublicFromKeyAsync throws an AriesAskarException if the key was created with P256.");
+        }
+        #endregion
+
+        #region GetJwkSecretFromKeyAsync
         [Test, TestCaseSource(nameof(GetJwkSecretFromKeyAsyncCases))]
         public async Task GetJwkSecretFromKeyAsyncWorks(KeyAlg testKeyAlg, int secretLength)
         {
@@ -612,10 +697,36 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             yield return new TestCaseData(KeyAlg.BLS12_381_G1, 104)
                 .SetName("GetJwkSecretFromKeyAsync returns a byte array with the jwk secret for a given key.");
-            yield return new TestCaseData(KeyAlg.A128GCM, 0)
-                .SetName("GetJwkSecretFromKeyAsync throws an AriesAskarException if the algorithm is not BLS12_381_G1,BLS12_381_G2 or BLS12_381_G1G2.");
         }
 
+        [Test, TestCaseSource(nameof(GetJwkSecretFromKeyAsyncErrorCases))]
+        public async Task GetJwkSecretFromKeyAsyncErrorWorks(KeyAlg createKeyAlg, KeyAlg testKeyAlg)
+        {
+            //Arrange
+            IntPtr testKeyHandle = await KeyApi.CreateKeyFromJwkAsync(
+                JsonConvert.SerializeObject(new
+                {
+                    crv = createKeyAlg.ToJwkCrvString(),
+                    kty = "OKP",
+                    x = "h56eYI8Qkq5hitICb-ik8wRTzcn6Fd4iY8aDNVc9q1xoPS3lh4DB_B4wNtar1HrV"
+                }));
+
+            //Act
+            Func<Task> action = async () => await KeyApi.GetJwkSecretFromKeyAsync(
+                testKeyHandle);
+
+            //Assert
+            _ = action.Should().ThrowAsync<Exception>();
+        }
+
+        private static IEnumerable<TestCaseData> GetJwkSecretFromKeyAsyncErrorCases()
+        {
+            yield return new TestCaseData(KeyAlg.BLS12_381_G1, KeyAlg.BLS12_381_G2)
+                .SetName("GetJwkSecretFromKeyAsync throws an AriesAskarException if the algorithm does not match the creation algorithm of the key.");
+        }
+        #endregion
+
+        #region GetJwkThumbprintFromKeyAsync
         [Test, TestCaseSource(nameof(GetJwkThumbprintFromKeyAsyncCases))]
         public async Task GetJwkThumbprintFromKeyAsyncWorks(KeyAlg testKeyAlg, string thumbprint)
         {
@@ -641,9 +752,35 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             yield return new TestCaseData(KeyAlg.BLS12_381_G1, "CEHoH9pekaE1pelnkF_goAxKl2K7HVgBHr7tW8lUkDI")
                 .SetName("GetJwkThumbprintFromKeyAsync returns a string with the thumbprint for a given key.");
-            yield return new TestCaseData(KeyAlg.A128GCM, "")
-                .SetName("GetJwkThumbprintFromKeyAsync throws an AriesAskarException if the algorithm is not BLS12_381_G1,BLS12_381_G2 or BLS12_381_G1G2.");
         }
+
+        [Test, TestCaseSource(nameof(GetJwkThumbprintFromKeyAsyncErrorCases))]
+        public async Task GetJwkThumbprintFromKeyAsyncErrorWorks(KeyAlg createKeyAlg, KeyAlg testKeyAlg)
+        {
+            //Arrange
+            IntPtr testKeyHandle = await KeyApi.CreateKeyFromJwkAsync(
+                JsonConvert.SerializeObject(new
+                {
+                    crv = createKeyAlg.ToJwkCrvString(),
+                    kty = "OKP",
+                    x = "h56eYI8Qkq5hitICb-ik8wRTzcn6Fd4iY8aDNVc9q1xoPS3lh4DB_B4wNtar1HrV"
+                }));
+
+            //Act
+            Func<Task> action = async () => await KeyApi.GetJwkThumbprintFromKeyAsync(
+                testKeyHandle,
+                testKeyAlg);
+
+            //Assert
+            _ = action.Should().ThrowAsync<Exception>();
+        }
+
+        private static IEnumerable<TestCaseData> GetJwkThumbprintFromKeyAsyncErrorCases()
+        {
+            yield return new TestCaseData(KeyAlg.BLS12_381_G1, KeyAlg.BLS12_381_G2)
+                .SetName("GetJwkThumbprintFromKeyAsync throws an AriesAskarException if the algorithm does not match the creation algorithm of the key.");
+        }
+        #endregion
         #endregion
 
         #region aead
