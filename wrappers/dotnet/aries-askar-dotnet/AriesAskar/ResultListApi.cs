@@ -31,7 +31,7 @@ namespace aries_askar_dotnet.AriesAskar
             int errorCode = NativeMethods.askar_entry_list_get_category(
                 entryListHandle,
                 index,
-                category);
+                ref category);
 
             if (errorCode != (int)ErrorCode.Success)
             {
@@ -50,7 +50,7 @@ namespace aries_askar_dotnet.AriesAskar
             int errorCode = NativeMethods.askar_entry_list_get_name(
                 entryListHandle,
                 index,
-                name);
+                ref name);
 
             if (errorCode != (int)ErrorCode.Success)
             {
@@ -88,7 +88,7 @@ namespace aries_askar_dotnet.AriesAskar
             int errorCode = NativeMethods.askar_entry_list_get_tags(
                 entryListHandle,
                 index,
-                tags);
+                ref tags);
 
             if (errorCode != (int)ErrorCode.Success)
             {
@@ -99,22 +99,12 @@ namespace aries_askar_dotnet.AriesAskar
             return tags;
         }
 
-        public static async Task<bool> EntryListFreeAsync(
+        public static async Task EntryListFreeAsync(
             IntPtr entryListHandle)
         {
-            int errorCode = NativeMethods.askar_entry_list_free(
+            NativeMethods.askar_entry_list_free(
                 entryListHandle);
-
-            if (errorCode != (int)ErrorCode.Success)
-            {
-                string error = await ErrorApi.GetCurrentErrorAsync();
-                Console.WriteLine(error);
-                throw AriesAskarException.FromSdkError(error);
-            }
-            else
-                return true;
         }
-
         public static async Task<int> KeyEntryListCountAsync(
             IntPtr keyEntryListHandle)
         {
@@ -132,20 +122,12 @@ namespace aries_askar_dotnet.AriesAskar
             return count;
         }
 
-        public static async Task<bool> KeyEntryListFreeAsync(
+        public static async Task KeyEntryListFreeAsync(
             IntPtr keyEntryListHandle)
         {
-            int errorCode = NativeMethods.askar_key_entry_list_free(
+            NativeMethods.askar_key_entry_list_free(
                 keyEntryListHandle);
 
-            if (errorCode != (int)ErrorCode.Success)
-            {
-                string error = await ErrorApi.GetCurrentErrorAsync();
-                Console.WriteLine(error);
-                throw AriesAskarException.FromSdkError(error);
-            }
-            else
-                return true;
         }
 
         public static async Task<string> KeyEntryListGetAlgorithmAsync(
@@ -156,7 +138,7 @@ namespace aries_askar_dotnet.AriesAskar
             int errorCode = NativeMethods.askar_key_entry_list_get_algorithm(
                 keyEntryListHandle,
                 index,
-                alg);
+                ref alg);
 
             if (errorCode != (int)ErrorCode.Success)
             {
@@ -175,7 +157,7 @@ namespace aries_askar_dotnet.AriesAskar
             int errorCode = NativeMethods.askar_key_entry_list_get_name(
                 keyEntryListHandle,
                 index,
-                name);
+                ref name);
 
             if (errorCode != (int)ErrorCode.Success)
             {
@@ -194,7 +176,7 @@ namespace aries_askar_dotnet.AriesAskar
             int errorCode = NativeMethods.askar_key_entry_list_get_metadata(
                 keyEntryListHandle,
                 index,
-                metadata);
+                ref metadata);
 
             if (errorCode != (int)ErrorCode.Success)
             {
@@ -213,7 +195,7 @@ namespace aries_askar_dotnet.AriesAskar
             int errorCode = NativeMethods.askar_key_entry_list_get_tags(
                 keyEntryListHandle,
                 index,
-                tags);
+                ref tags);
 
             if (errorCode != (int)ErrorCode.Success)
             {
@@ -224,7 +206,7 @@ namespace aries_askar_dotnet.AriesAskar
             return tags;
         }
 
-        public static async Task<IntPtr> KeyEntryListLoadLocalAsync(
+        public static async Task<IntPtr> LoadLocalKeyHandleFromKeyEntryListAsync(
             IntPtr keyEntryListHandle,
             int index)
         {

@@ -11,7 +11,7 @@ namespace aries_askar_dotnet.AriesAskar
     public static class StoreApi
     {
         #region Store calls
-        public static async Task<string> GenerateRawKeyAsync(this Store store, string seed)
+        public static async Task<string> GenerateRawKeyAsync(string seed)
         {
             return await StoreGenerateRawKeyAsync(seed);
         }
@@ -86,17 +86,7 @@ namespace aries_askar_dotnet.AriesAskar
             }
             if (remove)
             {
-                bool res = await StoreRemoveAsync(store.specUri);
-                if (res)
-                {
-                    if (store.session != null)
-                    {
-                        store.session.sessionHandle = new IntPtr();
-                        store.session.storeHandle = new IntPtr();
-                        store.session = null;
-                    }
-                }
-                return res;
+                return await store.RemoveAsync(store.specUri);
             }
             else return false;
         }
@@ -106,7 +96,7 @@ namespace aries_askar_dotnet.AriesAskar
             string category,
             string tagFilter = null,
             long offset = 0,
-            long limit = 0,
+            long limit = -1, //None
             string profile = null)
         {
             return await StartScanAsync(store.storeHandle, category, tagFilter, offset, limit, profile);
@@ -149,8 +139,23 @@ namespace aries_askar_dotnet.AriesAskar
         #endregion
 
         #region Scan calls
-       
 
+        public static async Task<IntPtr> NextAsync(this Scan scan)
+        {
+            return await ScanNextAsync(scan.scanHandle);
+        }
+
+        public static async Task<bool> FreeAsync(this Scan scan)
+        {
+            bool result = await ScanFreeAsync(scan.scanHandle);
+            if (result)
+            {
+                scan.scanHandle = new IntPtr();
+                scan.storeHandle = new IntPtr();
+                scan.parameters = null;
+            }
+            return result;
+        }
         #endregion
 
         #region Session calls
@@ -191,7 +196,12 @@ namespace aries_askar_dotnet.AriesAskar
         }
 
         //Return EntryListHandle
-        public static async Task<IntPtr> FetchAllAsync(this Session session, string category, string tagFilter = null , long limit = 0, bool forUpdate = false)
+        public static async Task<IntPtr> FetchAllAsync(
+            this Session session, 
+            string category, 
+            string tagFilter = null , 
+            long limit = -1, //None
+            bool forUpdate = false)
         {
             if (session.sessionHandle == new IntPtr())
             {
@@ -206,7 +216,8 @@ namespace aries_askar_dotnet.AriesAskar
             string name,
             string value = null,
             string tags = null,
-            long expiryMs = 0)
+            long expiryMs = -1 //None
+            )
         {
             if (session.sessionHandle == new IntPtr())
             {
@@ -221,7 +232,8 @@ namespace aries_askar_dotnet.AriesAskar
             string name,
             string value = null,
             string tags = null,
-            long expiryMs = 0)
+            long expiryMs = -1 //None
+            )
         {
             if (session.sessionHandle == new IntPtr())
             {
@@ -254,11 +266,12 @@ namespace aries_askar_dotnet.AriesAskar
 
         public static async Task<bool> InsertKeyAsync(
             this Session session,
-            IntPtr localKeyHandle, //TODO Key key  -> key.localKeyHandle
+            IntPtr localKeyHandle,
             string name,
             string metaData = null,
             string tags = null,
-            long expiryMs = 0)
+            long expiryMs = -1 //None
+            )
         {
             if (session.sessionHandle == new IntPtr())
             {
@@ -283,7 +296,7 @@ namespace aries_askar_dotnet.AriesAskar
             KeyAlg keyAlg = KeyAlg.NONE,
             string thumbprint = null,
             string tagFilter = null,
-            long limit = 0,
+            long limit = -1, //None
             bool forUpdate = false)
         {
             if (session.sessionHandle == new IntPtr())
@@ -298,7 +311,8 @@ namespace aries_askar_dotnet.AriesAskar
             string name,
             string metaData = null,
             string tags = null,
-            long expiryMs = 0)
+            long expiryMs = -1 //None
+            )
         {
             if (session.sessionHandle == new IntPtr())
             {
@@ -318,52 +332,36 @@ namespace aries_askar_dotnet.AriesAskar
             return await SessionRemoveKeyAsync(session.sessionHandle, name);
         }
 
-        public static async Task<bool> CommitAsync(
+        public static async Task<bool> CloseAndCommitAsync(
             this Session session)
         {
-            if (!session.isTransaction)
+            if (session != null)
             {
-                throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Session is not a transaction");
-            }
-            if (session.sessionHandle == new IntPtr())
-            {
-                throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Cannot commit closed transaction");
-            }
-            bool res = await SessionCloseAndCommitAsync(session.sessionHandle);
-            session.sessionHandle = new IntPtr();
-            return res;
-        }
-
-        public static async Task<bool> RollbackAsync(
-            this Session session)
-        {
-            if (!session.isTransaction)
-            {
-                throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Session is not a transaction");
-            }
-            if (session.sessionHandle == new IntPtr())
-            {
-                throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Cannot rollback closed transaction");
-            }
-            bool res = await SessionCloseAndRollbackAsync(session.sessionHandle);
-            session.sessionHandle = new IntPtr();
-            return res;
-        }
-
-        public static async Task<bool> CloseAsync(
-            this Session session)
-        {
-            if (session.sessionHandle != new IntPtr())
-            {
-                bool res = await SessionCloseAsync(session.sessionHandle, false);
+                if (session.sessionHandle == new IntPtr())
+                {
+                    throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Cannot close and commit already closed sessions or transactions");
+                }
+                bool res = await SessionCloseAndCommitAsync(session.sessionHandle);
                 session.sessionHandle = new IntPtr();
                 return res;
             }
-            else
+            else throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Session is null");
+        }
+
+        public static async Task<bool> CloseAndRollbackAsync(
+            this Session session)
+        {
+            if (session != null)
             {
-                //Error ? -> ALready closed
-                return false;
+                if (session.sessionHandle == new IntPtr())
+                {
+                    throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Cannot close and rollback already closed sessions or transactions");
+                }
+                bool res = await SessionCloseAndRollbackAsync(session.sessionHandle);
+                session.sessionHandle = new IntPtr();
+                return res;
             }
+            else throw AriesAskarException.FromWrapperError(ErrorCode.Wrapper, "Session is null");
         }
         #endregion
 
@@ -574,7 +572,7 @@ namespace aries_askar_dotnet.AriesAskar
             string category, 
             string tagFilter = null, 
             long offset = 0, 
-            long limit = 0,
+            long limit = -1, //None 
             string profile = null)
         {
             var taskCompletionSource = new TaskCompletionSource<IntPtr>();
@@ -600,12 +598,8 @@ namespace aries_askar_dotnet.AriesAskar
             return new Scan(await taskCompletionSource.Task, storeHandle, parameters);
         }
 
-        private static async Task<Entry> NextScanAsync(this Scan scan)
-        {
-            return await ScanNextAsync(scan.scanHandle);
-        }
         //Returns an entryListHandle
-        private static async Task<Entry> ScanNextAsync(IntPtr scanHandle)
+        private static async Task<IntPtr> ScanNextAsync(IntPtr scanHandle)
         {
             var taskCompletionSource = new TaskCompletionSource<IntPtr>();
             var callbackId = PendingCallbacks.Add(taskCompletionSource);
@@ -622,7 +616,7 @@ namespace aries_askar_dotnet.AriesAskar
                 throw AriesAskarException.FromSdkError(error);
             }
 
-            return new Entry(await taskCompletionSource.Task);
+            return await taskCompletionSource.Task;
         }
 
         private static async Task<bool> ScanFreeAsync(IntPtr scanHandle)
@@ -715,7 +709,7 @@ namespace aries_askar_dotnet.AriesAskar
             IntPtr sessionHandle, 
             string category, 
             string tagFilter = null, 
-            long limit = 0, 
+            long limit = -1, //None 
             bool forUpdate = false)
         {
             var taskCompletionSource = new TaskCompletionSource<IntPtr>();
@@ -767,7 +761,8 @@ namespace aries_askar_dotnet.AriesAskar
             string name,
             string value = null,
             string tags = null,
-            long expiryMs = 0)
+            long expiryMs = -1 //None
+            )
         {
             bool res = await SessionUpdateAsync(
                 sessionHandle,
@@ -787,7 +782,8 @@ namespace aries_askar_dotnet.AriesAskar
             string name,
             string value = null,
             string tags = null,
-            long expiryMs = 0)
+            long expiryMs = -1 //None
+            )
         {
             bool res = await SessionUpdateAsync(
                 sessionHandle,
@@ -822,7 +818,8 @@ namespace aries_askar_dotnet.AriesAskar
             string name, 
             string value = null, 
             string tags = null, 
-            long expiryMs = 0)
+            long expiryMs = -1 //None
+            )
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
             var callbackId = PendingCallbacks.Add(taskCompletionSource);
@@ -854,7 +851,8 @@ namespace aries_askar_dotnet.AriesAskar
             string name, 
             string metaData = null, 
             string tags = null,
-            long expiryMs = 0)
+            long expiryMs = -1 //None
+            )
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
             var callbackId = PendingCallbacks.Add(taskCompletionSource);
@@ -908,7 +906,7 @@ namespace aries_askar_dotnet.AriesAskar
             KeyAlg keyAlg = KeyAlg.NONE, 
             string thumbprint = null, 
             string tagFilter = null, 
-            long limit = 0, 
+            long limit = -1, //None 
             bool forUpdate = false)
         {
             var taskCompletionSource = new TaskCompletionSource<IntPtr>();
@@ -939,7 +937,8 @@ namespace aries_askar_dotnet.AriesAskar
             string name, 
             string metaData = null, 
             string tags = null, 
-            long expiryMs = 0)
+            long expiryMs = -1 //None
+            )
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
             var callbackId = PendingCallbacks.Add(taskCompletionSource);

@@ -144,16 +144,16 @@ namespace aries_askar_dotnet.AriesAskar
         internal static extern int askar_entry_list_count(IntPtr entryListHandle, ref int count);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int askar_entry_list_get_category(IntPtr entryListHandle, int index, string category);
+        internal static extern int askar_entry_list_get_category(IntPtr entryListHandle, int index, ref string category);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int askar_entry_list_get_name(IntPtr entryListHandle, int index, string name);
+        internal static extern int askar_entry_list_get_name(IntPtr entryListHandle, int index, ref string name);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int askar_entry_list_get_value(IntPtr entryListHandle, int index, ref ByteBuffer value);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int askar_entry_list_get_tags(IntPtr entryListHandle, int index, string tags);
+        internal static extern int askar_entry_list_get_tags(IntPtr entryListHandle, int index, ref string tags);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int askar_entry_list_free(IntPtr entryListHandle);
@@ -165,16 +165,16 @@ namespace aries_askar_dotnet.AriesAskar
         internal static extern int askar_key_entry_list_free(IntPtr keyEntryListHandle);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int askar_key_entry_list_get_algorithm(IntPtr keyEntryListHandle, int index, string alg);
+        internal static extern int askar_key_entry_list_get_algorithm(IntPtr keyEntryListHandle, int index, ref string alg);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int askar_key_entry_list_get_name(IntPtr keyEntryListHandle, int index, string name);
+        internal static extern int askar_key_entry_list_get_name(IntPtr keyEntryListHandle, int index, ref string name);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int askar_key_entry_list_get_metadata(IntPtr keyEntryListHandle, int index, string metadata);
+        internal static extern int askar_key_entry_list_get_metadata(IntPtr keyEntryListHandle, int index, ref string metadata);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int askar_key_entry_list_get_tags(IntPtr keyEntryListHandle, int index, string tags);
+        internal static extern int askar_key_entry_list_get_tags(IntPtr keyEntryListHandle, int index, ref string tags);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int askar_key_entry_list_load_local(IntPtr keyEntryListHandle, int index, ref IntPtr outLocalKeyHandle);
