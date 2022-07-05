@@ -18,11 +18,11 @@ namespace aries_askar_dotnet.AriesAskar
                 ephemeral,
                 ref localKeyHandle);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
 
             return localKeyHandle;
@@ -40,11 +40,11 @@ namespace aries_askar_dotnet.AriesAskar
                 FfiStr.Create(method.ToSeedMethodString()),
                 ref localKeyHandle);
 
-            if (errorCode != 0)
+            if(errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
 
             return localKeyHandle;
@@ -58,11 +58,11 @@ namespace aries_askar_dotnet.AriesAskar
                 ByteBuffer.Create(jwkJson),
                 ref localKeyHandle);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
 
             return localKeyHandle;
@@ -78,11 +78,11 @@ namespace aries_askar_dotnet.AriesAskar
                 ByteBuffer.Create(publicBytes),
                 ref localKeyHandle);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
 
             return localKeyHandle;
@@ -98,11 +98,11 @@ namespace aries_askar_dotnet.AriesAskar
                 ByteBuffer.Create(secretBytes),
                 ref localKeyHandle);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
 
             return localKeyHandle;
@@ -120,11 +120,11 @@ namespace aries_askar_dotnet.AriesAskar
                 publicKeyHandle,
                 ref localKeyHandle);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
 
             return localKeyHandle;
@@ -140,11 +140,11 @@ namespace aries_askar_dotnet.AriesAskar
                 localKeyHandle,
                 ref secret);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
 
             return secret.Decode();
@@ -158,11 +158,11 @@ namespace aries_askar_dotnet.AriesAskar
                 localKeyHandle,
                 ref secret);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
 
             return secret.Decode();
@@ -176,11 +176,11 @@ namespace aries_askar_dotnet.AriesAskar
                 localKeyHandle,
                 ref keyAlg);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
 
             return keyAlg;
@@ -194,11 +194,11 @@ namespace aries_askar_dotnet.AriesAskar
                 localKeyHandle,
                 ref ephemeral);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
 
             return ephemeral;
@@ -214,11 +214,11 @@ namespace aries_askar_dotnet.AriesAskar
                 FfiStr.Create(keyAlg.ToKeyAlgString()),
                 ref jwk);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
 
             return jwk;
@@ -232,11 +232,11 @@ namespace aries_askar_dotnet.AriesAskar
                 localKeyHandle,
                 ref secret);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
 
             return secret.Decode();
@@ -252,11 +252,11 @@ namespace aries_askar_dotnet.AriesAskar
                 FfiStr.Create(keyAlg.ToKeyAlgString()),
                 ref thumbprint);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
 
             return thumbprint;
@@ -272,11 +272,11 @@ namespace aries_askar_dotnet.AriesAskar
                 localKeyHandle,
                 ref secret);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
 
             return secret.Decode();
@@ -290,11 +290,11 @@ namespace aries_askar_dotnet.AriesAskar
                 localKeyHandle,
                 ref aeadParams);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
 
             return aeadParams;
@@ -310,11 +310,11 @@ namespace aries_askar_dotnet.AriesAskar
                 msgLen,
                 ref padding);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
 
             return padding;
@@ -339,11 +339,11 @@ namespace aries_askar_dotnet.AriesAskar
                 ByteBuffer.Create(aad),
                 ref encrypted);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
 
             return encrypted.Decode();
@@ -365,11 +365,11 @@ namespace aries_askar_dotnet.AriesAskar
                 ByteBuffer.Create(aad),
                 ref aead);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
 
             return aead.Decode();
@@ -383,11 +383,11 @@ namespace aries_askar_dotnet.AriesAskar
             int errorCode = NativeMethods.askar_key_crypto_box_random_nonce(
                 ref nonce);
 
-            if (errorCode != 0)
+            if (errorCode != (int)ErrorCode.Success)
             {
-                string error = "";
-                NativeMethods.askar_get_current_error(ref error);
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
                 Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
             }
 
             return nonce.Decode();
