@@ -57,7 +57,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             testSpecUri = "sqlite://:memory:";
             testSeed = "testseed000000000000000000000001";
-            testPassKey = await StoreApi.StoreGenerateRawKeyAsync(testSeed);
+            testPassKey = await StoreApi.GenerateRawKeyAsync(testSeed);
             testKeyMethod = KeyMethod.RAW;
             testProfile = "testProfile";
         }
