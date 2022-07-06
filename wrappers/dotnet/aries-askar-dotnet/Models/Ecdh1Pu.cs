@@ -24,7 +24,7 @@ namespace aries_askar_dotnet.Models
         //Returns a keyHandle
         public static async Task<IntPtr> DeriveKeyAsync(
             this Ecdh1Pu ecdh1Pu,
-            KeyAlg encKeyAlg,
+            KeyAlg keyAlg,
             IntPtr ephemeralKey,
             IntPtr senderKey,
             IntPtr receiverKey,
@@ -32,7 +32,7 @@ namespace aries_askar_dotnet.Models
             string ccTag = null)
         {
             return await KeyApi.DeriveEcdh1puAsync(
-                encKeyAlg.ToKeyAlgString(),
+                keyAlg.ToKeyAlgString(),
                 ephemeralKey,
                 senderKey,
                 receiverKey,

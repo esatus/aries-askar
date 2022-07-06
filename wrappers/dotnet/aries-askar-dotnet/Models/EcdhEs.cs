@@ -24,13 +24,13 @@ namespace aries_askar_dotnet.Models
         //Returns a keyHandle
         public static async Task<IntPtr> DeriveKeyAsync(
             this EcdhEs ecdhEs, 
-            KeyAlg encKeyAlg, 
+            KeyAlg keyAlg, 
             IntPtr ephemeralKey, 
             IntPtr receiverKey, 
             bool receive)
         {
             return await KeyApi.DeriveEcdhEsAsync(
-                encKeyAlg.ToKeyAlgString(),
+                keyAlg.ToKeyAlgString(),
                 ephemeralKey,
                 receiverKey,
                 ByteBuffer.Create(ecdhEs.AlgId).Decode(),
