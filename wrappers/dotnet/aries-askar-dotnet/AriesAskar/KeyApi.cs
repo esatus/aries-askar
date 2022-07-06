@@ -567,7 +567,7 @@ namespace aries_askar_dotnet.AriesAskar
         public static async Task<(byte[], byte[], byte[])> WrapKeyAsync(
             IntPtr localKeyHandle,
             IntPtr otherLocalKeyHandle,
-            byte[] nonce)
+            byte[] nonce = null)
         {
             EncryptedBuffer output = new()
             {
@@ -655,7 +655,7 @@ namespace aries_askar_dotnet.AriesAskar
             byte[] algId,
             byte[] apu,
             byte[] apv,
-            byte[] ccTag,
+            string ccTag,
             byte receive)
         {
             IntPtr output = new();
