@@ -118,7 +118,6 @@ namespace aries_askar_dotnet.AriesAskar
 
         #region Log
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        // Option<EnableCallback, Option<FlushCallback>
         internal static extern int askar_set_custom_logger(IntPtr context, GetLogCallbackDelegate log, GetEnableCallbackDelegate enable, GetFlushCallbackDelegate flush, int max_level);
         internal delegate void GetLogCallbackDelegate(IntPtr context, int level, string target, string message, string module_path, string file, int line);
         internal delegate void GetEnableCallbackDelegate(IntPtr context, int level);
@@ -156,13 +155,13 @@ namespace aries_askar_dotnet.AriesAskar
         internal static extern int askar_entry_list_get_tags(IntPtr entryListHandle, int index, ref string tags);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int askar_entry_list_free(IntPtr entryListHandle);
+        internal static extern void askar_entry_list_free(IntPtr entryListHandle);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int askar_key_entry_list_count(IntPtr keyEntryListHandle, ref int count);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int askar_key_entry_list_free(IntPtr keyEntryListHandle);
+        internal static extern void askar_key_entry_list_free(IntPtr keyEntryListHandle);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int askar_key_entry_list_get_algorithm(IntPtr keyEntryListHandle, int index, ref string alg);
