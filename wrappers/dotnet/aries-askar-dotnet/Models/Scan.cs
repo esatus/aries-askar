@@ -8,14 +8,12 @@ namespace aries_askar_dotnet.Models
         public IntPtr scanHandle { get; set; }
         public IntPtr storeHandle { get; set; }
         public List<object> parameters { get; set; }
-        //public IterEntryList buffer { get; set; }
 
-        public Scan(IntPtr handle, IntPtr stohandle, List<object> parameterList) //IterEntryList entryList, List<string> parameterList)
+        public Scan(IntPtr handle, IntPtr stohandle, List<object> parameterList)
         {
             scanHandle = handle;
             storeHandle = stohandle;
             parameters = parameterList;
-            //buffer = entryList;
         }
     }
 }

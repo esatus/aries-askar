@@ -34,7 +34,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             testSpecUri = "sqlite://:memory:";
             testSeed = "testseed000000000000000000000001";
-            testPassKey = await StoreApi.StoreGenerateRawKeyAsync(testSeed);
+            testPassKey = await StoreApi.GenerateRawKeyAsync(testSeed);
             testKeyMethod = KeyMethod.RAW;  //kdf:argon2i   //none
             testProfile = "testProfile";
             testRecreate = true;
@@ -47,7 +47,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         private static IEnumerable<TestCaseData> CreateCasesStoreProvisioningWorks()
         {
             string seed = "testseed000000000000000000000001";
-            string passKey = StoreApi.StoreGenerateRawKeyAsync(seed).GetAwaiter().GetResult();
+            string passKey = StoreApi.GenerateRawKeyAsync(seed).GetAwaiter().GetResult();
 
             yield return new TestCaseData(KeyMethod.RAW, passKey, "testProfile", true)
                 .SetName("StoreProvision call returns store with keyMethod 'raw' and recreate true.");
@@ -304,7 +304,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             //Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile, testRecreate);
             string newTestSeed = "testseed500000200006400003008001";
-            string newTestPassKey = await StoreApi.StoreGenerateRawKeyAsync(newTestSeed);
+            string newTestPassKey = await StoreApi.GenerateRawKeyAsync(newTestSeed);
             //Act
             bool actual = await store.RekeyAsync(KeyMethod.RAW, newTestPassKey);
 
@@ -318,7 +318,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             //Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile, testRecreate);
             string newTestSeed = "testseed500000200006400003008001";
-            string newTestPassKey = await StoreApi.StoreGenerateRawKeyAsync(newTestSeed);
+            string newTestPassKey = await StoreApi.GenerateRawKeyAsync(newTestSeed);
             store.storeHandle = (IntPtr)99;
             //Act
             Func<Task> actual = async() => await store.RekeyAsync(KeyMethod.RAW, newTestPassKey);
@@ -843,7 +843,6 @@ namespace aries_askar_dotnet_tests.AriesAskar
         }
         #endregion
 
-        //TODO improve fetch all
         #region fetch / fetch all records
         private static IEnumerable<TestCaseData> CreateCasesFetchAsyncWorks()
         {
@@ -1171,7 +1170,6 @@ namespace aries_askar_dotnet_tests.AriesAskar
         }
         #endregion
 
-        //TODO improve fetch all keys
         #region fetch key / fetch all keys
         private static IEnumerable<TestCaseData> CreateCasesFetchKeyAsyncWorks()
         {
