@@ -73,7 +73,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             //Act
             Func<Task> action = async () =>
             {
-                await KeyApi.CreateKeyAsync(
+                _ = await KeyApi.CreateKeyAsync(
                     testKeyAlg,
                     testEphemeral);
             };
@@ -185,7 +185,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
         private static IEnumerable<TestCaseData> CreateKeyFromJwkAsyncCases()
         {
-            yield return new TestCaseData(KeyAlg.BLS12_381_G1, 
+            yield return new TestCaseData(KeyAlg.BLS12_381_G1,
                 "h56eYI8Qkq5hitICb-ik8wRTzcn6Fd4iY8aDNVc9q1xoPS3lh4DB_B4wNtar1HrV")
                 .SetName("CreateKeyFromJwkAsync returns the handle of the created key for BLS12_381_G1.");
             yield return new TestCaseData(KeyAlg.BLS12_381_G2,
@@ -696,7 +696,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             //Arrange
             IntPtr testKeyHandle = new();
-            
+
             //Act
             Func<Task> action = async () => await KeyApi.GetJwkSecretFromKeyAsync(
                 testKeyHandle);
@@ -896,7 +896,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             string testAad = "testAad";
 
             //Act
-            (byte[] value, byte[] tag, byte[] nonce) = await KeyApi.EncryptKeyWithAeadAsync(
+            (byte[] value, _, _) = await KeyApi.EncryptKeyWithAeadAsync(
                 testHandle,
                 testMessage,
                 testNonce,
@@ -1168,7 +1168,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             byte[] testNonce = await KeyApi.GetAeadRandomNonceFromKeyAsync(testKeyHandle);
 
             //Act
-            (byte[] value, byte[] tag, byte[] nonce) = await KeyApi.WrapKeyAsync(
+            (byte[] value, _, _) = await KeyApi.WrapKeyAsync(
                 testKeyHandle,
                 otherTestKeyHandle,
                 testNonce);
