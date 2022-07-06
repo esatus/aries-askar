@@ -655,7 +655,7 @@ namespace aries_askar_dotnet.AriesAskar
             byte[] algId,
             byte[] apu,
             byte[] apv,
-            byte[] ccTag,
+            string ccTag,
             byte receive)
         {
             IntPtr output = new();
