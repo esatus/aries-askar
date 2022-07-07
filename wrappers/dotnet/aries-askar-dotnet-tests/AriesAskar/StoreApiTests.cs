@@ -773,7 +773,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Session session = await store.StartSessionAsync();
             bool initInsert1 = await session.InsertAsync(testEntry["category"].ToString(), testName, testValue);
 
-            ByteBuffer entryVal1 = await ResultListApi.EntryListGetValueAsync(
+            string entryVal1 = await ResultListApi.EntryListGetValueAsync(
                 await session.FetchAsync(
                     testEntry["category"].ToString(), 
                     testName), 
@@ -782,7 +782,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             //Act
             bool actual = await session.ReplaceAsync(testEntry["category"].ToString(), testName, replacedTestValue);
 
-            ByteBuffer entryVal2 = await ResultListApi.EntryListGetValueAsync(
+            string entryVal2 = await ResultListApi.EntryListGetValueAsync(
                 await session.FetchAsync(
                     testEntry["category"].ToString(), 
                     testName),
@@ -790,8 +790,8 @@ namespace aries_askar_dotnet_tests.AriesAskar
             
             //Assert
             actual.Should().BeTrue();
-            entryVal1.DecodeToString().Should().Be(testValue);
-            entryVal2.DecodeToString().Should().Be(replacedTestValue);
+            entryVal1.Should().Be(testValue);
+            entryVal2.Should().Be(replacedTestValue);
         }
 
         private static IEnumerable<TestCaseData> CreateCasesSessionReplaceAsyncThrows()
@@ -868,11 +868,11 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             //Act
             IntPtr actual = await session.FetchAsync(testEntry["category"].ToString(), testName, forUpdate);
-            ByteBuffer testVal = await ResultListApi.EntryListGetValueAsync(actual, 0);
+            string testVal = await ResultListApi.EntryListGetValueAsync(actual, 0);
 
             //Assert
             actual.Should().NotBe(new IntPtr());
-            testVal.DecodeToString().Should().Be(testValue);
+            testVal.Should().Be(testValue);
         }
 
         private static IEnumerable<TestCaseData> CreateCasesFetchAsyncThrows()
@@ -930,10 +930,10 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             //Act
             IntPtr actual = await session.FetchAllAsync(testEntry["category"].ToString());
-            string val1 = (await ResultListApi.EntryListGetValueAsync(actual, 0)).DecodeToString();
-            string val2 = (await ResultListApi.EntryListGetValueAsync(actual, 1)).DecodeToString();
-            string name1 = (await ResultListApi.EntryListGetNameAsync(actual, 0));
-            string name2 = (await ResultListApi.EntryListGetNameAsync(actual, 1));
+            string val1 = await ResultListApi.EntryListGetValueAsync(actual, 0);
+            string val2 = await ResultListApi.EntryListGetValueAsync(actual, 1);
+            string name1 = await ResultListApi.EntryListGetNameAsync(actual, 0);
+            string name2 = await ResultListApi.EntryListGetNameAsync(actual, 1);
             List<string> names = new() { name1, name2 };
 
             //Assert
@@ -1441,7 +1441,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             for (int n = 0; n < max; n++) {
                 string name = await ResultListApi.EntryListGetNameAsync(actual, n);
-                string value = (await ResultListApi.EntryListGetValueAsync(actual, n)).DecodeToString();
+                string value = await ResultListApi.EntryListGetValueAsync(actual, n);
                 names.Add(name);
                 values.Add(value);
             }
