@@ -210,8 +210,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
                 testEntry["name"].ToString());
             // Act
 
-            ByteBuffer buffer = await ResultListApi.EntryListGetValueAsync(entryListHandle, 0);
-            string bufferString = buffer.DecodeToString();
+            string bufferString = await ResultListApi.EntryListGetValueAsync(entryListHandle, 0);
             // Assert
             bufferString.Should().Be("testValue");
         }
@@ -486,38 +485,6 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             // Assert
             await func.Should().ThrowAsync<AriesAskarException>();
-        }
-
-        [Test, TestCase(TestName = "Test some EntryList methods.")]
-        public async Task SomeEntryListMethodsWork()
-        {
-            //Arrange
-            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
-            Session session = await store.StartSessionAsync();
-            string test = $"{{ \"~plaintag\": \"a\", \"enctag\": \"b\"}}";
-            //Act
-            bool actual = await session.InsertAsync(
-                testEntry["category"].ToString(),
-                testEntry["name"].ToString(),
-                testEntry["value"].ToString(),
-                testEntry["tags"].ToString()
-                );
-            long count = await session.CountAsync(
-                testEntry["category"].ToString(),
-                $"{{ \"~plaintag\": \"a\", \"enctag\": \"b\"}}");
-
-            IntPtr entry = await session.FetchAsync(
-                testEntry["category"].ToString(),
-                testEntry["name"].ToString());
-
-            string catName = await ResultListApi.EntryListGetCategoryAsync(entry, 0);
-            string nameName = await ResultListApi.EntryListGetNameAsync(entry, 0);
-            ByteBuffer valName = await ResultListApi.EntryListGetValueAsync(entry, 0);
-            string tagName = await ResultListApi.EntryListGetTagsAsync(entry, 0);
-
-            //Assert
-            actual.Should().BeTrue();
-            count.Should().Be(1);
         }
     }
 }
