@@ -792,14 +792,14 @@ namespace aries_askar_dotnet_tests.AriesAskar
         public async Task GetAeadRandomNonceFromKeyAsyncErrorTests()
         {
             //Arrange
-            IntPtr testKeyHandle = await KeyApi.CreateKeyFromJwkAsync(
-                JsonConvert.SerializeObject(new
-                {
-                    crv = KeyAlg.BLS12_381_G1.ToJwkCrvString(),
-                    kty = "OKP",
-                    x = "h56eYI8Qkq5hitICb-ik8wRTzcn6Fd4iY8aDNVc9q1xoPS3lh4DB_B4wNtar1HrV"
-                }));
-
+            //IntPtr testKeyHandle = await KeyApi.CreateKeyFromJwkAsync(
+            //    JsonConvert.SerializeObject(new
+            //    {
+            //        crv = KeyAlg.BLS12_381_G1.ToJwkCrvString(),
+            //        kty = "OKP",
+            //        x = "h56eYI8Qkq5hitICb-ik8wRTzcn6Fd4iY8aDNVc9q1xoPS3lh4DB_B4wNtar1HrV"
+            //    }));
+            IntPtr testKeyHandle = new();
             //Act
             Func<Task> action = async () => await KeyApi.GetAeadRandomNonceFromKeyAsync(
                 testKeyHandle);
@@ -861,15 +861,14 @@ namespace aries_askar_dotnet_tests.AriesAskar
         }
         #endregion
 
-
-        [Test, TestCase(TestName = "GetAeadPaddingFromKeyAsync call returns request handle.")]
-        public async Task GetAeadPaddingFromKeyAsyncTests()
+        #region GetAeadPaddingFromKeyAsync
+        [Test, TestCaseSource(nameof(GetAeadPaddingFromKeyAsyncCases)), Category("Aead")]
+        public async Task GetAeadPaddingFromKeyAsyncTests(KeyAlg testKeyAlg)
         {
             //Arrange
-            KeyAlg keyAlg = KeyAlg.A128GCM;
             byte testEphemeral = 5;
             IntPtr testHandle = await KeyApi.CreateKeyAsync(
-                    keyAlg,
+                    testKeyAlg,
                     testEphemeral);
             long testMsgLen = 10;
 
@@ -882,14 +881,42 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = actual.Should().Be(0);
         }
 
-        [Test, TestCase(TestName = "EncryptKeyWithAeadAsync call returns request handle.")]
-        public async Task EncryptKeyWithAeadAsyncTests()
+        private static IEnumerable<TestCaseData> GetAeadPaddingFromKeyAsyncCases()
+        {
+            yield return new TestCaseData(KeyAlg.A128GCM)
+                .SetName("GetAeadPaddingFromKeyAsyncCases call returns the padding.");
+        }
+
+        [Test, TestCaseSource(nameof(GetAeadPaddingFromKeyAsyncErrorCases)), Category("Aead")]
+        public async Task GetAeadPaddingFromKeyAsyncErrorTests()
         {
             //Arrange
-            KeyAlg keyAlg = KeyAlg.A128GCM;
+            IntPtr testHandle = new();
+            long testMsgLen = 10;
+            //Act
+            Func<Task> action = async () => await KeyApi.GetAeadPaddingFromKeyAsync(
+                testHandle,
+                testMsgLen);
+
+            //Assert
+            _ = await action.Should().ThrowAsync<Exception>();
+        }
+
+        private static IEnumerable<TestCaseData> GetAeadPaddingFromKeyAsyncErrorCases()
+        {
+            yield return new TestCaseData()
+                .SetName("GetAeadPaddingFromKeyAsync throws an AriesAskarException if the handle points to invalid data.");
+        }
+        #endregion
+
+        #region EncryptKeyWithAeadAsync
+        [Test, TestCaseSource(nameof(EncryptKeyWithAeadAsyncCases)), Category("Aead")]
+        public async Task EncryptKeyWithAeadAsyncTests(KeyAlg testKeyAlg)
+        {
+            //Arrange
             byte testEphemeral = 5;
             IntPtr testHandle = await KeyApi.CreateKeyAsync(
-                    keyAlg,
+                    testKeyAlg,
                     testEphemeral);
             string testMessage = "testMessage";
             byte[] testNonce = await KeyApi.GetAeadRandomNonceFromKeyAsync(testHandle);
@@ -906,14 +933,61 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = value.Length.Should().NotBe(0);
         }
 
-        [Test, TestCase(TestName = "DecryptKeyWithAeadAsync call returns request handle.")]
-        public async Task DecryptKeyWithAeadAsyncTests()
+        private static IEnumerable<TestCaseData> EncryptKeyWithAeadAsyncCases()
+        {
+            yield return new TestCaseData(KeyAlg.A128GCM)
+                .SetName("EncryptKeyWithAeadAsync call encrypts with key algorithm A128GCM.");
+            yield return new TestCaseData(KeyAlg.A256GCM)
+                .SetName("EncryptKeyWithAeadAsync call encrypts with key algorithm A256GCM.");
+            yield return new TestCaseData(KeyAlg.A128CBC_HS256)
+                .SetName("EncryptKeyWithAeadAsync call encryptswith key algorithm A128CBC_HS256.");
+            yield return new TestCaseData(KeyAlg.A256CBC_HS512)
+                .SetName("EncryptKeyWithAeadAsync call encrypts with key algorithm A256CBC_HS512.");
+            yield return new TestCaseData(KeyAlg.C20P)
+                .SetName("EncryptKeyWithAeadAsync call encrypts with key algorithm C20P.");
+            yield return new TestCaseData(KeyAlg.XC20P)
+                .SetName("EncryptKeyWithAeadAsync call encrypts with key algorithm XC20P.");
+        }
+
+        [Test, TestCaseSource(nameof(EncryptKeyWithAeadAsyncErrorCases)), Category("Aead")]
+        public async Task EncryptKeyWithAeadAsyncErrorTests(KeyAlg testKeyAlg)
         {
             //Arrange
-            KeyAlg keyAlg = KeyAlg.A128GCM;
             byte testEphemeral = 5;
             IntPtr testHandle = await KeyApi.CreateKeyAsync(
-                    keyAlg,
+                    testKeyAlg,
+                    testEphemeral);
+            string testMessage = "testMessage";
+            byte[] testNonce = Array.Empty<byte>();
+            string testAad = "testAad";
+
+            //Act
+            Func<Task> action = async () => await KeyApi.EncryptKeyWithAeadAsync(
+                testHandle,
+                testMessage,
+                testNonce,
+                testAad);
+
+            //Assert
+            _ = await action.Should().ThrowAsync<Exception>();
+        }
+
+        private static IEnumerable<TestCaseData> EncryptKeyWithAeadAsyncErrorCases()
+        {
+            yield return new TestCaseData(KeyAlg.P256)
+                .SetName("EncryptKeyWithAeadAsync throws an AriesAskarException if the provided key algorithm is not A128GCM, A256GCM, A128CBC_HS256, A256CBC_HS512, C20P or XC20P.");
+        }
+        #endregion
+
+        #region DecryptKeyWithAeadAsync
+
+        [Test, TestCaseSource(nameof(DecryptKeyWithAeadAsyncCases)), Category("Aead")]
+        public async Task DecryptKeyWithAeadAsyncTests(KeyAlg testKeyAlg)
+        {
+            //Arrange
+            byte testEphemeral = 5;
+            IntPtr testHandle = await KeyApi.CreateKeyAsync(
+                    testKeyAlg,
                     testEphemeral);
             byte[] testNonce = await KeyApi.GetAeadRandomNonceFromKeyAsync(testHandle);
             string testAad = "testAad";
@@ -936,31 +1010,66 @@ namespace aries_askar_dotnet_tests.AriesAskar
             //Assert
             _ = ByteBuffer.Create(actual).len.Should().NotBe(0);
         }
+
+        private static IEnumerable<TestCaseData> DecryptKeyWithAeadAsyncCases()
+        {
+            yield return new TestCaseData(KeyAlg.A128GCM)
+                .SetName("DecryptKeyWithAeadAsync call decrypt with key algorithm A128GCM.");
+            yield return new TestCaseData(KeyAlg.A256GCM)
+                .SetName("DecryptKeyWithAeadAsync call decrypts with key algorithm A256GCM.");
+            yield return new TestCaseData(KeyAlg.A128CBC_HS256)
+                .SetName("DecryptKeyWithAeadAsync call decrypts with key algorithm A128CBC_HS256.");
+            yield return new TestCaseData(KeyAlg.A256CBC_HS512)
+                .SetName("DecryptKeyWithAeadAsync call decrypts with key algorithm A256CBC_HS512.");
+            yield return new TestCaseData(KeyAlg.C20P)
+                .SetName("DecryptKeyWithAeadAsync call decrypts with key algorithm C20P.");
+            yield return new TestCaseData(KeyAlg.XC20P)
+                .SetName("DecryptKeyWithAeadAsync call decrypts with key algorithm XC20P.");
+        }
+
+        [Test, TestCaseSource(nameof(DecryptKeyWithAeadAsyncErrorCases)), Category("Aead")]
+        public async Task DecryptKeyWithAeadAsyncErrorTests()
+        {
+            //Arrange
+            IntPtr testHandle = new();
+            byte[] testValue = Array.Empty<byte>();
+            byte[] testNonce = Array.Empty<byte>();
+            byte[] testTag = Array.Empty<byte>();
+            string testAad = "testAad";
+            //Act
+            Func<Task> action = async () => await KeyApi.DecryptKeyWithAeadAsync(
+                testHandle,
+                testValue,
+                testNonce,
+                testTag,
+                testAad);
+
+            //Assert
+            _ = await action.Should().ThrowAsync<Exception>();
+        }
+
+        private static IEnumerable<TestCaseData> DecryptKeyWithAeadAsyncErrorCases()
+        {
+            yield return new TestCaseData()
+                .SetName("DecryptKeyWithAeadAsync throws an AriesAskarException if the handle points to invalid data.");
+        }
+        #endregion
+
         #endregion
 
         #region Crypto
-        [Test, TestCase(TestName = "CreateCryptoBoxRandomNonceAsync call returns request handle.")]
-        public async Task CreateCryptoBoxRandomNonceAsyncTests()
+
+        #region CryptoBoxAsync
+        [Test, TestCaseSource(nameof(CreateCryptoBoxRandomNonceAsyncCases)), Category("Crypto")]
+        public async Task CreateCryptoBoxRandomNonceAsyncTests(KeyAlg testKeyAlg)
         {
-            //Arrange
-
-            //Act
-            byte[] actual = await KeyApi.CreateCryptoBoxRandomNonceAsync();
-
-            //Assert
-            _ = ByteBuffer.Create(actual).len.Should().NotBe(0);
-        }
-
-        [Test, TestCase(TestName = "CryptoBoxAsync call returns request handle.")]
-        public async Task CryptoBoxAsyncTests()
-        {
-            KeyAlg keyRecipientAlg = KeyAlg.X25519;
+            KeyAlg keyRecipientAlg = testKeyAlg;
             byte testRecipientEphemeral = 5;
             IntPtr testRecipientHandle = await KeyApi.CreateKeyAsync(
                     keyRecipientAlg,
                     testRecipientEphemeral);
 
-            KeyAlg keySenderAlg = KeyAlg.X25519;
+            KeyAlg keySenderAlg = testKeyAlg;
             byte testSenderEphemeral = 10;
             IntPtr testSenderHandle = await KeyApi.CreateKeyAsync(
                     keySenderAlg,
@@ -980,8 +1089,160 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = ByteBuffer.Create(actual).len.Should().NotBe(0);
         }
 
-        [Test, TestCase(TestName = "OpenCryptoBoxAsync call returns request handle.")]
-        public async Task OpenCryptoBoxAsyncTests()
+        private static IEnumerable<TestCaseData> CreateCryptoBoxRandomNonceAsyncCases()
+        {
+            yield return new TestCaseData(KeyAlg.X25519)
+                .SetName("CreateCryptoBoxRandomNonceAsync creates a crypto box with key algorithm X25519");
+        }
+
+        //[Test, TestCaseSource(nameof(CreateCryptoBoxRandomNonceAsyncErrorCases)), Category("Crypto")]
+        //public async Task CreateCryptoBoxRandomNonceAsyncErrorTests(KeyAlg testKeyAlgRecip, KeyAlg testKeyAlgSend)
+        //{
+        //    KeyAlg keyRecipientAlg = testKeyAlgRecip;
+        //    byte testRecipientEphemeral = 5;
+        //    IntPtr testRecipientHandle = await KeyApi.CreateKeyAsync(
+        //            keyRecipientAlg,
+        //            testRecipientEphemeral);
+
+        //    KeyAlg keySenderAlg = testKeyAlgSend;
+        //    byte testSenderEphemeral = 10;
+        //    IntPtr testSenderHandle = await KeyApi.CreateKeyAsync(
+        //            keySenderAlg,
+        //            testSenderEphemeral);
+
+        //    string testMessage = "testMessage";
+        //    byte[] testNonce = await KeyApi.CreateCryptoBoxRandomNonceAsync();
+
+        //    //Act
+        //    Func<Task<byte[]>> func = async () => await KeyApi.CryptoBoxAsync(
+        //        testRecipientHandle,
+        //        testSenderHandle,
+        //        testMessage,
+        //        testNonce);
+
+        //    //Assert
+        //    await func.Should().ThrowAsync<AriesAskarException>();
+        //}
+
+        //private static IEnumerable<TestCaseData> CreateCryptoBoxRandomNonceAsyncErrorCases()
+        //{
+        //    yield return new TestCaseData(KeyAlg.A256GCM, KeyAlg.A256GCM)
+        //        .SetName("CreateCryptoBoxRandomNonceAsync throws an AriesAskarException if the provided key algorithm is not X25519.");
+        //}
+
+        #endregion
+
+        #region CryptoBoxAsync
+
+        [Test, TestCaseSource(nameof(CryptoBoxAsyncCases)), Category("Crypto")]
+        public async Task CryptoBoxAsyncTests(KeyAlg testKeyAlg)
+        {
+            KeyAlg keyRecipientAlg = testKeyAlg;
+            byte testRecipientEphemeral = 5;
+            IntPtr testRecipientHandle = await KeyApi.CreateKeyAsync(
+                    keyRecipientAlg,
+                    testRecipientEphemeral);
+
+            KeyAlg keySenderAlg = testKeyAlg;
+            byte testSenderEphemeral = 10;
+            IntPtr testSenderHandle = await KeyApi.CreateKeyAsync(
+                    keySenderAlg,
+                    testSenderEphemeral);
+
+            string testMessage = "testMessage";
+            byte[] testNonce = await KeyApi.CreateCryptoBoxRandomNonceAsync();
+
+            //Act
+            byte[] actual = await KeyApi.CryptoBoxAsync(
+                testRecipientHandle,
+                testSenderHandle,
+                testMessage,
+                testNonce);
+
+            //Assert
+            _ = ByteBuffer.Create(actual).len.Should().NotBe(0);
+        }
+
+        private static IEnumerable<TestCaseData> CryptoBoxAsyncCases()
+        {
+            yield return new TestCaseData(KeyAlg.X25519)
+                .SetName("CryptoBoxAsync creates a crypto box with key algorithm X25519");
+        }
+
+        [Test, TestCaseSource(nameof(CryptoBoxAsyncErrorCases)), Category("Crypto")]
+        public async Task CryptoBoxAsyncErrorTests(KeyAlg testKeyAlgRecip, KeyAlg testKeyAlgSend)
+        {
+            KeyAlg keyRecipientAlg = testKeyAlgRecip;
+            byte testRecipientEphemeral = 5;
+            IntPtr testRecipientHandle = await KeyApi.CreateKeyAsync(
+                    keyRecipientAlg,
+                    testRecipientEphemeral);
+
+            KeyAlg keySenderAlg = testKeyAlgSend;
+            byte testSenderEphemeral = 10;
+            IntPtr testSenderHandle = await KeyApi.CreateKeyAsync(
+                    keySenderAlg,
+                    testSenderEphemeral);
+
+            string testMessage = "testMessage";
+            byte[] testNonce = await KeyApi.CreateCryptoBoxRandomNonceAsync();
+
+            //Act
+            Func<Task<byte[]>> func = async () => await KeyApi.CryptoBoxAsync(
+                testRecipientHandle,
+                testSenderHandle,
+                testMessage,
+                testNonce);
+
+            //Assert
+            await func.Should().ThrowAsync<AriesAskarException>();
+        }
+
+        private static IEnumerable<TestCaseData> CryptoBoxAsyncErrorCases()
+        {
+            yield return new TestCaseData(KeyAlg.A256GCM, KeyAlg.A256GCM)
+                .SetName("CryptoBoxAsync throws an AriesAskarException if the provided key algorithm is not X25519.");
+        }
+        #endregion
+
+        #region OpenCryptoBoxAsync
+        //[Test, TestCase(TestName = "OpenCryptoBoxAsync call returns request handle.")]
+        //public async Task OpenCryptoBoxAsyncTests()
+        //{
+        //    KeyAlg keyRecipientAlg = KeyAlg.X25519;
+        //    byte testRecipientEphemeral = 5;
+        //    IntPtr testRecipientHandle = await KeyApi.CreateKeyAsync(
+        //            keyRecipientAlg,
+        //            testRecipientEphemeral);
+
+        //    KeyAlg keySenderAlg = KeyAlg.X25519;
+        //    byte testSenderEphemeral = 10;
+        //    IntPtr testSenderHandle = await KeyApi.CreateKeyAsync(
+        //            keySenderAlg,
+        //            testSenderEphemeral);
+
+        //    string testMessage = "testMessage";
+        //    byte[] testNonce = await KeyApi.CreateCryptoBoxRandomNonceAsync();
+
+        //    byte[] testBox = await KeyApi.CryptoBoxAsync(
+        //        testRecipientHandle,
+        //        testSenderHandle,
+        //        testMessage,
+        //        testNonce);
+
+        //    //Act
+        //    byte[] actual = await KeyApi.OpenCryptoBoxAsync(
+        //        testRecipientHandle,
+        //        testSenderHandle,
+        //        testBox,
+        //        testNonce);
+
+        //    //Assert
+        //    _ = ByteBuffer.Create(actual).len.Should().NotBe(0);
+        //}
+
+        [Test, TestCaseSource(nameof(OpenCryptoBoxAsyncCases)), Category("Crypto")]
+        public async Task OpenCryptoBoxAsyncTests(KeyAlg testKeyAlg)
         {
             KeyAlg keyRecipientAlg = KeyAlg.X25519;
             byte testRecipientEphemeral = 5;
@@ -1015,13 +1276,62 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = ByteBuffer.Create(actual).len.Should().NotBe(0);
         }
 
-        [Test, TestCase(TestName = "SealCryptoBoxAsync call returns request handle.")]
-        public async Task SealCryptoBoxAsyncTests()
+        private static IEnumerable<TestCaseData> OpenCryptoBoxAsyncCases()
         {
-            KeyAlg keyAlg = KeyAlg.X25519;
+            yield return new TestCaseData(KeyAlg.X25519)
+                .SetName("OpenCryptoBoxAsync opens the crypto box.");
+        }
+
+        [Test, TestCaseSource(nameof(OpenCryptoBoxAsyncErrorCases)), Category("Crypto")]
+        public async Task OpenCryptoBoxAsyncErrorTests()
+        {
+            KeyAlg keyRecipientAlg = KeyAlg.X25519;
+            byte testRecipientEphemeral = 5;
+            IntPtr testRecipientHandle = await KeyApi.CreateKeyAsync(
+                    keyRecipientAlg,
+                    testRecipientEphemeral);
+
+            KeyAlg keySenderAlg = KeyAlg.X25519;
+            byte testSenderEphemeral = 10;
+            IntPtr testSenderHandle = await KeyApi.CreateKeyAsync(
+                    keySenderAlg,
+                    testSenderEphemeral);
+
+            string testMessage = "testMessage";
+            byte[] testNonce = await KeyApi.CreateCryptoBoxRandomNonceAsync();
+
+            byte[] testBox = await KeyApi.CryptoBoxAsync(
+                testRecipientHandle,
+                testSenderHandle,
+                testMessage,
+                testNonce);
+
+            //Act
+            Func<Task<byte[]>> func = async () => await KeyApi.OpenCryptoBoxAsync(
+                new IntPtr(),
+                new IntPtr(),
+                testBox,
+                testNonce);
+
+            //Assert
+            await func.Should().ThrowAsync<AriesAskarException>();
+        }
+
+        private static IEnumerable<TestCaseData> OpenCryptoBoxAsyncErrorCases()
+        {
+            yield return new TestCaseData()
+                .SetName("OpenCryptoBoxAsync throws an AriesAskarException if the provided handles are invalid.");
+        }
+        #endregion
+
+        #region SealCryptoBoxAsync
+        
+        [Test, TestCaseSource(nameof(SealCryptoBoxAsyncCases)), Category("Crypto")]
+        public async Task SealCryptoBoxAsyncTests(KeyAlg testKeyAlg)
+        {
             byte testEphemeral = 5;
             IntPtr testKeyHandle = await KeyApi.CreateKeyAsync(
-                    keyAlg,
+                    testKeyAlg,
                     testEphemeral);
 
             string testMessage = "testMessage";
@@ -1035,6 +1345,36 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = ByteBuffer.Create(actual).len.Should().NotBe(0);
         }
 
+        private static IEnumerable<TestCaseData> SealCryptoBoxAsyncCases()
+        {
+            yield return new TestCaseData(KeyAlg.X25519)
+                .SetName("SealCryptoBoxAsync seals the key.");
+        }
+
+        [Test, TestCaseSource(nameof(SealCryptoBoxAsyncErrorCases)), Category("Crypto")]
+        public async Task SealCryptoBoxAsynccErrorTests()
+        {
+            IntPtr testKeyHandle = new IntPtr();
+
+            string testMessage = "testMessage";
+
+            //Act
+            Func<Task<byte[]>> func = async () => await KeyApi.SealCryptoBoxAsync(
+                testKeyHandle,
+                testMessage);
+
+            //Assert
+            await func.Should().ThrowAsync<AriesAskarException>();
+        }
+
+        private static IEnumerable<TestCaseData> SealCryptoBoxAsyncErrorCases()
+        {
+            yield return new TestCaseData()
+                .SetName("SealCryptoBoxAsync throws an AriesAskarException if the provided handles are invalid.");
+        }
+        #endregion
+
+        #region OpenSealCryptoBoxAsync
         [Test, TestCase(TestName = "OpenSealCryptoBoxAsync call returns request handle.")]
         public async Task OpenSealCryptoBoxAsyncTests()
         {
@@ -1057,6 +1397,9 @@ namespace aries_askar_dotnet_tests.AriesAskar
             //Assert
             _ = ByteBuffer.Create(actual).len.Should().NotBe(0);
         }
+
+        #endregion
+
         #endregion
 
         #region Utils

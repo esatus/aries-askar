@@ -54,7 +54,9 @@ namespace indy_vdr_dotnet.models
             public static ByteBuffer Create(byte[] bytes)
             {
                 ByteBuffer buffer = new();
-                buffer.len = bytes.Length;
+                if (bytes != null)
+                    buffer.len = bytes.Length;
+                else buffer.len = 0;
 
                 if(buffer.len > 0)
                 {
@@ -153,20 +155,5 @@ namespace indy_vdr_dotnet.models
             public uint nonce_length;
             public uint tag_length;
         }
-        /**
-        [StructLayout(LayoutKind.Sequential)]
-        public unsafe struct FfiEntryList
-        {
-            public FfiEntry category;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        public unsafe struct FfiEntry
-        {
-            public FfiStr category;
-            public FfiStr name;
-            public ByteBuffer value;
-            public byte* tags;
-        }**/
     }
 }
