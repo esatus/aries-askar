@@ -72,11 +72,10 @@ namespace aries_askar_dotnet.Models
             KeyAlg wrapKeyAlg, 
             IntPtr ephemeralKey, 
             IntPtr receiverKey, 
-            IntPtr cek, 
-            byte[] nonce = null)
+            IntPtr cek)
         {
             IntPtr derivedKey = await ecdhEs.DeriveKeyAsync(wrapKeyAlg, ephemeralKey, receiverKey, false);
-            (byte[] ciphertext, byte[] tagBytes, byte[] nonceBytes) = await KeyApi.WrapKeyAsync(derivedKey, cek, nonce);
+            (byte[] ciphertext, byte[] tagBytes, byte[] nonceBytes) = await KeyApi.WrapKeyAsync(derivedKey, cek, null);
             return (ciphertext, tagBytes, nonceBytes);
         }
 

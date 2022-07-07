@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using static indy_vdr_dotnet.models.Structures;
 
@@ -13,6 +14,8 @@ namespace aries_askar_dotnet_tests.AriesAskar
 {
     public class KeyApiTests
     {
+        UTF8Encoding Decoder = new UTF8Encoding(true, true);
+
         #region Create
         #region CreateKeyAsync
         [Test, TestCaseSource(nameof(CreateKeyAsyncCases)), Category("Create")]
@@ -1059,7 +1062,8 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
         #region Crypto
 
-        #region CryptoBoxAsync
+        #region CreateCryptoBoxRandomNonceAsync
+
         [Test, TestCaseSource(nameof(CreateCryptoBoxRandomNonceAsyncCases)), Category("Crypto")]
         public async Task CreateCryptoBoxRandomNonceAsyncTests(KeyAlg testKeyAlg)
         {
@@ -1094,41 +1098,6 @@ namespace aries_askar_dotnet_tests.AriesAskar
             yield return new TestCaseData(KeyAlg.X25519)
                 .SetName("CreateCryptoBoxRandomNonceAsync creates a crypto box with key algorithm X25519");
         }
-
-        //[Test, TestCaseSource(nameof(CreateCryptoBoxRandomNonceAsyncErrorCases)), Category("Crypto")]
-        //public async Task CreateCryptoBoxRandomNonceAsyncErrorTests(KeyAlg testKeyAlgRecip, KeyAlg testKeyAlgSend)
-        //{
-        //    KeyAlg keyRecipientAlg = testKeyAlgRecip;
-        //    byte testRecipientEphemeral = 5;
-        //    IntPtr testRecipientHandle = await KeyApi.CreateKeyAsync(
-        //            keyRecipientAlg,
-        //            testRecipientEphemeral);
-
-        //    KeyAlg keySenderAlg = testKeyAlgSend;
-        //    byte testSenderEphemeral = 10;
-        //    IntPtr testSenderHandle = await KeyApi.CreateKeyAsync(
-        //            keySenderAlg,
-        //            testSenderEphemeral);
-
-        //    string testMessage = "testMessage";
-        //    byte[] testNonce = await KeyApi.CreateCryptoBoxRandomNonceAsync();
-
-        //    //Act
-        //    Func<Task<byte[]>> func = async () => await KeyApi.CryptoBoxAsync(
-        //        testRecipientHandle,
-        //        testSenderHandle,
-        //        testMessage,
-        //        testNonce);
-
-        //    //Assert
-        //    await func.Should().ThrowAsync<AriesAskarException>();
-        //}
-
-        //private static IEnumerable<TestCaseData> CreateCryptoBoxRandomNonceAsyncErrorCases()
-        //{
-        //    yield return new TestCaseData(KeyAlg.A256GCM, KeyAlg.A256GCM)
-        //        .SetName("CreateCryptoBoxRandomNonceAsync throws an AriesAskarException if the provided key algorithm is not X25519.");
-        //}
 
         #endregion
 
@@ -1172,6 +1141,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         [Test, TestCaseSource(nameof(CryptoBoxAsyncErrorCases)), Category("Crypto")]
         public async Task CryptoBoxAsyncErrorTests(KeyAlg testKeyAlgRecip, KeyAlg testKeyAlgSend)
         {
+            // Arrange
             KeyAlg keyRecipientAlg = testKeyAlgRecip;
             byte testRecipientEphemeral = 5;
             IntPtr testRecipientHandle = await KeyApi.CreateKeyAsync(
@@ -1206,44 +1176,11 @@ namespace aries_askar_dotnet_tests.AriesAskar
         #endregion
 
         #region OpenCryptoBoxAsync
-        //[Test, TestCase(TestName = "OpenCryptoBoxAsync call returns request handle.")]
-        //public async Task OpenCryptoBoxAsyncTests()
-        //{
-        //    KeyAlg keyRecipientAlg = KeyAlg.X25519;
-        //    byte testRecipientEphemeral = 5;
-        //    IntPtr testRecipientHandle = await KeyApi.CreateKeyAsync(
-        //            keyRecipientAlg,
-        //            testRecipientEphemeral);
-
-        //    KeyAlg keySenderAlg = KeyAlg.X25519;
-        //    byte testSenderEphemeral = 10;
-        //    IntPtr testSenderHandle = await KeyApi.CreateKeyAsync(
-        //            keySenderAlg,
-        //            testSenderEphemeral);
-
-        //    string testMessage = "testMessage";
-        //    byte[] testNonce = await KeyApi.CreateCryptoBoxRandomNonceAsync();
-
-        //    byte[] testBox = await KeyApi.CryptoBoxAsync(
-        //        testRecipientHandle,
-        //        testSenderHandle,
-        //        testMessage,
-        //        testNonce);
-
-        //    //Act
-        //    byte[] actual = await KeyApi.OpenCryptoBoxAsync(
-        //        testRecipientHandle,
-        //        testSenderHandle,
-        //        testBox,
-        //        testNonce);
-
-        //    //Assert
-        //    _ = ByteBuffer.Create(actual).len.Should().NotBe(0);
-        //}
 
         [Test, TestCaseSource(nameof(OpenCryptoBoxAsyncCases)), Category("Crypto")]
         public async Task OpenCryptoBoxAsyncTests(KeyAlg testKeyAlg)
         {
+            //Arrange
             KeyAlg keyRecipientAlg = KeyAlg.X25519;
             byte testRecipientEphemeral = 5;
             IntPtr testRecipientHandle = await KeyApi.CreateKeyAsync(
@@ -1285,6 +1222,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         [Test, TestCaseSource(nameof(OpenCryptoBoxAsyncErrorCases)), Category("Crypto")]
         public async Task OpenCryptoBoxAsyncErrorTests()
         {
+            // Arrange
             KeyAlg keyRecipientAlg = KeyAlg.X25519;
             byte testRecipientEphemeral = 5;
             IntPtr testRecipientHandle = await KeyApi.CreateKeyAsync(
@@ -1329,6 +1267,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         [Test, TestCaseSource(nameof(SealCryptoBoxAsyncCases)), Category("Crypto")]
         public async Task SealCryptoBoxAsyncTests(KeyAlg testKeyAlg)
         {
+            // Arrange
             byte testEphemeral = 5;
             IntPtr testKeyHandle = await KeyApi.CreateKeyAsync(
                     testKeyAlg,
@@ -1336,12 +1275,12 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             string testMessage = "testMessage";
 
-            //Act
+            // Act
             byte[] actual = await KeyApi.SealCryptoBoxAsync(
                 testKeyHandle,
                 testMessage);
 
-            //Assert
+            // Assert
             _ = ByteBuffer.Create(actual).len.Should().NotBe(0);
         }
 
@@ -1354,6 +1293,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         [Test, TestCaseSource(nameof(SealCryptoBoxAsyncErrorCases)), Category("Crypto")]
         public async Task SealCryptoBoxAsynccErrorTests()
         {
+            //Arrange
             IntPtr testKeyHandle = new IntPtr();
 
             string testMessage = "testMessage";
@@ -1375,9 +1315,11 @@ namespace aries_askar_dotnet_tests.AriesAskar
         #endregion
 
         #region OpenSealCryptoBoxAsync
+
         [Test, TestCase(TestName = "OpenSealCryptoBoxAsync call returns request handle.")]
         public async Task OpenSealCryptoBoxAsyncTests()
         {
+            //Arrange
             KeyAlg keyAlg = KeyAlg.X25519;
             byte testEphemeral = 5;
             IntPtr testKeyHandle = await KeyApi.CreateKeyAsync(
@@ -1398,12 +1340,72 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = ByteBuffer.Create(actual).len.Should().NotBe(0);
         }
 
+        [Test, TestCaseSource(nameof(OpenSealCryptoBoxAsyncCases)), Category("Crypto")]
+        public async Task OpenSealCryptoBoxAsyncTests(KeyAlg testKeyAlg)
+        {
+            //Arrange
+            KeyAlg keyAlg = KeyAlg.X25519;
+            byte testEphemeral = 5;
+            IntPtr testKeyHandle = await KeyApi.CreateKeyAsync(
+                    keyAlg,
+                    testEphemeral);
+
+            string testMessage = "testMessage";
+
+            byte[] sealedBox = await KeyApi.SealCryptoBoxAsync(
+                testKeyHandle,
+                testMessage);
+            //Act
+            byte[] actual = await KeyApi.OpenSealCryptoBoxAsync(
+                testKeyHandle,
+                sealedBox);
+
+            //Assert
+            _ = ByteBuffer.Create(actual).len.Should().NotBe(0);
+        }
+
+        private static IEnumerable<TestCaseData> OpenSealCryptoBoxAsyncCases()
+        {
+            yield return new TestCaseData(KeyAlg.X25519)
+                .SetName("OpenSealCryptoBoxAsync opens a sealed cryptobox.");
+        }
+
+        [Test, TestCaseSource(nameof(OpenSealCryptoBoxAsyncErrorCases)), Category("Crypto")]
+        public async Task OpenSealCryptoBoxAsyncErrorTests()
+        {
+            //Arrange
+            KeyAlg keyAlg = KeyAlg.X25519;
+            byte testEphemeral = 5;
+            IntPtr testKeyHandle = await KeyApi.CreateKeyAsync(
+                    keyAlg,
+                    testEphemeral);
+
+            string testMessage = "testMessage";
+
+            byte[] sealedBox = await KeyApi.SealCryptoBoxAsync(
+                testKeyHandle,
+                testMessage);
+
+            //Act
+            Func<Task<byte[]>> func = async () => await KeyApi.OpenSealCryptoBoxAsync(
+                new IntPtr(),
+                sealedBox);
+
+            //Assert
+            await func.Should().ThrowAsync<AriesAskarException>();
+        }
+
+        private static IEnumerable<TestCaseData> OpenSealCryptoBoxAsyncErrorCases()
+        {
+            yield return new TestCaseData()
+                .SetName("OpenSealCryptoBoxAsync throws an AriesAskarException if the provided handles are invalid.");
+        }
         #endregion
 
         #endregion
 
         #region Utils
-        [Test, TestCase(TestName = "ConvertKeyAsync call returns request handle.")]
+        [Test, TestCase(TestName = "ConvertKeyAsync call returns request handle."), Category("Utils")]
         public async Task ConvertKeyAsyncTests()
         {
             //Arrange
@@ -1424,7 +1426,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = actual.Should().Be(newKeyAlg.ToKeyAlgString());
         }
 
-        [Test, TestCase(TestName = "FreeKeyAsync call returns request handle.")]
+        [Test, TestCase(TestName = "FreeKeyAsync call returns request handle."), Category("Utils")]
         public async Task FreeKeyAsyncTests()
         {
             //Arrange
@@ -1442,7 +1444,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = actual.Should().ThrowAsync<Exception>();
         }
 
-        [Test, TestCase(TestName = "SignMessageFromKeyAsync call returns request handle.")]
+        [Test, TestCase(TestName = "SignMessageFromKeyAsync call returns request handle."), Category("Utils")]
         public async Task SignMessageFromKeyAsyncTests()
         {
             //Arrange
@@ -1464,7 +1466,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = actual.Should().NotBeEmpty();
         }
 
-        [Test, TestCase(TestName = "VerifySignatureFromKeyAsync call returns request handle.")]
+        [Test, TestCase(TestName = "VerifySignatureFromKeyAsync call returns request handle."), Category("Utils")]
         public async Task VerifySignatureFromKeyAsyncTests()
         {
             //Arrange
@@ -1492,7 +1494,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = actual.Should().BeTrue();
         }
 
-        [Test, TestCase(TestName = "WrapKeyAsync call returns request handle.")]
+        [Test, TestCase(TestName = "WrapKeyAsync call returns request handle."), Category("Utils")]
         public async Task WrapKeyAsyncTests()
         {
             //Arrange
@@ -1518,6 +1520,199 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             //Assert
             _ = value.Should().NotBeEmpty();
+        }
+
+        [Test, TestCase(TestName = "EcdhEs SenderWrapKeyAsync and ReceiverUnwrapKeyAsyncworks works and returns the input message."), Category("Utils")]
+        public async Task EcdhEsWrapUnwrapKeyAsyncWorks()
+        {
+            //Arrange
+            byte testEphemeral = 5;
+            KeyAlg keyAlg = KeyAlg.X25519;
+            string algId = "ECDH-ES";
+            string enc = "A256GCM";
+            string apu = "Alice";
+            string apv = "Bob";
+            EcdhEs ecdhEs = new(algId,apu, apv);
+            string msgSend = "testMessage";
+
+            IntPtr keyBob = await KeyApi.CreateKeyAsync(keyAlg, testEphemeral);
+            IntPtr keyEphemeral = await KeyApi.CreateKeyAsync(keyAlg, testEphemeral);
+            string jwkEphemeral = await KeyApi.GetJwkPublicFromKeyAsync(keyEphemeral, keyAlg);
+
+            KeyAlg keyAlgCek = KeyAlg.A256GCM;
+            IntPtr cek = await KeyApi.CreateKeyAsync(keyAlgCek, testEphemeral);
+            string testAeadContent = $"{{ \"alg\":{algId}, \"enc\":{enc}, \"apu\":{apu}, \"apv\":{apv}, \"epk\":{jwkEphemeral}}}";
+
+            //Act
+            (byte[] testAeadCiphertext, byte[] testAeadTag, byte[] testAeadNonce) = await KeyApi.EncryptKeyWithAeadAsync(cek, msgSend, null, testAeadContent);
+
+            (byte[] encryptCiphertext, _, _ ) = await ecdhEs.SenderWrapKeyAsync(
+                KeyAlg.A128KW,
+                keyEphemeral,
+                keyBob,
+                cek);
+
+            IntPtr cekReceiver = await ecdhEs.ReceiverUnwrapKeyAsync(
+                KeyAlg.A128KW,
+                keyAlgCek,
+                keyEphemeral,
+                keyBob,
+                encryptCiphertext);
+
+            string msgReceive = Decoder.GetString(await KeyApi.DecryptKeyWithAeadAsync(cekReceiver, testAeadCiphertext, testAeadNonce, testAeadTag, testAeadContent));
+            string cekSecret = Decoder.GetString(await KeyApi.GetJwkSecretFromKeyAsync(cek));
+            string cekReceiverSecret = Decoder.GetString(await KeyApi.GetJwkSecretFromKeyAsync(cekReceiver));
+
+            //Assert
+            msgReceive.Should().Be(msgSend);
+            cekSecret.Should().Be(cekReceiverSecret);
+        }
+
+        [Test, TestCase(TestName = "EcdhEs EncryptDirectAsync and DecryptDirectAsync works and returns the input message."), Category("Utils")]
+        public async Task EcdhEsEncryptDecryptDirectAsyncWorks()
+        {
+            //Arrange
+            byte testEphemeral = 5;
+            KeyAlg keyAlg = KeyAlg.P256;
+            KeyAlg directKeyAlg = KeyAlg.A256GCM;
+            string algId = "ECDH-ES";
+            string enc = "A256GCM";
+            string apu = "Alice";
+            string apv = "Bob";
+            EcdhEs ecdhEs = new(algId, apu, apv);
+            string msgSend = "testMessage";
+
+            IntPtr keyBob = await KeyApi.CreateKeyAsync(keyAlg, testEphemeral);
+            IntPtr keyEphemeral = await KeyApi.CreateKeyAsync(keyAlg, testEphemeral);
+            string jwkEphemeral = await KeyApi.GetJwkPublicFromKeyAsync(keyEphemeral, keyAlg);
+
+            KeyAlg keyAlgCek = KeyAlg.A256GCM;
+            IntPtr cek = await KeyApi.CreateKeyAsync(keyAlgCek, testEphemeral);
+            string testAeadContent = $"{{ \"alg\":{algId}, \"enc\":{enc}, \"apu\":{apu}, \"apv\":{apv}, \"epk\":{jwkEphemeral}}}";
+
+            //Act
+            (byte[] testCiphertext, byte[] testTag, byte[] testNonce) = await ecdhEs.EncryptDirectAsync(
+                directKeyAlg,
+                keyEphemeral,
+                keyBob,
+                msgSend,
+                null,
+                testAeadContent);
+
+            byte[] msgReceiveByte = await ecdhEs.DecryptDirectAsync(
+                directKeyAlg,
+                keyEphemeral,
+                keyBob,
+                testCiphertext,
+                testNonce,
+                testTag,
+                testAeadContent);
+
+            string msgReceive = Decoder.GetString(msgReceiveByte);
+
+            //Assert
+            msgReceive.Should().Be(msgSend);
+        }
+
+        [Test, TestCase(TestName = "Ecdh1Pu SenderWrapKeyAsync and ReceiverUnwrapKeyAsyncworks works and returns the input message."), Category("Utils")]
+        public async Task Ecdh1PuWrapUnwrapKeyAsyncWorks()
+        {
+            //Arrange
+            byte testEphemeral = 5;
+            KeyAlg keyAlg = KeyAlg.X25519;
+            string algId = "ECDH-1PU";
+            string enc = "A256GCM";
+            string apu = "Alice";
+            string apv = "Bob";
+            Ecdh1Pu ecdh1Pu = new(algId, apu, apv);
+            string msgSend = "testMessage";
+
+            IntPtr keyAlice = await KeyApi.CreateKeyAsync(keyAlg, testEphemeral);
+            IntPtr keyBob = await KeyApi.CreateKeyAsync(keyAlg, testEphemeral);
+            IntPtr keyEphemeral = await KeyApi.CreateKeyAsync(keyAlg, testEphemeral);
+            string jwkEphemeral = await KeyApi.GetJwkPublicFromKeyAsync(keyEphemeral, keyAlg);
+
+            KeyAlg keyAlgCek = KeyAlg.A256GCM;
+            IntPtr cek = await KeyApi.CreateKeyAsync(keyAlgCek, testEphemeral);
+            string testAeadContent = $"{{ \"alg\":{algId}, \"enc\":{enc}, \"apu\":{apu}, \"apv\":{apv}, \"epk\":{jwkEphemeral}}}";
+
+            //Act
+            (byte[] testAeadCiphertext, byte[] testAeadTag, byte[] testAeadNonce) = await KeyApi.EncryptKeyWithAeadAsync(cek, msgSend, null, testAeadContent);
+
+            (byte[] encryptCiphertext, _, _) = await ecdh1Pu.SenderWrapKeyAsync(
+                KeyAlg.A128KW,
+                keyEphemeral,
+                keyAlice,
+                keyBob,
+                cek,
+                testAeadTag);
+
+            IntPtr cekReceiver = await ecdh1Pu.ReceiverUnwrapKeyAsync(
+                KeyAlg.A128KW,
+                keyAlgCek,
+                keyEphemeral,
+                keyAlice,
+                keyBob,
+                testAeadTag,
+                encryptCiphertext);
+
+
+            string msgReceive = Decoder.GetString(await KeyApi.DecryptKeyWithAeadAsync(cekReceiver, testAeadCiphertext, testAeadNonce, testAeadTag, testAeadContent));
+            string cekSecret = Decoder.GetString(await KeyApi.GetJwkSecretFromKeyAsync(cek));
+            string cekReceiverSecret = Decoder.GetString(await KeyApi.GetJwkSecretFromKeyAsync(cekReceiver));
+
+            //Assert
+            msgReceive.Should().Be(msgSend);
+            cekSecret.Should().Be(cekReceiverSecret);
+        }
+
+        [Test, TestCase(TestName = "Ecdh1Pu EncryptDirectAsync and DecryptDirectAsync works and returns the input message."), Category("Utils")]
+        public async Task Ecdh1PuEncryptDecryptDirectAsyncWorks()
+        {
+            //Arrange
+            byte testEphemeral = 5;
+            KeyAlg keyAlg = KeyAlg.P256;
+            KeyAlg directKeyAlg = KeyAlg.A256GCM;
+            string algId = "ECDH-1PU";
+            string enc = "A256GCM";
+            string apu = "Alice";
+            string apv = "Bob";
+            Ecdh1Pu ecdh1Pu = new(algId, apu, apv);
+            string msgSend = "testMessage";
+
+            IntPtr keyAlice = await KeyApi.CreateKeyAsync(keyAlg, testEphemeral);
+            IntPtr keyBob = await KeyApi.CreateKeyAsync(keyAlg, testEphemeral);
+            IntPtr keyEphemeral = await KeyApi.CreateKeyAsync(keyAlg, testEphemeral);
+            string jwkEphemeral = await KeyApi.GetJwkPublicFromKeyAsync(keyEphemeral, keyAlg);
+
+            KeyAlg keyAlgCek = KeyAlg.A256GCM;
+            IntPtr cek = await KeyApi.CreateKeyAsync(keyAlgCek, testEphemeral);
+            string testAeadContent = $"{{ \"alg\":{algId}, \"enc\":{enc}, \"apu\":{apu}, \"apv\":{apv}, \"epk\":{jwkEphemeral}}}";
+
+            //Act
+            (byte[] testCiphertext, byte[] testTag, byte[] testNonce) = await ecdh1Pu.EncryptDirectAsync(
+                directKeyAlg,
+                keyEphemeral,
+                keyAlice,
+                keyBob,
+                msgSend,
+                null,
+                testAeadContent);
+
+            byte[] msgReceiveByte = await ecdh1Pu.DecryptDirectAsync(
+                directKeyAlg,
+                keyEphemeral,
+                keyAlice,
+                keyBob,
+                testCiphertext,
+                testNonce,
+                testTag,
+                testAeadContent);
+
+            string msgReceive = Decoder.GetString(msgReceiveByte);
+
+            //Assert
+            msgReceive.Should().Be(msgSend);
         }
         #endregion
     }

@@ -29,7 +29,7 @@ namespace aries_askar_dotnet.Models
             IntPtr senderKey,
             IntPtr receiverKey,
             bool receive,
-            string ccTag = null)
+            byte[] ccTag = null)
         {
             return await KeyApi.DeriveEcdh1puAsync(
                 keyAlg.ToKeyAlgString(),
@@ -80,11 +80,10 @@ namespace aries_askar_dotnet.Models
             IntPtr senderKey,
             IntPtr receiverKey,
             IntPtr cek,
-            string ccTag,
-            byte[] nonce = null)
+            byte[] ccTag)
         {
             IntPtr derivedKey = await ecdh1Pu.DeriveKeyAsync(wrapKeyAlg, ephemeralKey, senderKey, receiverKey, false, ccTag);
-            (byte[] ciphertext, byte[] tagBytes, byte[] nonceBytes) = await KeyApi.WrapKeyAsync(derivedKey, cek, nonce);
+            (byte[] ciphertext, byte[] tagBytes, byte[] nonceBytes) = await KeyApi.WrapKeyAsync(derivedKey, cek, null);
             return (ciphertext, tagBytes, nonceBytes);
         }
 
@@ -96,7 +95,7 @@ namespace aries_askar_dotnet.Models
             IntPtr ephemeralKey,
             IntPtr senderKey,
             IntPtr receiverKey,
-            string ccTag,
+            byte[] ccTag,
             byte[] ciphertext,
             byte[] nonce = null,
             byte[] tag = null)
