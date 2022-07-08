@@ -271,7 +271,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
             bool wasInserted = await session.InsertKeyAsync(
-                KeyApi.CreateKeyAsync(KeyAlg.ED25519, 1).GetAwaiter().GetResult(),
+                KeyApi.CreateKeyAsync(KeyAlg.ED25519, true).GetAwaiter().GetResult(),
                 testKeyEntry["key_name"],
                 testKeyEntry["metadata"],
                 testKeyEntry["tags"]);
@@ -290,13 +290,13 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
             bool wasInserted = await session.InsertKeyAsync(
-                KeyApi.CreateKeyAsync(KeyAlg.ED25519, 1).GetAwaiter().GetResult(),
+                KeyApi.CreateKeyAsync(KeyAlg.ED25519, true).GetAwaiter().GetResult(),
                 testKeyEntry["key_name"],
                 testKeyEntry["metadata"],
                 testKeyEntry["tags"]);
 
             bool wasInserted2 = await session.InsertKeyAsync(
-                KeyApi.CreateKeyAsync(KeyAlg.ED25519, 1).GetAwaiter().GetResult(),
+                KeyApi.CreateKeyAsync(KeyAlg.ED25519, true).GetAwaiter().GetResult(),
                 testKeyEntry2["key_name"],
                 testKeyEntry2["metadata"],
                 testKeyEntry2["tags"]);
@@ -328,7 +328,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
             bool wasInserted = await session.InsertKeyAsync(
-                KeyApi.CreateKeyAsync(KeyAlg.ED25519, 1).GetAwaiter().GetResult(),
+                KeyApi.CreateKeyAsync(KeyAlg.ED25519, true).GetAwaiter().GetResult(),
                 testKeyEntry["key_name"],
                 testKeyEntry["metadata"],
                 testKeyEntry["tags"]);
@@ -361,7 +361,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
             bool wasInserted = await session.InsertKeyAsync(
-                KeyApi.CreateKeyAsync(KeyAlg.ED25519, 1).GetAwaiter().GetResult(),
+                KeyApi.CreateKeyAsync(KeyAlg.ED25519, true).GetAwaiter().GetResult(),
                 testKeyEntry["key_name"],
                 testKeyEntry["metadata"],
                 testKeyEntry["tags"]);
@@ -394,7 +394,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
             bool wasInserted = await session.InsertKeyAsync(
-                KeyApi.CreateKeyAsync(KeyAlg.ED25519, 1).GetAwaiter().GetResult(),
+                KeyApi.CreateKeyAsync(KeyAlg.ED25519, true).GetAwaiter().GetResult(),
                 testKeyEntry["key_name"],
                 testKeyEntry["metadata"],
                 testKeyEntry["tags"]);
@@ -427,7 +427,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
             bool wasInserted = await session.InsertKeyAsync(
-                KeyApi.CreateKeyAsync(KeyAlg.ED25519, 1).GetAwaiter().GetResult(),
+                KeyApi.CreateKeyAsync(KeyAlg.ED25519, true).GetAwaiter().GetResult(),
                 testKeyEntry["key_name"],
                 testKeyEntry["metadata"],
                 testKeyEntry["tags"]);
@@ -460,7 +460,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
             bool wasInserted = await session.InsertKeyAsync(
-                KeyApi.CreateKeyAsync(KeyAlg.ED25519, 1).GetAwaiter().GetResult(),
+                KeyApi.CreateKeyAsync(KeyAlg.ED25519, true).GetAwaiter().GetResult(),
                 testKeyEntry["key_name"],
                 testKeyEntry["metadata"],
                 testKeyEntry["tags"]);

@@ -979,7 +979,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             //Arrange
             string testKeyName = "testKeyName";
-            IntPtr keyHandle = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, 1);
+            IntPtr keyHandle = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, true);
 
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync(asTransactions: asTxn);
@@ -1000,7 +1000,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         private static IEnumerable<TestCaseData> CreateCasesInsertKeyAsyncThrows()
         {
             string testName = "testName";
-            IntPtr validKeyHandle = KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, 1).GetAwaiter().GetResult();
+            IntPtr validKeyHandle = KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, true).GetAwaiter().GetResult();
 
             yield return new TestCaseData(validKeyHandle, null, false, true)
                 .SetName("InsertKeyAsync throws with no name provided.");
@@ -1047,7 +1047,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             string testTag = $"{{\"~plaintag\":\"plainKeyTag\"}}";
             string newTestMetadata = "newTestKeyMetadata";
             string newTestTag = $"{{\"~plaintag\":\"newPlainKeyTag\"}}";
-            IntPtr keyHandle = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, 1);
+            IntPtr keyHandle = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, true);
 
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync(asTransactions: asTxn);
@@ -1087,7 +1087,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             string testKeyName = "testKeyName";
             string testMetadata = "testKeyMetadata";
             string testTag = $"{{\"~plaintag\":\"plainKeyTag\"}}";
-            IntPtr keyHandle = KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, 1).GetAwaiter().GetResult();
+            IntPtr keyHandle = KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, true).GetAwaiter().GetResult();
 
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
@@ -1116,7 +1116,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             //Arrange
             string testKeyName = "testKeyName";
-            IntPtr keyHandle = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, 1);
+            IntPtr keyHandle = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, true);
 
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync(asTransactions: asTxn);
@@ -1152,7 +1152,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             //Arrange
             string testKeyName = "testKeyName";
-            IntPtr keyHandle = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, 1);
+            IntPtr keyHandle = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, true);
 
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync(asTransactions: asTxn);
@@ -1187,7 +1187,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             //Arrange
             string testKeyName = "testKeyName";
-            IntPtr keyHandle = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, 1);
+            IntPtr keyHandle = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, true);
 
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync(asTransactions: asTxn);
@@ -1214,7 +1214,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             //Arrange
             string testKeyName = "testKeyName";
-            IntPtr keyHandle = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, 1);            
+            IntPtr keyHandle = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, true);            
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
             bool initInsert1 = await session.InsertKeyAsync(keyHandle, testKeyName);
@@ -1242,9 +1242,9 @@ namespace aries_askar_dotnet_tests.AriesAskar
             string testKeyName1 = "testKeyName1_A128CBC";
             string testKeyName2 = "testKeyName2_A128CBC";
             string testKeyName3 = "testKeyNameC20P";
-            IntPtr keyHandle1 = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, 1);
-            IntPtr keyHandle2 = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, 1);
-            IntPtr keyHandle3 = await KeyApi.CreateKeyAsync(KeyAlg.C20P, 1);
+            IntPtr keyHandle1 = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, true);
+            IntPtr keyHandle2 = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, true);
+            IntPtr keyHandle3 = await KeyApi.CreateKeyAsync(KeyAlg.C20P, true);
 
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync(asTransactions: asTxn);
@@ -1275,7 +1275,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             //Arrange
             string testKeyName1 = "testKeyName1_A128CBC";
-            IntPtr keyHandle1 = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, 1);
+            IntPtr keyHandle1 = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, true);
 
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();

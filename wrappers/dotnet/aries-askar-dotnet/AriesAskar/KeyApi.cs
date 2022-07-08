@@ -10,12 +10,12 @@ namespace aries_askar_dotnet.AriesAskar
         #region Create
         public static async Task<IntPtr> CreateKeyAsync(
             KeyAlg keyAlg,
-            byte ephemeral)
+            bool ephemeral)
         {
             IntPtr localKeyHandle = new();
             int errorCode = NativeMethods.askar_key_generate(
                 FfiStr.Create(keyAlg.ToKeyAlgString()),
-                ephemeral,
+                Convert.ToByte(ephemeral),
                 ref localKeyHandle);
 
             if (errorCode != (int)ErrorCode.Success)
@@ -186,7 +186,7 @@ namespace aries_askar_dotnet.AriesAskar
             return keyAlg;
         }
 
-        public static async Task<byte> GetEphemeralFromKeyAsync(
+        public static async Task<bool> GetEphemeralFromKeyAsync(
             IntPtr localKeyHandle)
         {
             byte ephemeral = 0;
@@ -201,7 +201,7 @@ namespace aries_askar_dotnet.AriesAskar
                 throw AriesAskarException.FromSdkError(error);
             }
 
-            return ephemeral;
+            return Convert.ToBoolean(ephemeral);
         }
 
         public static async Task<string> GetJwkPublicFromKeyAsync(

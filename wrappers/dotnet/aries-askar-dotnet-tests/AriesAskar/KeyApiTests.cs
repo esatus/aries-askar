@@ -22,7 +22,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         public async Task CreateKeyAsyncTests(KeyAlg testKeyAlg)
         {
             //Arrange
-            byte testEphemeral = 1;
+            bool testEphemeral = true;
 
             //Act
             IntPtr actual = await KeyApi.CreateKeyAsync(
@@ -71,7 +71,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         public async Task CreateKeyAsyncErrorTests(KeyAlg testKeyAlg)
         {
             //Arrange
-            byte testEphemeral = 1;
+            bool testEphemeral = true;
 
             //Act
             Func<Task> action = async () =>
@@ -406,7 +406,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         public async Task GetPublicBytesFromKeyAsyncTests(KeyAlg testKeyAlg)
         {
             //Arrange
-            byte testEphemeral = 1;
+            bool testEphemeral = true;
             IntPtr testKeyHandle = await KeyApi.CreateKeyAsync(
                 testKeyAlg,
                 testEphemeral);
@@ -428,7 +428,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         public async Task GetPublicBytesFromKeyAsyncErrorTests(KeyAlg testKeyAlg)
         {
             //Arrange
-            byte testEphemeral = 1;
+            bool testEphemeral = true;
             IntPtr testKeyHandle = await KeyApi.CreateKeyAsync(
                 testKeyAlg,
                 testEphemeral);
@@ -557,7 +557,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
         #region GetEphemeralFromKeyAsync
         [Test, TestCaseSource(nameof(GetEphemeralFromKeyAsyncCases)), Category("Get")]
-        public async Task GetEphemeralFromKeyAsyncTests(KeyAlg testKeyAlg, byte testEphemeral)
+        public async Task GetEphemeralFromKeyAsyncTests(KeyAlg testKeyAlg, bool testEphemeral)
         {
             //Arrange
             IntPtr testKeyHandle = await KeyApi.CreateKeyAsync(
@@ -565,7 +565,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
                     testEphemeral);
 
             //Act
-            byte actual = await KeyApi.GetEphemeralFromKeyAsync(
+            bool actual = await KeyApi.GetEphemeralFromKeyAsync(
                 testKeyHandle);
 
             //Assert
@@ -574,7 +574,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
         private static IEnumerable<TestCaseData> GetEphemeralFromKeyAsyncCases()
         {
-            yield return new TestCaseData(KeyAlg.A128GCM, (byte)1)
+            yield return new TestCaseData(KeyAlg.A128GCM, true)
                 .SetName("GetEphemeralFromKeyAsync returns the ephemeral as a byte for a given key.");
         }
 
@@ -772,7 +772,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         public async Task GetAeadRandomNonceFromKeyAsyncTests(KeyAlg testKeyAlg)
         {
             //Arrange
-            byte testEphemeral = 1;
+            bool testEphemeral = true;
             IntPtr testHandle = await KeyApi.CreateKeyAsync(
                     testKeyAlg,
                     testEphemeral);
@@ -823,7 +823,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         public async Task GetAeadParamsFromKeyAsyncTests(KeyAlg testKeyAlg)
         {
             //Arrange
-            byte testEphemeral = 1;
+            bool testEphemeral = true;
             IntPtr testHandle = await KeyApi.CreateKeyAsync(
                     testKeyAlg,
                     testEphemeral);
@@ -869,7 +869,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         public async Task GetAeadPaddingFromKeyAsyncTests(KeyAlg testKeyAlg)
         {
             //Arrange
-            byte testEphemeral = 5;
+            bool testEphemeral = true;
             IntPtr testHandle = await KeyApi.CreateKeyAsync(
                     testKeyAlg,
                     testEphemeral);
@@ -917,7 +917,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         public async Task EncryptKeyWithAeadAsyncTests(KeyAlg testKeyAlg)
         {
             //Arrange
-            byte testEphemeral = 5;
+            bool testEphemeral = true;
             IntPtr testHandle = await KeyApi.CreateKeyAsync(
                     testKeyAlg,
                     testEphemeral);
@@ -956,7 +956,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         public async Task EncryptKeyWithAeadAsyncErrorTests(KeyAlg testKeyAlg)
         {
             //Arrange
-            byte testEphemeral = 5;
+            bool testEphemeral = true;
             IntPtr testHandle = await KeyApi.CreateKeyAsync(
                     testKeyAlg,
                     testEphemeral);
@@ -988,7 +988,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         public async Task DecryptKeyWithAeadAsyncTests(KeyAlg testKeyAlg)
         {
             //Arrange
-            byte testEphemeral = 5;
+            bool testEphemeral = true;
             IntPtr testHandle = await KeyApi.CreateKeyAsync(
                     testKeyAlg,
                     testEphemeral);
@@ -1068,13 +1068,13 @@ namespace aries_askar_dotnet_tests.AriesAskar
         public async Task CreateCryptoBoxRandomNonceAsyncTests(KeyAlg testKeyAlg)
         {
             KeyAlg keyRecipientAlg = testKeyAlg;
-            byte testRecipientEphemeral = 5;
+            bool testRecipientEphemeral = true;
             IntPtr testRecipientHandle = await KeyApi.CreateKeyAsync(
                     keyRecipientAlg,
                     testRecipientEphemeral);
 
             KeyAlg keySenderAlg = testKeyAlg;
-            byte testSenderEphemeral = 10;
+            bool testSenderEphemeral = true;
             IntPtr testSenderHandle = await KeyApi.CreateKeyAsync(
                     keySenderAlg,
                     testSenderEphemeral);
@@ -1107,13 +1107,13 @@ namespace aries_askar_dotnet_tests.AriesAskar
         public async Task CryptoBoxAsyncTests(KeyAlg testKeyAlg)
         {
             KeyAlg keyRecipientAlg = testKeyAlg;
-            byte testRecipientEphemeral = 5;
+            bool testRecipientEphemeral = true;
             IntPtr testRecipientHandle = await KeyApi.CreateKeyAsync(
                     keyRecipientAlg,
                     testRecipientEphemeral);
 
             KeyAlg keySenderAlg = testKeyAlg;
-            byte testSenderEphemeral = 10;
+            bool testSenderEphemeral = true;
             IntPtr testSenderHandle = await KeyApi.CreateKeyAsync(
                     keySenderAlg,
                     testSenderEphemeral);
@@ -1143,13 +1143,13 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             // Arrange
             KeyAlg keyRecipientAlg = testKeyAlgRecip;
-            byte testRecipientEphemeral = 5;
+            bool testRecipientEphemeral = true;
             IntPtr testRecipientHandle = await KeyApi.CreateKeyAsync(
                     keyRecipientAlg,
                     testRecipientEphemeral);
 
             KeyAlg keySenderAlg = testKeyAlgSend;
-            byte testSenderEphemeral = 10;
+            bool testSenderEphemeral = true;
             IntPtr testSenderHandle = await KeyApi.CreateKeyAsync(
                     keySenderAlg,
                     testSenderEphemeral);
@@ -1182,13 +1182,13 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             //Arrange
             KeyAlg keyRecipientAlg = KeyAlg.X25519;
-            byte testRecipientEphemeral = 5;
+            bool testRecipientEphemeral = true;
             IntPtr testRecipientHandle = await KeyApi.CreateKeyAsync(
                     keyRecipientAlg,
                     testRecipientEphemeral);
 
             KeyAlg keySenderAlg = KeyAlg.X25519;
-            byte testSenderEphemeral = 10;
+            bool testSenderEphemeral = true;
             IntPtr testSenderHandle = await KeyApi.CreateKeyAsync(
                     keySenderAlg,
                     testSenderEphemeral);
@@ -1224,13 +1224,13 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             // Arrange
             KeyAlg keyRecipientAlg = KeyAlg.X25519;
-            byte testRecipientEphemeral = 5;
+            bool testRecipientEphemeral = true;
             IntPtr testRecipientHandle = await KeyApi.CreateKeyAsync(
                     keyRecipientAlg,
                     testRecipientEphemeral);
 
             KeyAlg keySenderAlg = KeyAlg.X25519;
-            byte testSenderEphemeral = 10;
+            bool testSenderEphemeral = true;
             IntPtr testSenderHandle = await KeyApi.CreateKeyAsync(
                     keySenderAlg,
                     testSenderEphemeral);
@@ -1268,7 +1268,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         public async Task SealCryptoBoxAsyncTests(KeyAlg testKeyAlg)
         {
             // Arrange
-            byte testEphemeral = 5;
+            bool testEphemeral = true;
             IntPtr testKeyHandle = await KeyApi.CreateKeyAsync(
                     testKeyAlg,
                     testEphemeral);
@@ -1321,7 +1321,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             //Arrange
             KeyAlg keyAlg = KeyAlg.X25519;
-            byte testEphemeral = 5;
+            bool testEphemeral = true;
             IntPtr testKeyHandle = await KeyApi.CreateKeyAsync(
                     keyAlg,
                     testEphemeral);
@@ -1345,7 +1345,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             //Arrange
             KeyAlg keyAlg = KeyAlg.X25519;
-            byte testEphemeral = 5;
+            bool testEphemeral = true;
             IntPtr testKeyHandle = await KeyApi.CreateKeyAsync(
                     keyAlg,
                     testEphemeral);
@@ -1375,7 +1375,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             //Arrange
             KeyAlg keyAlg = KeyAlg.X25519;
-            byte testEphemeral = 5;
+            bool testEphemeral = true;
             IntPtr testKeyHandle = await KeyApi.CreateKeyAsync(
                     keyAlg,
                     testEphemeral);
@@ -1410,7 +1410,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             //Arrange
             KeyAlg oldKeyAlg = KeyAlg.ED25519;
-            byte testEphemeral = 5;
+            bool testEphemeral = true;
             IntPtr oldKey = await KeyApi.CreateKeyAsync(
                     oldKeyAlg,
                     testEphemeral);
@@ -1431,7 +1431,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             //Arrange
             KeyAlg keyAlg = KeyAlg.ED25519;
-            byte testEphemeral = 5;
+            bool testEphemeral = true;
             IntPtr testKeyHandle = await KeyApi.CreateKeyAsync(
                     keyAlg,
                     testEphemeral);
@@ -1449,7 +1449,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             //Arrange
             KeyAlg keyAlg = KeyAlg.K256;
-            byte testEphemeral = 5;
+            bool testEphemeral = true;
             IntPtr testKeyHandle = await KeyApi.CreateKeyAsync(
                     keyAlg,
                     testEphemeral);
@@ -1471,7 +1471,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             //Arrange
             KeyAlg keyAlg = KeyAlg.K256;
-            byte testEphemeral = 5;
+            bool testEphemeral = true;
             IntPtr testKeyHandle = await KeyApi.CreateKeyAsync(
                     keyAlg,
                     testEphemeral);
@@ -1499,13 +1499,13 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             //Arrange
             KeyAlg keyAlg = KeyAlg.A256GCM;
-            byte testEphemeral = 5;
+            bool testEphemeral = true;
             IntPtr testKeyHandle = await KeyApi.CreateKeyAsync(
                     keyAlg,
                     testEphemeral);
 
             KeyAlg otherKeyAlg = KeyAlg.A128KW;
-            byte otherTestEphemeral = 15;
+            bool otherTestEphemeral = true;
             IntPtr otherTestKeyHandle = await KeyApi.CreateKeyAsync(
                     otherKeyAlg,
                     otherTestEphemeral);
@@ -1526,7 +1526,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         public async Task EcdhEsWrapUnwrapKeyAsyncWorks()
         {
             //Arrange
-            byte testEphemeral = 5;
+            bool testEphemeral = true;
             KeyAlg keyAlg = KeyAlg.X25519;
             string algId = "ECDH-ES";
             string enc = "A256GCM";
@@ -1572,7 +1572,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         public async Task EcdhEsEncryptDecryptDirectAsyncWorks()
         {
             //Arrange
-            byte testEphemeral = 5;
+            bool testEphemeral = true;
             KeyAlg keyAlg = KeyAlg.P256;
             KeyAlg directKeyAlg = KeyAlg.A256GCM;
             string algId = "ECDH-ES";
@@ -1616,7 +1616,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         public async Task Ecdh1PuWrapUnwrapKeyAsyncWorks()
         {
             //Arrange
-            byte testEphemeral = 5;
+            bool testEphemeral = true;
             KeyAlg keyAlg = KeyAlg.X25519;
             string algId = "ECDH-1PU";
             string enc = "A256GCM";
@@ -1668,7 +1668,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         public async Task Ecdh1PuEncryptDecryptDirectAsyncWorks()
         {
             //Arrange
-            byte testEphemeral = 5;
+            bool testEphemeral = true;
             KeyAlg keyAlg = KeyAlg.P256;
             KeyAlg directKeyAlg = KeyAlg.A256GCM;
             string algId = "ECDH-1PU";
