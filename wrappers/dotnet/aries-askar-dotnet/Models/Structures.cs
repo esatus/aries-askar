@@ -27,12 +27,12 @@ namespace indy_vdr_dotnet.models
         public unsafe struct ByteBuffer
         {
             public long len;
-            public byte* value;
+            public IntPtr value;
 
             public static ByteBuffer Create(string json)
             {
                 ByteBuffer buffer = new();
-                if (json != null)
+                if (!string.IsNullOrEmpty(json))
                 {
                     UTF8Encoding decoder = new(true, true);
                     byte[] bytes = new byte[json.Length];
@@ -40,13 +40,13 @@ namespace indy_vdr_dotnet.models
                     buffer.len = json.Length;
                     fixed (byte* bytebuffer_p = &bytes[0])
                     {
-                        buffer.value = bytebuffer_p;
+                        buffer.value = new IntPtr(bytebuffer_p);
                     }
                 }
                 else
                 {
                     buffer.len = 0;
-                    buffer.value = null;
+                    buffer.value = new IntPtr();
                 }
                 return buffer;
             }
@@ -62,12 +62,12 @@ namespace indy_vdr_dotnet.models
                 {
                     fixed (byte* bytebuffer_p = &bytes[0])
                     {
-                        buffer.value = bytebuffer_p;
+                        buffer.value = new IntPtr(bytebuffer_p);
                     }
                 }
                 else
                 {
-                    buffer.value = null;
+                    buffer.value = new IntPtr();
                 }
 
                 return buffer;
@@ -80,14 +80,18 @@ namespace indy_vdr_dotnet.models
 
             if(buffer.len > 0)
             {
-                Marshal.Copy(new IntPtr(buffer.value), managedArray, 0, (int)buffer.len);
+                Marshal.Copy(buffer.value, managedArray, 0, (int)buffer.len);
             }
 
             return managedArray;
         }
         public unsafe static string DecodeToString(this ByteBuffer buffer)
         {
-            return Marshal.PtrToStringUTF8(new IntPtr(buffer.value), (int)buffer.len);
+            return buffer.len switch
+            {
+                0 => "",
+                _ => Marshal.PtrToStringUTF8(buffer.value, (int)buffer.len)
+            };
         }
 
         public unsafe static (byte[], byte[], byte[]) Decode(this EncryptedBuffer encryptedBuffer)
@@ -99,12 +103,12 @@ namespace indy_vdr_dotnet.models
 
             if (encryptedBuffer.buffer.len > 0)
             {
-                if (encryptedBuffer.buffer.len > encryptedBuffer.tag_pos && encryptedBuffer.tag_pos >= 0)
+                if (encryptedBuffer.buffer.len > encryptedBuffer.tag_pos && encryptedBuffer.tag_pos > 0)
                 {
                     valueBytes = new byte[encryptedBuffer.tag_pos];
                     Array.Copy(source, 0, valueBytes, 0, encryptedBuffer.tag_pos);
                     //tag and nonce exist
-                    if (encryptedBuffer.buffer.len > encryptedBuffer.nonce_pos && encryptedBuffer.nonce_pos >= 0)
+                    if (encryptedBuffer.buffer.len > encryptedBuffer.nonce_pos && encryptedBuffer.nonce_pos > 0)
                     {
                         tagBytes = new byte[encryptedBuffer.nonce_pos - encryptedBuffer.tag_pos];
                         Array.Copy(source, encryptedBuffer.tag_pos, tagBytes, 0, encryptedBuffer.nonce_pos - encryptedBuffer.tag_pos);
@@ -122,7 +126,7 @@ namespace indy_vdr_dotnet.models
                 else
                 {
                     //only nonce exists
-                    if (encryptedBuffer.buffer.len > encryptedBuffer.nonce_pos && encryptedBuffer.nonce_pos >= 0)
+                    if (encryptedBuffer.buffer.len > encryptedBuffer.nonce_pos && encryptedBuffer.nonce_pos > 0)
                     {
                         valueBytes = new byte[encryptedBuffer.nonce_pos];
                         Array.Copy(source, 0, valueBytes, 0, encryptedBuffer.nonce_pos);

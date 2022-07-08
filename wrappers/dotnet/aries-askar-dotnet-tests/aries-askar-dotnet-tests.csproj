@@ -5,6 +5,8 @@
     <RootNamespace>aries_askar_dotnet_tests</RootNamespace>
 
     <IsPackable>false</IsPackable>
+
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
