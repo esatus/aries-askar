@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace aries_askar_dotnet.Models
 {
+    /// <summary>
+    /// Scan instance for holding the scan handle, store handle from the backend and parameters list.
+    /// </summary>
     public class Scan
     {
         public IntPtr scanHandle { get; set; }

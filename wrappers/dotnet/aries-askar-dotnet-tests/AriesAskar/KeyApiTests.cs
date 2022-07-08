@@ -1599,7 +1599,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
                 null,
                 testAeadContent);
 
-            byte[] msgReceiveByte = await ecdhEs.DecryptDirectAsync(
+            string msgReceive = await ecdhEs.DecryptDirectAsync(
                 directKeyAlg,
                 keyEphemeral,
                 keyBob,
@@ -1607,8 +1607,6 @@ namespace aries_askar_dotnet_tests.AriesAskar
                 testNonce,
                 testTag,
                 testAeadContent);
-
-            string msgReceive = Decoder.GetString(msgReceiveByte);
 
             //Assert
             msgReceive.Should().Be(msgSend);
@@ -1699,7 +1697,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
                 null,
                 testAeadContent);
 
-            byte[] msgReceiveByte = await ecdh1Pu.DecryptDirectAsync(
+            string msgReceive = await ecdh1Pu.DecryptDirectAsync(
                 directKeyAlg,
                 keyEphemeral,
                 keyAlice,
@@ -1708,8 +1706,6 @@ namespace aries_askar_dotnet_tests.AriesAskar
                 testNonce,
                 testTag,
                 testAeadContent);
-
-            string msgReceive = Decoder.GetString(msgReceiveByte);
 
             //Assert
             msgReceive.Should().Be(msgSend);

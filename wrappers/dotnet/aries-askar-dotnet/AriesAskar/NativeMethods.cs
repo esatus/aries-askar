@@ -4,6 +4,9 @@ using static indy_vdr_dotnet.models.Structures;
 
 namespace aries_askar_dotnet.AriesAskar
 {
+    /// <summary>
+    /// Api calls to the native code.
+    /// </summary>
     internal static class NativeMethods
     {
         #region Error
