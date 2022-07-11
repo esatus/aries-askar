@@ -1,5 +1,8 @@
 ﻿namespace aries_askar_dotnet.Models
 {
+    /// <summary>
+    /// Converts the value of KeyAlg to the corresponding string representation for the backend.
+    /// </summary>
     public static class KeyAlgConverter
     {
         public static string ToKeyAlgString(this KeyAlg keyAlg)
@@ -49,23 +52,33 @@
         }
     }
 
+    /// <summary>
+    /// Supported key algorithms.
+    /// </summary>
     public enum KeyAlg
     {
+        /// AES
         A128GCM,
         A256GCM,
         A128CBC_HS256,
         A256CBC_HS512,
         A128KW,
         A256KW,
+        /// BLS12-381
         BLS12_381_G1,
         BLS12_381_G2,
         BLS12_381_G1G2,
+        /// (X)ChaCha20-Poly1305
         C20P,
         XC20P,
+        /// Curve25519 signing key
         ED25519,
+        /// Curve25519 diffie-hellman key exchange key
         X25519,
+        /// Elliptic Curve key for signing or key exchange
         K256,
         P256,
+        /// None
         NONE = -1
     }
 }

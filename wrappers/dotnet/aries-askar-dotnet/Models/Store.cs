@@ -2,6 +2,9 @@
 
 namespace aries_askar_dotnet.Models
 {
+    /// <summary>
+    /// Store instance for holding the store handle from the backend. Also holds the specUri of the store and a session instance.
+    /// </summary>
     public class Store
     {
         public IntPtr storeHandle { get; set; }

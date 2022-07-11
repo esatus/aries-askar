@@ -1,5 +1,8 @@
 ﻿namespace aries_askar_dotnet
 {
+    /// <summary>
+    /// Converts the value of ErrorCode to the corresponding string representation for the backend.
+    /// </summary>
     public static class ErrorCodeConverter
     {
         public static string ToErrorCodeString(this ErrorCode errorCode)
@@ -21,6 +24,10 @@
             };
         }
     }
+
+    /// <summary>
+    /// The error codes defined in the backend.
+    /// </summary>
     public enum ErrorCode
     {
         Success = 0,
