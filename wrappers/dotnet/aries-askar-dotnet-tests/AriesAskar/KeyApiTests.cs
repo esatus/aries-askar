@@ -1593,7 +1593,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
                 null,
                 testAeadContent);
 
-            byte[] msgReceiveByte = await ecdhEs.DecryptDirectAsync(
+            string msgReceived = await ecdhEs.DecryptDirectAsync(
                 directKeyAlg,
                 keyEphemeral,
                 keyBob,
@@ -1602,10 +1602,8 @@ namespace aries_askar_dotnet_tests.AriesAskar
                 testTag,
                 testAeadContent);
 
-            string msgReceive = Decoder.GetString(msgReceiveByte);
-
             //Assert
-            msgReceive.Should().Be(msgSend);
+            msgReceived.Should().Be(msgSend);
         }
 
         [Test, TestCase(TestName = "Ecdh1Pu SenderWrapKeyAsync and ReceiverUnwrapKeyAsyncworks works and returns the input message."), Category("Utils")]
@@ -1693,7 +1691,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
                 null,
                 testAeadContent);
 
-            byte[] msgReceiveByte = await ecdh1Pu.DecryptDirectAsync(
+            string msgReceived = await ecdh1Pu.DecryptDirectAsync(
                 directKeyAlg,
                 keyEphemeral,
                 keyAlice,
@@ -1703,10 +1701,8 @@ namespace aries_askar_dotnet_tests.AriesAskar
                 testTag,
                 testAeadContent);
 
-            string msgReceive = Decoder.GetString(msgReceiveByte);
-
             //Assert
-            msgReceive.Should().Be(msgSend);
+            msgReceived.Should().Be(msgSend);
         }
         #endregion
     }
