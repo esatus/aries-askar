@@ -8,14 +8,21 @@ namespace aries_askar_dotnet.AriesAskar
     public class KeyApi
     {
         #region Create
+        /// <summary>
+        /// Creates a new key.
+        /// </summary>
+        /// <param name="keyAlg">The <see cref="KeyAlg"/> used to create the key.</param>
+        /// <param name="ephemeral">The <see cref="bool"/> used to create the key.</param>
+        /// <returns>The handle of the created key as <see cref="IntPtr"/>.</returns>
         public static async Task<IntPtr> CreateKeyAsync(
             KeyAlg keyAlg,
-            byte ephemeral)
+            bool ephemeral)
         {
+            int ephemeralAsInt = ephemeral ? 1 : 0;
             IntPtr localKeyHandle = new();
             int errorCode = NativeMethods.askar_key_generate(
                 FfiStr.Create(keyAlg.ToKeyAlgString()),
-                ephemeral,
+                (byte)ephemeralAsInt,
                 ref localKeyHandle);
 
             if (errorCode != (int)ErrorCode.Success)
@@ -28,6 +35,13 @@ namespace aries_askar_dotnet.AriesAskar
             return localKeyHandle;
         }
 
+        /// <summary>
+        /// Creates a new key from a seed.
+        /// </summary>
+        /// <param name="keyAlg">The <see cref="KeyAlg"/> used to create the key.</param>
+        /// <param name="seed">The seed <see cref="string"/> used to create the key.</param>
+        /// <param name="method">The <see cref="SeedMethod"/> used to create the key.</param>
+        /// <returns>The handle of the created key as <see cref="IntPtr"/>.</returns>
         public static async Task<IntPtr> CreateKeyFromSeedAsync(
             KeyAlg keyAlg,
             string seed,
@@ -50,6 +64,11 @@ namespace aries_askar_dotnet.AriesAskar
             return localKeyHandle;
         }
 
+        /// <summary>
+        /// Creates a new key from a jwk.
+        /// </summary>
+        /// <param name="jwkJson">The jwk as json <see cref="string"/> used to create the key.</param>
+        /// <returns>The handle of the created key as <see cref="IntPtr"/>.</returns>
         public static async Task<IntPtr> CreateKeyFromJwkAsync(
             string jwkJson)
         {
@@ -68,6 +87,12 @@ namespace aries_askar_dotnet.AriesAskar
             return localKeyHandle;
         }
 
+        /// <summary>
+        /// Creates a new key from public bytes.
+        /// </summary>
+        /// <param name="keyAlg">The <see cref="KeyAlg"/> used to create the key.</param>
+        /// <param name="publicBytes">The public bytes as <see cref="byte[]"/> used to create the key.</param>
+        /// <returns>The handle of the created key as <see cref="IntPtr"/>.</returns>
         public static async Task<IntPtr> CreateKeyFromPublicBytesAsync(
             KeyAlg keyAlg,
             byte[] publicBytes)
@@ -88,6 +113,12 @@ namespace aries_askar_dotnet.AriesAskar
             return localKeyHandle;
         }
 
+        /// <summary>
+        /// Creates a new key from secret bytes.
+        /// </summary>
+        /// <param name="keyAlg">The <see cref="KeyAlg"/> used to create the key.</param>
+        /// <param name="secretBytes">The secret bytes <see cref="byte[]"/> used to create the key.</param>
+        /// <returns>The handle of the created key as <see cref="IntPtr"/>.</returns>
         public static async Task<IntPtr> CreateKeyFromSecretBytesAsync(
             KeyAlg keyAlg,
             byte[] secretBytes)
@@ -108,6 +139,13 @@ namespace aries_askar_dotnet.AriesAskar
             return localKeyHandle;
         }
 
+        /// <summary>
+        /// Creates a new key from exchange.
+        /// </summary>
+        /// <param name="keyAlg">The <see cref="KeyAlg"/> used to create the key.</param>
+        /// <param name="secretKeyHandle">The secret key handle as <see cref="IntPtr"/> used to create the key.</param>
+        /// <param name="publicKeyHandle">The public key handle as <see cref="IntPtr"/> used to create the key.</param>
+        /// <returns>The handle of the created key as <see cref="IntPtr"/>.</returns>
         public static async Task<IntPtr> CreateKeyFromKeyExchangeAsync(
             KeyAlg keyAlg,
             IntPtr secretKeyHandle,
@@ -132,6 +170,11 @@ namespace aries_askar_dotnet.AriesAskar
         #endregion
 
         #region Get
+        /// <summary>
+        /// Gets the public bytes from a key.
+        /// </summary>
+        /// <param name="localKeyHandle">The handle of the key as <see cref="IntPtr"/>.</param>
+        /// <returns>The public bytes of a key as <see cref="byte[]"/>.</returns>
         public static async Task<byte[]> GetPublicBytesFromKeyAsync(
             IntPtr localKeyHandle)
         {
@@ -150,6 +193,11 @@ namespace aries_askar_dotnet.AriesAskar
             return secret.Decode();
         }
 
+        /// <summary>
+        /// Gets the secret bytes from a key.
+        /// </summary>
+        /// <param name="localKeyHandle">The handle of the key as <see cref="IntPtr"/>.</param>
+        /// <returns>The secret bytes of a key as <see cref="byte[]"/>.</returns>
         public static async Task<byte[]> GetSecretBytesFromKeyAsync(
             IntPtr localKeyHandle)
         {
@@ -168,6 +216,11 @@ namespace aries_askar_dotnet.AriesAskar
             return secret.Decode();
         }
 
+        /// <summary>
+        /// Gets the creation key algorithm from a key.
+        /// </summary>
+        /// <param name="localKeyHandle">The handle of the key as <see cref="IntPtr"/>.</param>
+        /// <returns>The creation key algorithm from a key as <see cref="string"/>.</returns>
         public static async Task<string> GetAlgorithmFromKeyAsync(
             IntPtr localKeyHandle)
         {
@@ -186,7 +239,12 @@ namespace aries_askar_dotnet.AriesAskar
             return keyAlg;
         }
 
-        public static async Task<byte> GetEphemeralFromKeyAsync(
+        /// <summary>
+        /// Gets the ephemeral setting from a key.
+        /// </summary>
+        /// <param name="localKeyHandle">The handle of the key as <see cref="IntPtr"/>.</param>
+        /// <returns>The ephemeral setting as <see cref="bool"/>.</returns>
+        public static async Task<bool> GetEphemeralFromKeyAsync(
             IntPtr localKeyHandle)
         {
             byte ephemeral = 0;
@@ -201,9 +259,15 @@ namespace aries_askar_dotnet.AriesAskar
                 throw AriesAskarException.FromSdkError(error);
             }
 
-            return ephemeral;
+            return Convert.ToBoolean(ephemeral);
         }
 
+        /// <summary>
+        /// Gets the jwk public from a key.
+        /// </summary>
+        /// <param name="localKeyHandle">The handle of the key as <see cref="IntPtr"/>.</param>
+        /// <param name="keyAlg">The <see cref="KeyAlg"/> used to create the key.</param>
+        /// <returns>The jwk public as <see cref="string"/>.</returns>
         public static async Task<string> GetJwkPublicFromKeyAsync(
             IntPtr localKeyHandle,
             KeyAlg keyAlg)
@@ -224,6 +288,11 @@ namespace aries_askar_dotnet.AriesAskar
             return jwk;
         }
 
+        /// <summary>
+        /// Gets the jwk secret from a key.
+        /// </summary>
+        /// <param name="localKeyHandle">The handle of the key as <see cref="IntPtr"/>.</param>
+        /// <returns>The jwk secret as <see cref="string"/>.</returns>
         public static async Task<byte[]> GetJwkSecretFromKeyAsync(
             IntPtr localKeyHandle)
         {
@@ -242,6 +311,12 @@ namespace aries_askar_dotnet.AriesAskar
             return secret.Decode();
         }
 
+        /// <summary>
+        /// Gets the jwk thumbprint from a key.
+        /// </summary>
+        /// <param name="localKeyHandle">The handle of the key as <see cref="IntPtr"/>.</param>
+        /// <param name="keyAlg">The <see cref="KeyAlg"/> used to create the key.</param>
+        /// <returns>The jwk thumbprint as <see cref="string"/>.</returns>
         public static async Task<string> GetJwkThumbprintFromKeyAsync(
             IntPtr localKeyHandle,
             KeyAlg keyAlg)
@@ -264,6 +339,11 @@ namespace aries_askar_dotnet.AriesAskar
         #endregion
 
         #region aead
+        /// <summary>
+        /// Creates an aead random nonce from a key.
+        /// </summary>
+        /// <param name="localKeyHandle">The handle of the key as <see cref="IntPtr"/>.</param>
+        /// <returns>The created nonce as <see cref="byte[]"/>.</returns>
         public static async Task<byte[]> GetAeadRandomNonceFromKeyAsync(
             IntPtr localKeyHandle)
         {
@@ -282,7 +362,13 @@ namespace aries_askar_dotnet.AriesAskar
             return secret.Decode();
         }
 
-        public static async Task<AeadParams> GetAeadParamsFromKeyAsync(
+        /// <summary>
+        /// Gets the aead params from a key.
+        /// </summary>
+        /// <param name="localKeyHandle">The handle of the key as <see cref="IntPtr"/>.</param>
+        /// <returns>The aead params as a pair of <see cref="uint"/>. 
+        /// First is nonce length, second is tag length.</returns>
+        public static async Task<(uint, uint)> GetAeadParamsFromKeyAsync(
             IntPtr localKeyHandle)
         {
             AeadParams aeadParams = new() { nonce_length = 0, tag_length = 0 };
@@ -297,9 +383,15 @@ namespace aries_askar_dotnet.AriesAskar
                 throw AriesAskarException.FromSdkError(error);
             }
 
-            return aeadParams;
+            return (aeadParams.nonce_length, aeadParams.tag_length);
         }
 
+        /// <summary>
+        /// Gets the aead padding from a key.
+        /// </summary>
+        /// <param name="localKeyHandle">The handle of the key as <see cref="IntPtr"/>.</param>
+        /// <param name="msgLen">The length of the message as <see cref="long"/>.</param>
+        /// <returns>The aead padding as <see cref="int"/>.</returns>
         public static async Task<int> GetAeadPaddingFromKeyAsync(
             IntPtr localKeyHandle,
             long msgLen)
@@ -320,6 +412,15 @@ namespace aries_askar_dotnet.AriesAskar
             return padding;
         }
 
+        /// <summary>
+        /// Encrypts a message with aead.
+        /// </summary>
+        /// <param name="localKeyHandle">The handle of the key as <see cref="IntPtr"/>.</param>
+        /// <param name="message">The encryption message as <see cref="string"/>.</param>
+        /// <param name="nonce">The encryption nonce as <see cref="byte[]"/>.</param>
+        /// <param name="aad">The encryption aad as <see cref="string"/>.</param>
+        /// <returns>The encrypted message as a pair of <see cref="byte[]"/>. 
+        /// First is value. Second is tag. Third is nonce.</returns>
         public static async Task<(byte[], byte[], byte[])> EncryptKeyWithAeadAsync(
             IntPtr localKeyHandle,
             string message,
@@ -349,6 +450,15 @@ namespace aries_askar_dotnet.AriesAskar
             return encrypted.Decode();
         }
 
+        /// <summary>
+        /// Decrypts a message with aead.
+        /// </summary>
+        /// <param name="localKeyHandle">The handle of the key as <see cref="IntPtr"/>.</param>
+        /// <param name="ciphertext">The encryption ciphertext as <see cref="byte[]"/>.</param>
+        /// <param name="nonce">The encryption nonce as <see cref="byte[]"/>.</param>
+        /// <param name="tag">The encryption tag as <see cref="byte[]"/>.</param>
+        /// <param name="aad">The encryption aad as <see cref="string"/>.</param>
+        /// <returns>The decrypted message as <see cref="byte[]"/>.</returns>
         public static async Task<byte[]> DecryptKeyWithAeadAsync(
             IntPtr localKeyHandle,
             byte[] ciphertext,
@@ -377,6 +487,10 @@ namespace aries_askar_dotnet.AriesAskar
         #endregion
 
         #region Crypto
+        /// <summary>
+        /// Creates a random nonce for creating a crypto box.
+        /// </summary>
+        /// <returns>The nonce as <see cref="byte[]"/>.</returns>
         public static async Task<byte[]> CreateCryptoBoxRandomNonceAsync()
         {
             ByteBuffer nonce = new() { len = 0, value = new IntPtr() };
@@ -393,6 +507,14 @@ namespace aries_askar_dotnet.AriesAskar
             return nonce.Decode();
         }
 
+        /// <summary>
+        /// Creates a crypto box.
+        /// </summary>
+        /// <param name="recipKey">The handle of the recipient key as <see cref="IntPtr"/>.</param>
+        /// <param name="senderKey">The handle of the sender key as <see cref="IntPtr"/>.</param>
+        /// <param name="message">The encryption message as <see cref="string"/>.</param>
+        /// <param name="nonce">The encryption nonce as <see cref="byte[]"/>.</param>
+        /// <returns>The box as <see cref="byte[]"/>.</returns>
         public static async Task<byte[]> CryptoBoxAsync(
             IntPtr recipKey,
             IntPtr senderKey,
@@ -417,6 +539,14 @@ namespace aries_askar_dotnet.AriesAskar
             return output.Decode();
         }
 
+        /// <summary>
+        /// Opens a crypto box.
+        /// </summary>
+        /// <param name="recipKey">The handle of the recipient key as <see cref="IntPtr"/>.</param>
+        /// <param name="senderKey">The handle of the sender key as <see cref="IntPtr"/>.</param>
+        /// <param name="encrypted">The encrypted message as <see cref="byte[]"/>.</param>
+        /// <param name="nonce">The encryption nonce as <see cref="byte[]"/>.</param>
+        /// <returns>The opened box as <see cref="byte[]"/>.</returns>
         public static async Task<byte[]> OpenCryptoBoxAsync(
             IntPtr recipKey,
             IntPtr senderKey,
@@ -441,6 +571,12 @@ namespace aries_askar_dotnet.AriesAskar
             return output.Decode();
         }
 
+        /// <summary>
+        /// Seals a crypto box.
+        /// </summary>
+        /// <param name="localKeyHandle">The handle of the key as <see cref="IntPtr"/>.</param>
+        /// <param name="message">The encryption message as <see cref="string"/>.</param>
+        /// <returns>The sealed box as <see cref="byte[]"/>.</returns>
         public static async Task<byte[]> SealCryptoBoxAsync(
             IntPtr localKeyHandle,
             string message)
@@ -461,6 +597,12 @@ namespace aries_askar_dotnet.AriesAskar
             return output.Decode();
         }
 
+        /// <summary>
+        /// Opens a sealed crypto box.
+        /// </summary>
+        /// <param name="localKeyHandle">The handle of the key as <see cref="IntPtr"/>.</param>
+        /// <param name="ciphertext">The encryption ciphertext as <see cref="byte[]"/>.</param>
+        /// <returns>The box as <see cref="byte[]"/>.</returns>
         public static async Task<byte[]> OpenSealCryptoBoxAsync(
             IntPtr localKeyHandle,
             byte[] ciphertext)
@@ -483,6 +625,12 @@ namespace aries_askar_dotnet.AriesAskar
         #endregion
 
         #region Utils
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="inputHandle">The handle of the key as <see cref="IntPtr"/>.</param>
+        /// <param name="keyAlg">The <see cref="KeyAlg"/> used to create the key.</param>
+        /// <returns></returns>
         public static async Task<IntPtr> ConvertKeyAsync(
             IntPtr inputHandle,
             KeyAlg keyAlg)
@@ -503,6 +651,11 @@ namespace aries_askar_dotnet.AriesAskar
             return output;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="inputHandle">The handle of the key as <see cref="IntPtr"/>.</param>
+        /// <returns></returns>
         public static async Task FreeKeyAsync(
             IntPtr inputHandle)
         {
