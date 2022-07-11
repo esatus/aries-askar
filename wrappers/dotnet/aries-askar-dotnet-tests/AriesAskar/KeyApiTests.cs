@@ -1078,15 +1078,8 @@ namespace aries_askar_dotnet_tests.AriesAskar
                     keySenderAlg,
                     testEphemeral);
 
-            string testMessage = "testMessage";
-            byte[] testNonce = await KeyApi.CreateCryptoBoxRandomNonceAsync();
-
             //Act
-            byte[] actual = await KeyApi.CryptoBoxAsync(
-                testRecipientHandle,
-                testSenderHandle,
-                testMessage,
-                testNonce);
+            byte[] actual = await KeyApi.CreateCryptoBoxRandomNonceAsync();
 
             //Assert
             _ = ByteBuffer.Create(actual).len.Should().NotBe(0);
@@ -1095,7 +1088,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         private static IEnumerable<TestCaseData> CreateCryptoBoxRandomNonceAsyncCases()
         {
             yield return new TestCaseData(KeyAlg.X25519)
-                .SetName("CreateCryptoBoxRandomNonceAsync creates a crypto box with key algorithm X25519");
+                .SetName("CreateCryptoBoxRandomNonceAsync works and creates a nonce.");
         }
 
         #endregion
@@ -1133,7 +1126,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         private static IEnumerable<TestCaseData> CryptoBoxAsyncCases()
         {
             yield return new TestCaseData(KeyAlg.X25519)
-                .SetName("CryptoBoxAsync creates a crypto box with key algorithm X25519");
+                .SetName("CryptoBoxAsync works and encrypts the message with key algorithm X25519.");
         }
 
         [Test, TestCaseSource(nameof(CryptoBoxAsyncErrorCases)), Category("Crypto")]
@@ -1199,20 +1192,20 @@ namespace aries_askar_dotnet_tests.AriesAskar
                 testNonce);
 
             //Act
-            byte[] actual = await KeyApi.OpenCryptoBoxAsync(
+            string actual = await KeyApi.OpenCryptoBoxAsync(
                 testRecipientHandle,
                 testSenderHandle,
                 testBox,
                 testNonce);
 
             //Assert
-            _ = ByteBuffer.Create(actual).len.Should().NotBe(0);
+            _ =actual.Should().Be(testMessage);
         }
 
         private static IEnumerable<TestCaseData> OpenCryptoBoxAsyncCases()
         {
             yield return new TestCaseData(KeyAlg.X25519)
-                .SetName("OpenCryptoBoxAsync opens the crypto box.");
+                .SetName("OpenCryptoBoxAsync works and decrypts the message.");
         }
 
         [Test, TestCaseSource(nameof(OpenCryptoBoxAsyncErrorCases)), Category("Crypto")]
@@ -1240,7 +1233,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
                 testNonce);
 
             //Act
-            Func<Task<byte[]>> func = async () => await KeyApi.OpenCryptoBoxAsync(
+            Func<Task<string>> func = async () => await KeyApi.OpenCryptoBoxAsync(
                 new IntPtr(),
                 new IntPtr(),
                 testBox,
@@ -1282,7 +1275,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         private static IEnumerable<TestCaseData> SealCryptoBoxAsyncCases()
         {
             yield return new TestCaseData(KeyAlg.X25519)
-                .SetName("SealCryptoBoxAsync seals the key.");
+                .SetName("SealCryptoBoxAsync works and encrypts the message.");
         }
 
         [Test, TestCaseSource(nameof(SealCryptoBoxAsyncErrorCases)), Category("Crypto")]
@@ -1311,30 +1304,6 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
         #region OpenSealCryptoBoxAsync
 
-        [Test, TestCase(TestName = "OpenSealCryptoBoxAsync call returns request handle.")]
-        public async Task OpenSealCryptoBoxAsyncTests()
-        {
-            //Arrange
-            KeyAlg keyAlg = KeyAlg.X25519;
-            bool testEphemeral = true;
-            IntPtr testKeyHandle = await KeyApi.CreateKeyAsync(
-                    keyAlg,
-                    testEphemeral);
-
-            string testMessage = "testMessage";
-
-            byte[] sealedBox = await KeyApi.SealCryptoBoxAsync(
-                testKeyHandle,
-                testMessage);
-
-            byte[] actual = await KeyApi.OpenSealCryptoBoxAsync(
-                testKeyHandle,
-                sealedBox);
-
-            //Assert
-            _ = ByteBuffer.Create(actual).len.Should().NotBe(0);
-        }
-
         [Test, TestCaseSource(nameof(OpenSealCryptoBoxAsyncCases)), Category("Crypto")]
         public async Task OpenSealCryptoBoxAsyncTests(KeyAlg testKeyAlg)
         {
@@ -1351,18 +1320,18 @@ namespace aries_askar_dotnet_tests.AriesAskar
                 testKeyHandle,
                 testMessage);
             //Act
-            byte[] actual = await KeyApi.OpenSealCryptoBoxAsync(
+            string actual = await KeyApi.OpenSealCryptoBoxAsync(
                 testKeyHandle,
                 sealedBox);
 
             //Assert
-            _ = ByteBuffer.Create(actual).len.Should().NotBe(0);
+            _ = actual.Should().Be(testMessage);
         }
 
         private static IEnumerable<TestCaseData> OpenSealCryptoBoxAsyncCases()
         {
             yield return new TestCaseData(KeyAlg.X25519)
-                .SetName("OpenSealCryptoBoxAsync opens a sealed cryptobox.");
+                .SetName("OpenSealCryptoBoxAsync works and decrypts the message.");
         }
 
         [Test, TestCaseSource(nameof(OpenSealCryptoBoxAsyncErrorCases)), Category("Crypto")]
@@ -1382,7 +1351,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
                 testMessage);
 
             //Act
-            Func<Task<byte[]>> func = async () => await KeyApi.OpenSealCryptoBoxAsync(
+            Func<Task<string>> func = async () => await KeyApi.OpenSealCryptoBoxAsync(
                 new IntPtr(),
                 sealedBox);
 
@@ -1449,7 +1418,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
                     keyAlg,
                     testEphemeral);
             byte[] testMessage = ByteBuffer.Create("testMessage").Decode();
-            string testSigType = "ES256K";
+            SignatureType testSigType = SignatureType.ES256K;
 
             //Act
             byte[] actual = await KeyApi.SignMessageFromKeyAsync(
@@ -1461,29 +1430,37 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = actual.Should().NotBeEmpty();
         }
 
-        [Test, TestCase(TestName = "VerifySignatureFromKeyAsync call returns request handle."), Category("Utils")]
-        public async Task VerifySignatureFromKeyAsyncTests()
+        private static IEnumerable<TestCaseData> VerifySignatureFromKeyAsyncCases()
+        {
+            yield return new TestCaseData(KeyAlg.K256, SignatureType.ES256K)
+                .SetName("VerifySignatureFromKeyAsync call returns request handle for keyAlg K256 and SigType ES256K.");
+            yield return new TestCaseData(KeyAlg.P256, SignatureType.ES256)
+                .SetName("VerifySignatureFromKeyAsync call returns request handle for keyAlg P256 and SigType ES256.");
+            yield return new TestCaseData(KeyAlg.ED25519, SignatureType.EdDSA)
+                .SetName("VerifySignatureFromKeyAsync call returns request handle for keyAlg ED25519 and SigType EdDSA.");
+        }
+
+        [Test, TestCaseSource(nameof(VerifySignatureFromKeyAsyncCases)), Category("Utils")]
+        public async Task VerifySignatureFromKeyAsyncTests(KeyAlg keyAlg, SignatureType sigType)
         {
             //Arrange
-            KeyAlg keyAlg = KeyAlg.K256;
             bool testEphemeral = true;
             IntPtr testKeyHandle = await KeyApi.CreateKeyAsync(
                     keyAlg,
                     testEphemeral);
             byte[] testMessage = ByteBuffer.Create("testMessage").Decode();
-            string testSigType = "ES256K";
 
             //Act
-            byte[] testSignedMessage = await KeyApi.SignMessageFromKeyAsync(
+            byte[] testSignature = await KeyApi.SignMessageFromKeyAsync(
                 testKeyHandle,
                 testMessage,
-                testSigType);
+                sigType);
 
             bool actual = await KeyApi.VerifySignatureFromKeyAsync(
                 testKeyHandle,
                 testMessage,
-                testSignedMessage,
-                testSigType);
+                testSignature,
+                sigType);
 
             //Assert
             _ = actual.Should().BeTrue();

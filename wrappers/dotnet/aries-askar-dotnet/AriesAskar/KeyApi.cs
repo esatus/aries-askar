@@ -9,7 +9,7 @@ namespace aries_askar_dotnet.AriesAskar
     {
         #region Create
         /// <summary>
-        /// Creates a new key.
+        /// Creates a new random key or keypair.
         /// </summary>
         /// <param name="keyAlg">The <see cref="KeyAlg"/> used to create the key.</param>
         /// <param name="ephemeral">The <see cref="bool"/> used to create the key.</param>
@@ -36,7 +36,7 @@ namespace aries_askar_dotnet.AriesAskar
         }
 
         /// <summary>
-        /// Creates a new key from a seed.
+        /// Creates a new deterministic key or keypair from a seed.
         /// </summary>
         /// <param name="keyAlg">The <see cref="KeyAlg"/> used to create the key.</param>
         /// <param name="seed">The seed <see cref="string"/> used to create the key.</param>
@@ -65,7 +65,7 @@ namespace aries_askar_dotnet.AriesAskar
         }
 
         /// <summary>
-        /// Creates a new key from a jwk.
+        /// Creates a new key or keypair from a jwk.
         /// </summary>
         /// <param name="jwkJson">The jwk as json <see cref="string"/> used to create the key.</param>
         /// <returns>The handle of the created key as <see cref="IntPtr"/>.</returns>
@@ -88,7 +88,7 @@ namespace aries_askar_dotnet.AriesAskar
         }
 
         /// <summary>
-        /// Creates a new key from public bytes.
+        /// Create a public key from its byte representation
         /// </summary>
         /// <param name="keyAlg">The <see cref="KeyAlg"/> used to create the key.</param>
         /// <param name="publicBytes">The public bytes as <see cref="byte[]"/> used to create the key.</param>
@@ -114,7 +114,7 @@ namespace aries_askar_dotnet.AriesAskar
         }
 
         /// <summary>
-        /// Creates a new key from secret bytes.
+        /// Creates a new secret key or keypair from its byte representation
         /// </summary>
         /// <param name="keyAlg">The <see cref="KeyAlg"/> used to create the key.</param>
         /// <param name="secretBytes">The secret bytes <see cref="byte[]"/> used to create the key.</param>
@@ -140,7 +140,7 @@ namespace aries_askar_dotnet.AriesAskar
         }
 
         /// <summary>
-        /// Creates a new key from exchange.
+        /// Derive a new key from a Diffie-Hellman exchange between this keypair and a public key
         /// </summary>
         /// <param name="keyAlg">The <see cref="KeyAlg"/> used to create the key.</param>
         /// <param name="secretKeyHandle">The secret key handle as <see cref="IntPtr"/> used to create the key.</param>
@@ -217,10 +217,10 @@ namespace aries_askar_dotnet.AriesAskar
         }
 
         /// <summary>
-        /// Gets the creation key algorithm from a key.
+        /// Gets the key creation algorithm of a key.
         /// </summary>
         /// <param name="localKeyHandle">The handle of the key as <see cref="IntPtr"/>.</param>
-        /// <returns>The creation key algorithm from a key as <see cref="string"/>.</returns>
+        /// <returns>The key creation algorithm from a key as <see cref="string"/>.</returns>
         public static async Task<string> GetAlgorithmFromKeyAsync(
             IntPtr localKeyHandle)
         {
@@ -240,7 +240,7 @@ namespace aries_askar_dotnet.AriesAskar
         }
 
         /// <summary>
-        /// Gets the ephemeral setting from a key.
+        /// Gets the ephemeral setting of a key.
         /// </summary>
         /// <param name="localKeyHandle">The handle of the key as <see cref="IntPtr"/>.</param>
         /// <returns>The ephemeral setting as <see cref="bool"/>.</returns>
@@ -263,11 +263,11 @@ namespace aries_askar_dotnet.AriesAskar
         }
 
         /// <summary>
-        /// Gets the jwk public from a key.
+        /// Gets the public jwk representation for this key or keypair
         /// </summary>
         /// <param name="localKeyHandle">The handle of the key as <see cref="IntPtr"/>.</param>
         /// <param name="keyAlg">The <see cref="KeyAlg"/> used to create the key.</param>
-        /// <returns>The jwk public as <see cref="string"/>.</returns>
+        /// <returns>The public jwk representation as <see cref="string"/>.</returns>
         public static async Task<string> GetJwkPublicFromKeyAsync(
             IntPtr localKeyHandle,
             KeyAlg keyAlg)
@@ -289,10 +289,10 @@ namespace aries_askar_dotnet.AriesAskar
         }
 
         /// <summary>
-        /// Gets the jwk secret from a key.
+        /// Gets the private jwk representation for this private key or keypair
         /// </summary>
         /// <param name="localKeyHandle">The handle of the key as <see cref="IntPtr"/>.</param>
-        /// <returns>The jwk secret as <see cref="string"/>.</returns>
+        /// <returns>The private jwk representation as <see cref="byte"/>[].</returns>
         public static async Task<byte[]> GetJwkSecretFromKeyAsync(
             IntPtr localKeyHandle)
         {
@@ -312,7 +312,7 @@ namespace aries_askar_dotnet.AriesAskar
         }
 
         /// <summary>
-        /// Gets the jwk thumbprint from a key.
+        /// Gets the jwk thumbprint for this key or keypair
         /// </summary>
         /// <param name="localKeyHandle">The handle of the key as <see cref="IntPtr"/>.</param>
         /// <param name="keyAlg">The <see cref="KeyAlg"/> used to create the key.</param>
@@ -363,7 +363,7 @@ namespace aries_askar_dotnet.AriesAskar
         }
 
         /// <summary>
-        /// Gets the aead params from a key.
+        /// Gets the aead parameter lengths for a key.
         /// </summary>
         /// <param name="localKeyHandle">The handle of the key as <see cref="IntPtr"/>.</param>
         /// <returns>The aead params as a pair of <see cref="uint"/>. 
@@ -387,11 +387,11 @@ namespace aries_askar_dotnet.AriesAskar
         }
 
         /// <summary>
-        /// Gets the aead padding from a key.
+        /// Calculates and gets the padding required for a message.
         /// </summary>
         /// <param name="localKeyHandle">The handle of the key as <see cref="IntPtr"/>.</param>
         /// <param name="msgLen">The length of the message as <see cref="long"/>.</param>
-        /// <returns>The aead padding as <see cref="int"/>.</returns>
+        /// <returns>The required padding for a message as <see cref="int"/>.</returns>
         public static async Task<int> GetAeadPaddingFromKeyAsync(
             IntPtr localKeyHandle,
             long msgLen)
@@ -413,13 +413,13 @@ namespace aries_askar_dotnet.AriesAskar
         }
 
         /// <summary>
-        /// Encrypts a message with aead.
+        /// Perform aead message encryption with this encryption key.
         /// </summary>
         /// <param name="localKeyHandle">The handle of the key as <see cref="IntPtr"/>.</param>
         /// <param name="message">The encryption message as <see cref="string"/>.</param>
         /// <param name="nonce">The encryption nonce as <see cref="byte[]"/>.</param>
         /// <param name="aad">The encryption aad as <see cref="string"/>.</param>
-        /// <returns>The encrypted message as a pair of <see cref="byte[]"/>. 
+        /// <returns>The encrypted message as a triple of <see cref="byte[]"/>. 
         /// First is value. Second is tag. Third is nonce.</returns>
         public static async Task<(byte[], byte[], byte[])> EncryptKeyWithAeadAsync(
             IntPtr localKeyHandle,
@@ -451,7 +451,7 @@ namespace aries_askar_dotnet.AriesAskar
         }
 
         /// <summary>
-        /// Decrypts a message with aead.
+        /// Perform aead message decryption with this encryption key.
         /// </summary>
         /// <param name="localKeyHandle">The handle of the key as <see cref="IntPtr"/>.</param>
         /// <param name="ciphertext">The encryption ciphertext as <see cref="byte[]"/>.</param>
@@ -488,7 +488,7 @@ namespace aries_askar_dotnet.AriesAskar
 
         #region Crypto
         /// <summary>
-        /// Creates a random nonce for creating a crypto box.
+        /// Creates a random nonce for crypto box.
         /// </summary>
         /// <returns>The nonce as <see cref="byte[]"/>.</returns>
         public static async Task<byte[]> CreateCryptoBoxRandomNonceAsync()
@@ -508,13 +508,13 @@ namespace aries_askar_dotnet.AriesAskar
         }
 
         /// <summary>
-        /// Creates a crypto box.
+        /// Encrypt a message with crypto_box and a detached nonce.
         /// </summary>
         /// <param name="recipKey">The handle of the recipient key as <see cref="IntPtr"/>.</param>
         /// <param name="senderKey">The handle of the sender key as <see cref="IntPtr"/>.</param>
-        /// <param name="message">The encryption message as <see cref="string"/>.</param>
+        /// <param name="message">The message to encrypt as <see cref="string"/>.</param>
         /// <param name="nonce">The encryption nonce as <see cref="byte[]"/>.</param>
-        /// <returns>The box as <see cref="byte[]"/>.</returns>
+        /// <returns>The encrypted message as <see cref="byte[]"/>.</returns>
         public static async Task<byte[]> CryptoBoxAsync(
             IntPtr recipKey,
             IntPtr senderKey,
@@ -540,14 +540,14 @@ namespace aries_askar_dotnet.AriesAskar
         }
 
         /// <summary>
-        /// Opens a crypto box.
+        /// Decrypt a message with crypto_box and a detached nonce.
         /// </summary>
         /// <param name="recipKey">The handle of the recipient key as <see cref="IntPtr"/>.</param>
         /// <param name="senderKey">The handle of the sender key as <see cref="IntPtr"/>.</param>
         /// <param name="encrypted">The encrypted message as <see cref="byte[]"/>.</param>
         /// <param name="nonce">The encryption nonce as <see cref="byte[]"/>.</param>
-        /// <returns>The opened box as <see cref="byte[]"/>.</returns>
-        public static async Task<byte[]> OpenCryptoBoxAsync(
+        /// <returns>The decrypted message as <see cref="string"/>.</returns>
+        public static async Task<string> OpenCryptoBoxAsync(
             IntPtr recipKey,
             IntPtr senderKey,
             byte[] encrypted,
@@ -568,15 +568,15 @@ namespace aries_askar_dotnet.AriesAskar
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
-            return output.Decode();
+            return output.DecodeToString();
         }
 
         /// <summary>
-        /// Seals a crypto box.
+        /// Perform message encryption equivalent to libsodium's `crypto_box_seal`.
         /// </summary>
         /// <param name="localKeyHandle">The handle of the key as <see cref="IntPtr"/>.</param>
-        /// <param name="message">The encryption message as <see cref="string"/>.</param>
-        /// <returns>The sealed box as <see cref="byte[]"/>.</returns>
+        /// <param name="message">The message to encrypt as <see cref="string"/>.</param>
+        /// <returns>The encrypted message as <see cref="byte[]"/>.</returns>
         public static async Task<byte[]> SealCryptoBoxAsync(
             IntPtr localKeyHandle,
             string message)
@@ -598,12 +598,12 @@ namespace aries_askar_dotnet.AriesAskar
         }
 
         /// <summary>
-        /// Opens a sealed crypto box.
+        /// Perform message decryption equivalent to libsodium's `crypto_box_seal_open`.
         /// </summary>
         /// <param name="localKeyHandle">The handle of the key as <see cref="IntPtr"/>.</param>
         /// <param name="ciphertext">The encryption ciphertext as <see cref="byte[]"/>.</param>
-        /// <returns>The box as <see cref="byte[]"/>.</returns>
-        public static async Task<byte[]> OpenSealCryptoBoxAsync(
+        /// <returns>The decrypted message as <see cref="string"/>.</returns>
+        public static async Task<string> OpenSealCryptoBoxAsync(
             IntPtr localKeyHandle,
             byte[] ciphertext)
         {
@@ -620,17 +620,17 @@ namespace aries_askar_dotnet.AriesAskar
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
-            return output.Decode();
+            return output.DecodeToString();
         }
         #endregion
 
         #region Utils
         /// <summary>
-        /// 
+        /// Map this key or keypair to its equivalent for another key algorithm
         /// </summary>
         /// <param name="inputHandle">The handle of the key as <see cref="IntPtr"/>.</param>
         /// <param name="keyAlg">The <see cref="KeyAlg"/> used to create the key.</param>
-        /// <returns></returns>
+        /// <returns>The mapped key as <see cref="IntPtr"/>.</returns>
         public static async Task<IntPtr> ConvertKeyAsync(
             IntPtr inputHandle,
             KeyAlg keyAlg)
@@ -652,10 +652,9 @@ namespace aries_askar_dotnet.AriesAskar
         }
 
         /// <summary>
-        /// 
+        /// Free the key object in the backend.
         /// </summary>
         /// <param name="inputHandle">The handle of the key as <see cref="IntPtr"/>.</param>
-        /// <returns></returns>
         public static async Task FreeKeyAsync(
             IntPtr inputHandle)
         {
@@ -663,25 +662,25 @@ namespace aries_askar_dotnet.AriesAskar
         }
 
         /// <summary>
-        /// Standard signature output for ed25519 is EdDSA
-        /// Elliptic curve DSA using P-256 and SHA-256 ES256
-        /// Elliptic curve DSA using K-256 and SHA-256 ES256K
+        /// Sign a message with this private signing key.
+        /// Standard signature output for ed25519 is EdDSA, for Elliptic curve DSA using P-256 and SHA-256 is ES256, 
+        /// for Elliptic curve DSA using K-256 and SHA-256 is signature type ES256K.
         /// </summary>
-        /// <param name="localKeyHandle"></param>
-        /// <param name="message"></param>
-        /// <param name="sigType"></param>
-        /// <returns></returns>
+        /// <param name="localKeyHandle">The signing key handle as <see cref="IntPtr"/>.</param>
+        /// <param name="message">The message as <see cref="byte"/>[].</param>
+        /// <param name="sigType">The signature type as <see cref="SignatureType"/>.</param>
+        /// <returns>The signature as <see cref="byte"/>[].</returns>
         public static async Task<byte[]> SignMessageFromKeyAsync(
             IntPtr localKeyHandle,
             byte[] message,
-            string sigType)
+            SignatureType sigType)
         {
             ByteBuffer output = new() { len = 0, value = new IntPtr() };
 
             int errorCode = NativeMethods.askar_key_sign_message(
                 localKeyHandle,
                 ByteBuffer.Create(message),
-                FfiStr.Create(sigType),
+                FfiStr.Create(sigType.ToSigTypeString()),
                 ref output);
 
             if (errorCode != (int)ErrorCode.Success)
@@ -693,11 +692,21 @@ namespace aries_askar_dotnet.AriesAskar
             return output.Decode();
         }
 
+        /// <summary>
+        /// Verify a message signature with this private signing key or public verification key
+        /// Standard signature output for ed25519 is EdDSA, for Elliptic curve DSA using P-256 and SHA-256 is ES256, 
+        /// for Elliptic curve DSA using K-256 and SHA-256 is signature type ES256K.
+        /// </summary>
+        /// <param name="localKeyHandle">The signing key / public verification key handle as <see cref="IntPtr"/>.</param>
+        /// <param name="message">The message as <see cref="byte"/>[].</param>
+        /// <param name="signature">The signature as <see cref="byte"/>[].</param>
+        /// <param name="sigType">The signature type as <see cref="SignatureType"/>.</param>
+        /// <returns>The result of the verify call as <see cref="bool"/> flag, true if verification was successfull else false.</returns>
         public static async Task<bool> VerifySignatureFromKeyAsync(
             IntPtr localKeyHandle,
             byte[] message,
             byte[] signature,
-            string sigType)
+            SignatureType sigType)
         {
             byte output = new();
 
@@ -705,7 +714,7 @@ namespace aries_askar_dotnet.AriesAskar
                 localKeyHandle,
                 ByteBuffer.Create(message),
                 ByteBuffer.Create(signature),
-                FfiStr.Create(sigType),
+                FfiStr.Create(sigType.ToSigTypeString()),
                 ref output);
 
             if (errorCode != (int)ErrorCode.Success)
@@ -717,6 +726,15 @@ namespace aries_askar_dotnet.AriesAskar
             return Convert.ToBoolean(output);
         }
 
+        /// <summary>
+        /// Wrap another key using this key.
+        /// </summary>
+        /// <param name="localKeyHandle">The key handle as <see cref="IntPtr"/>.</param>
+        /// <param name="otherLocalKeyHandle">The key handle of the key to be wrapped as <see cref="IntPtr"/>.</param>
+        /// <param name="nonce">A nonce as <see cref="byte"/>[]; default null.</param>
+        /// <returns>The triple of the encryption ciphertext (first), tag(second) and nonce(third) as <see cref="byte"/>[].</returns>
+        /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter. 
+        /// </exception>
         public static async Task<(byte[], byte[], byte[])> WrapKeyAsync(
             IntPtr localKeyHandle,
             IntPtr otherLocalKeyHandle,
@@ -744,9 +762,20 @@ namespace aries_askar_dotnet.AriesAskar
             return output.Decode();
         }
 
+        /// <summary>
+        /// Unwrap a key using this key.
+        /// </summary>
+        /// <param name="localKeyHandle">The key handle as <see cref="IntPtr"/>.</param>
+        /// <param name="alg">The key algorithm of the this key as <see cref="KeyAlg"/>.</param>
+        /// <param name="ciphertext">The encryption ciphertext as <see cref="byte"/>[].</param>
+        /// <param name="nonce">The encryption nonce as <see cref="byte"/>[].</param>
+        /// <param name="tag">The encryption tag as <see cref="byte"/>[].</param>
+        /// <returns>The key handle of the unwrapped key as <see cref="IntPtr"/>.</returns>
+        /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter. 
+        /// </exception>
         public static async Task<IntPtr> UnwrapKeyAsync(
             IntPtr localKeyHandle,
-            string alg,
+            KeyAlg alg,
             byte[] ciphertext,
             byte[] nonce,
             byte[] tag)
@@ -755,7 +784,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             int errorCode = NativeMethods.askar_key_unwrap_key(
                 localKeyHandle,
-                FfiStr.Create(alg),
+                FfiStr.Create(alg.ToKeyAlgString()),
                 ByteBuffer.Create(ciphertext),
                 ByteBuffer.Create(nonce),
                 ByteBuffer.Create(tag),
@@ -770,8 +799,21 @@ namespace aries_askar_dotnet.AriesAskar
             return output;
         }
 
+        /// <summary>
+        /// Derive an ECDH-ES shared key for anonymous encryption
+        /// </summary>
+        /// <param name="alg">The key algorithm of the key as <see cref="KeyAlg"/>.</param>
+        /// <param name="ephemKey">The ephemeral key handle as <see cref="IntPtr"/>.</param>
+        /// <param name="recipKey">The recipient key handle as <see cref="IntPtr"/>.</param>
+        /// <param name="algId">The algorithm id as <see cref="byte"/>[].</param>
+        /// <param name="apu">The apu (sender identity) as <see cref="byte"/>[].</param>
+        /// <param name="apv">The apv (receiver identity) as <see cref="byte"/>[].</param>
+        /// <param name="receive">The receive flag as <see cref="bool"/>, indicating receive or send. True for receive, false for send.</param>
+        /// <returns>The key handle of the derived key as <see cref="IntPtr"/>.</returns>
+        /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter. 
+        /// </exception>
         public static async Task<IntPtr> DeriveEcdhEsAsync(
-            string alg,
+            KeyAlg alg,
             IntPtr ephemKey,
             IntPtr recipKey,
             byte[] algId,
@@ -782,7 +824,7 @@ namespace aries_askar_dotnet.AriesAskar
             IntPtr output = new();
 
             int errorCode = NativeMethods.askar_key_derive_ecdh_es(
-                FfiStr.Create(alg),
+                FfiStr.Create(alg.ToKeyAlgString()),
                 ephemKey,
                 recipKey,
                 ByteBuffer.Create(algId),
@@ -800,8 +842,23 @@ namespace aries_askar_dotnet.AriesAskar
             return output;
         }
 
+        /// <summary>
+        /// Derive an ECDH-1PU shared key for authenticated encryption
+        /// </summary>
+        /// <param name="alg">The key algorithm of the key as <see cref="KeyAlg"/>.</param>
+        /// <param name="ephemKey">The ephemeral key handle as <see cref="IntPtr"/>.</param>
+        /// <param name="senderKey">The sender key handle as <see cref="IntPtr"/>.</param>
+        /// <param name="recipKey">The recipient key handle as <see cref="IntPtr"/>.</param>
+        /// <param name="algId">The algorithm id as <see cref="byte"/>[].</param>
+        /// <param name="apu">The apu (sender identity) as <see cref="byte"/>[].</param>
+        /// <param name="apv">The apv (receiver identity) as <see cref="byte"/>[].</param>
+        /// <param name="ccTag">The ccTag as <see cref="byte"/>[].</param>
+        /// <param name="receive">The receive flag as <see cref="bool"/>, indicating receive or send. True for receive, false for send.</param>
+        /// <returns>The key handle of the derived key as <see cref="IntPtr"/>.</returns>
+        /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter. 
+        /// </exception>
         public static async Task<IntPtr> DeriveEcdh1puAsync(
-            string alg,
+            KeyAlg alg,
             IntPtr ephemKey,
             IntPtr senderKey,
             IntPtr recipKey,
@@ -814,7 +871,7 @@ namespace aries_askar_dotnet.AriesAskar
             IntPtr output = new();
 
             int errorCode = NativeMethods.askar_key_derive_ecdh_1pu(
-                FfiStr.Create(alg),
+                FfiStr.Create(alg.ToKeyAlgString()),
                 ephemKey,
                 senderKey,
                 recipKey,

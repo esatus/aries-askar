@@ -29,15 +29,15 @@ namespace aries_askar_dotnet.Models
     public static class Ecdh1PUExtensions
     {
         /// <summary>
-        /// Derive an ECDH-1PU shared key for anonymous encryption.
+        /// Derive an ECDH-1PU shared key for authenticated encryption
         /// </summary>
         /// <param name="ecdh1Pu">The <see cref="Ecdh1Pu"/> instance.</param>
-        /// <param name="keyAlg"></param>
-        /// <param name="ephemeralKey"></param>
-        /// <param name="senderKey"></param>
-        /// <param name="receiverKey"></param>
-        /// <param name="receive"></param>
-        /// <param name="ccTag"></param>
+        /// <param name="keyAlg">The key algorithm of the key as <see cref="KeyAlg"/>.</param>
+        /// <param name="ephemeralKey">The ephemeral key handle as <see cref="IntPtr"/>.</param>
+        /// <param name="senderKey">The sender key handle as <see cref="IntPtr"/>.</param>
+        /// <param name="receiverKey">The receiver key handle as <see cref="IntPtr"/>.</param>
+        /// <param name="receive">The receive flag as <see cref="bool"/>, indicating receive or send. True for receive, false for send.</param>
+        /// <param name="ccTag">The ccTag as <see cref="byte"/>[]; default null.</param>
         /// <returns>A new key handle as <see cref="IntPtr"/>.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter. 
         /// </exception>
@@ -51,7 +51,7 @@ namespace aries_askar_dotnet.Models
             byte[] ccTag = null)
         {
             return await KeyApi.DeriveEcdh1puAsync(
-                keyAlg.ToKeyAlgString(),
+                keyAlg,
                 ephemeralKey,
                 senderKey,
                 receiverKey,
@@ -73,7 +73,7 @@ namespace aries_askar_dotnet.Models
         /// <param name="message">The message to encrypt as <see cref="string"/>.</param>
         /// <param name="nonce">A nonce as <see cref="byte"/> array.</param>
         /// <param name="aad">The associated data as <see cref="string"/>.</param>
-        /// <returns>The ciphertext, nonce and tag as <see cref="byte"/> arrays.</returns>
+        /// <returns>The triple of ciphertext (first), tag(second) and nonce(third) as <see cref="byte"/>[].</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter. 
         /// </exception>
         public static async Task<(byte[], byte[], byte[])> EncryptDirectAsync(
@@ -99,9 +99,9 @@ namespace aries_askar_dotnet.Models
         /// <param name="ephemeralKey">A ephemeral key as <see cref="IntPtr"/>.</param>
         /// <param name="senderKey">The sender key as <see cref="IntPtr"/>.</param>
         /// <param name="receiverKey">The receiver key as <see cref="IntPtr"/>.</param>
-        /// <param name="ciphertext"></param>
-        /// <param name="nonce"></param>
-        /// <param name="tag"></param>
+        /// <param name="ciphertext">The encryption ciphertext as <see cref="byte"/>[].</param>
+        /// <param name="nonce">The encryption nonce as <see cref="byte"/>[].</param>
+        /// <param name="tag">The tag ciphertext as <see cref="byte"/>[].</param>
         /// <param name="aad">The associated data as <see cref="string"/>.</param>
         /// <returns>The decrypted message as <see cref="string"/>.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter. 
@@ -132,7 +132,7 @@ namespace aries_askar_dotnet.Models
         /// <param name="receiverKey">The receiver key as <see cref="IntPtr"/>.</param>
         /// <param name="cek">A content-encryption key as <see cref="IntPtr"/>.</param>
         /// <param name="ccTag">A ccTag as <see cref="byte"/> array; default null.</param>
-        /// <returns>The ciphertext, nonce and tag as <see cref="byte"/> arrays.</returns>
+        /// <returns>The triple of ciphertext (first), tag(second) and nonce(third) as <see cref="byte"/>[].</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter. 
         /// </exception>
         public static async Task<(byte[], byte[], byte[])> SenderWrapKeyAsync(
@@ -159,9 +159,9 @@ namespace aries_askar_dotnet.Models
         /// <param name="senderKey">The sender key as <see cref="IntPtr"/>.</param>
         /// <param name="receiverKey">The receiver key as <see cref="IntPtr"/>.</param>
         /// <param name="ccTag">A ccTag as <see cref="byte"/> array; default null.</param>
-        /// <param name="ciphertext"></param>
-        /// <param name="nonce"></param>
-        /// <param name="tag"></param>
+        /// <param name="ciphertext">The encryption ciphertext as <see cref="byte"/>[].</param>
+        /// <param name="nonce">The encryption nonce as <see cref="byte"/>[].</param>
+        /// <param name="tag">The tag ciphertext as <see cref="byte"/>[].</param>
         /// <returns>The key handle as <see cref="IntPtr"/>.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter. 
         /// </exception>
@@ -180,7 +180,7 @@ namespace aries_askar_dotnet.Models
             IntPtr derivedKey = await ecdh1Pu.DeriveKeyAsync(wrapKeyAlg, ephemeralKey, senderKey, receiverKey, true, ccTag);
             return await KeyApi.UnwrapKeyAsync(
                 derivedKey,
-                encKeyAlg.ToKeyAlgString(),
+                encKeyAlg,
                 ciphertext,
                 nonce,
                 tag);
