@@ -1,8 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>aries_askar_dotnet</RootNamespace>
+	<AssemblyName>Hyperledger.Aries-Askar</AssemblyName>
+	<RootNamespace>Hyperledger.Aries</RootNamespace>
+	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	<Version>0.2.7-alpha</Version>
+	<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+	<Authors>esatus AG</Authors>
+	<Company>Hyperledger Aries</Company>
+	<Product>Hyperledger Aries-Askar</Product>
+	<Description>
+		.NET wrapper for the Hyperledger aries-askar.
+	</Description>
+	<PackageProjectUrl>https://github.com/hyperledger/aries-askar</PackageProjectUrl>
+	<RepositoryUrl>https://github.com/hyperledger/aries-askar</RepositoryUrl>
+	<RepositoryType>git</RepositoryType>
+	<PackageTags>hyperledger aries-askar</PackageTags>
+	<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+	<PackageIconUrl></PackageIconUrl>
+	<AssemblyVersion>0.2.7</AssemblyVersion>
+	<FileVersion>0.2.7</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

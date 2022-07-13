@@ -464,8 +464,8 @@ namespace aries_askar_dotnet_tests.AriesAskar
                 testKeyEntry["tags"]);
             IntPtr keyEntryListHandle = await session.FetchKeyAsync(
                 testKeyEntry["key_name"]);
+
             // Act
-            _ = new();
             IntPtr localKeyHandle = await ResultListApi.LoadLocalKeyHandleFromKeyEntryListAsync(keyEntryListHandle, 0);
 
             // Assert
