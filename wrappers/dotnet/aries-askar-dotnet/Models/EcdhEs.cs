@@ -2,7 +2,7 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
-using static indy_vdr_dotnet.models.Structures;
+using static aries_askar_dotnet.Models.Structures;
 
 namespace aries_askar_dotnet.Models
 {
@@ -40,10 +40,10 @@ namespace aries_askar_dotnet.Models
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter. 
         /// </exception>
         public static async Task<IntPtr> DeriveKeyAsync(
-            this EcdhEs ecdhEs, 
-            KeyAlg keyAlg, 
-            IntPtr ephemeralKey, 
-            IntPtr receiverKey, 
+            this EcdhEs ecdhEs,
+            KeyAlg keyAlg,
+            IntPtr ephemeralKey,
+            IntPtr receiverKey,
             bool receive)
         {
             return await KeyApi.DeriveEcdhEsAsync(
@@ -124,10 +124,10 @@ namespace aries_askar_dotnet.Models
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter. 
         /// </exception>
         public static async Task<(byte[], byte[], byte[])> SenderWrapKeyAsync(
-            this EcdhEs ecdhEs, 
-            KeyAlg wrapKeyAlg, 
-            IntPtr ephemeralKey, 
-            IntPtr receiverKey, 
+            this EcdhEs ecdhEs,
+            KeyAlg wrapKeyAlg,
+            IntPtr ephemeralKey,
+            IntPtr receiverKey,
             IntPtr cek)
         {
             IntPtr derivedKey = await ecdhEs.DeriveKeyAsync(wrapKeyAlg, ephemeralKey, receiverKey, false);
@@ -161,10 +161,10 @@ namespace aries_askar_dotnet.Models
         {
             IntPtr derivedKey = await ecdhEs.DeriveKeyAsync(wrapKeyAlg, ephemeralKey, receiverKey, true);
             return await KeyApi.UnwrapKeyAsync(
-                derivedKey, 
-                encKeyAlg, 
-                ciphertext, 
-                nonce, 
+                derivedKey,
+                encKeyAlg,
+                ciphertext,
+                nonce,
                 tag);
         }
     }

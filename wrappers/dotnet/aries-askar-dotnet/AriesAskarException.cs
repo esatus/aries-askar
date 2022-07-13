@@ -23,16 +23,10 @@ namespace aries_askar_dotnet
         {
             string msg = JsonConvert.DeserializeObject<Dictionary<string, string>>(message)["message"];
             string errCode = JsonConvert.DeserializeObject<Dictionary<string, string>>(message)["code"];
-            int errCodeInt;
-            if (int.TryParse(errCode, out errCodeInt))
-            {
-                return new AriesAskarException(
-                    $"'{((ErrorCode)errCodeInt).ToErrorCodeString()}' error occured with ErrorCode '{errCode}' : {msg}.");
-            }
-            else
-            {
-                return new AriesAskarException("An unknown error code was received.");
-            }
+            return int.TryParse(errCode, out int errCodeInt)
+                ? new AriesAskarException(
+                    $"'{((ErrorCode)errCodeInt).ToErrorCodeString()}' error occured with ErrorCode '{errCode}' : {msg}.")
+                : new AriesAskarException("An unknown error code was received.");
         }
     }
 }

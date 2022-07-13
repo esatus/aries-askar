@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace indy_vdr_dotnet.models
+namespace aries_askar_dotnet.Models
 {
     public static class Structures
     {
@@ -13,8 +13,10 @@ namespace indy_vdr_dotnet.models
 
             public static FfiStr Create(string arg)
             {
-                FfiStr FfiString = new();
-                FfiString.data = new IntPtr();
+                FfiStr FfiString = new()
+                {
+                    data = new IntPtr()
+                };
                 if (arg != null)
                 {
                     FfiString.data = Marshal.StringToCoTaskMemUTF8(arg);
@@ -36,7 +38,7 @@ namespace indy_vdr_dotnet.models
                 {
                     UTF8Encoding decoder = new(true, true);
                     byte[] bytes = new byte[json.Length];
-                    decoder.GetBytes(json, 0, json.Length, bytes, 0);
+                    _ = decoder.GetBytes(json, 0, json.Length, bytes, 0);
                     buffer.len = json.Length;
                     fixed (byte* bytebuffer_p = &bytes[0])
                     {
@@ -54,11 +56,9 @@ namespace indy_vdr_dotnet.models
             public static ByteBuffer Create(byte[] bytes)
             {
                 ByteBuffer buffer = new();
-                if (bytes != null)
-                    buffer.len = bytes.Length;
-                else buffer.len = 0;
+                buffer.len = bytes != null ? bytes.Length : 0;
 
-                if(buffer.len > 0)
+                if (buffer.len > 0)
                 {
                     fixed (byte* bytebuffer_p = &bytes[0])
                     {
@@ -74,18 +74,18 @@ namespace indy_vdr_dotnet.models
             }
         }
 
-        public unsafe static byte[] Decode(this ByteBuffer buffer)
+        public static unsafe byte[] Decode(this ByteBuffer buffer)
         {
             byte[] managedArray = new byte[buffer.len];
 
-            if(buffer.len > 0)
+            if (buffer.len > 0)
             {
                 Marshal.Copy(buffer.value, managedArray, 0, (int)buffer.len);
             }
 
             return managedArray;
         }
-        public unsafe static string DecodeToString(this ByteBuffer buffer)
+        public static unsafe string DecodeToString(this ByteBuffer buffer)
         {
             return buffer.len switch
             {
@@ -94,7 +94,7 @@ namespace indy_vdr_dotnet.models
             };
         }
 
-        public unsafe static (byte[], byte[], byte[]) Decode(this EncryptedBuffer encryptedBuffer)
+        public static unsafe (byte[], byte[], byte[]) Decode(this EncryptedBuffer encryptedBuffer)
         {
             byte[] source = encryptedBuffer.buffer.Decode();
             byte[] valueBytes = null;

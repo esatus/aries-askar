@@ -1,6 +1,7 @@
-﻿using System;
+﻿using aries_askar_dotnet.Models;
+using System;
 using System.Threading.Tasks;
-using static indy_vdr_dotnet.models.Structures;
+using static aries_askar_dotnet.Models.Structures;
 
 namespace aries_askar_dotnet.AriesAskar
 {
@@ -100,7 +101,7 @@ namespace aries_askar_dotnet.AriesAskar
             IntPtr entryListHandle,
             int index)
         {
-            ByteBuffer value = new ByteBuffer();
+            ByteBuffer value = new();
             int errorCode = NativeMethods.askar_entry_list_get_value(
                 entryListHandle,
                 index,
@@ -319,7 +320,7 @@ namespace aries_askar_dotnet.AriesAskar
             IntPtr keyEntryListHandle,
             int index)
         {
-            IntPtr output = new IntPtr();
+            IntPtr output = new();
             int errorCode = NativeMethods.askar_key_entry_list_load_local(
                 keyEntryListHandle,
                 index,

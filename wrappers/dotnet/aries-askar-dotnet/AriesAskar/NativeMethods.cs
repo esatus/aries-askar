@@ -1,6 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
-using static indy_vdr_dotnet.models.Structures;
+using static aries_askar_dotnet.Models.Structures;
 
 namespace aries_askar_dotnet.AriesAskar
 {

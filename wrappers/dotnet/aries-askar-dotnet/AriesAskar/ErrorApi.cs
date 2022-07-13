@@ -11,7 +11,7 @@ namespace aries_askar_dotnet.AriesAskar
         public static Task<string> GetCurrentErrorAsync()
         {
             string result = "";
-            NativeMethods.askar_get_current_error(ref result);
+            _ = NativeMethods.askar_get_current_error(ref result);
             return Task.FromResult(result);
         }
     }

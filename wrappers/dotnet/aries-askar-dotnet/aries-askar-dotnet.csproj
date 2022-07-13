@@ -4,7 +4,6 @@
     <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>aries_askar_dotnet</RootNamespace>
 	<AssemblyName>Hyperledger.Aries-Askar</AssemblyName>
-	<RootNamespace>Hyperledger.Aries</RootNamespace>
 	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	<Version>0.2.7-alpha</Version>
 	<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>

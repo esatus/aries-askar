@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using static aries_askar_dotnet.AriesAskar.NativeMethods;
-using static indy_vdr_dotnet.models.Structures;
+using static aries_askar_dotnet.Models.Structures;
 
 namespace aries_askar_dotnet.AriesAskar
 {

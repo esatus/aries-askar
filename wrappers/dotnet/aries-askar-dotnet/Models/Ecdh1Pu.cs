@@ -2,7 +2,7 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
-using static indy_vdr_dotnet.models.Structures;
+using static aries_askar_dotnet.Models.Structures;
 
 namespace aries_askar_dotnet.Models
 {

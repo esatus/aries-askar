@@ -1,7 +1,7 @@
 ﻿using aries_askar_dotnet.Models;
 using System;
 using System.Threading.Tasks;
-using static indy_vdr_dotnet.models.Structures;
+using static aries_askar_dotnet.Models.Structures;
 
 namespace aries_askar_dotnet.AriesAskar
 {
@@ -54,7 +54,7 @@ namespace aries_askar_dotnet.AriesAskar
                 FfiStr.Create(method.ToSeedMethodString()),
                 ref localKeyHandle);
 
-            if(errorCode != (int)ErrorCode.Success)
+            if (errorCode != (int)ErrorCode.Success)
             {
                 string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
                 Console.WriteLine(error);
@@ -429,7 +429,7 @@ namespace aries_askar_dotnet.AriesAskar
         {
             EncryptedBuffer encrypted = new()
             {
-                buffer = new ByteBuffer(){ len = 0, value = new IntPtr() },
+                buffer = new ByteBuffer() { len = 0, value = new IntPtr() },
                 nonce_pos = 0,
                 tag_pos = 0
             };
