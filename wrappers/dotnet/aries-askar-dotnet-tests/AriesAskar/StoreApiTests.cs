@@ -6,20 +6,19 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using static indy_vdr_dotnet.models.Structures;
 
 namespace aries_askar_dotnet_tests.AriesAskar
 {
     public class StoreApiTests
     {
-        Dictionary<string, string> testEntry;
-        string testSpecUri;
-        KeyMethod testKeyMethod;
-        string testPassKey;
-        string testProfile;
-        string testSeed;
-        bool testRecreate;
-        bool testAsTransactions;
+        private Dictionary<string, string> testEntry;
+        private string testSpecUri;
+        private KeyMethod testKeyMethod;
+        private string testPassKey;
+        private string testProfile;
+        private string testSeed;
+        private bool testRecreate;
+        private bool testAsTransactions;
 
         [OneTimeSetUp]
         public async Task OneTimeSetUp()
@@ -42,7 +41,6 @@ namespace aries_askar_dotnet_tests.AriesAskar
         }
 
         #region STORE
-        //Todo open
         #region provision and open
         private static IEnumerable<TestCaseData> CreateCasesStoreProvisioningWorks()
         {
@@ -79,13 +77,12 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Store actual = await StoreApi.ProvisionAsync(testSpecUri, keyMethod, passKey, profile, recreate);
 
             //Assert
-            actual.storeHandle.Should().NotBe((IntPtr)0);
+            _ = actual.storeHandle.Should().NotBe((IntPtr)0);
 
         }
 
         private static IEnumerable<TestCaseData> CreateCasesStoreProvisioningThrows()
         {
-            string seed = "testseed000000000000000000000001";
             string specUri = "sqlite://:memory:";
 
             yield return new TestCaseData(specUri, KeyMethod.RAW, null, "testProfile", true)
@@ -103,56 +100,13 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             //Arrange
             //Act
-            Func<Task> actual = async() => await StoreApi.ProvisionAsync(specUri, keyMethod, passKey, profile, recreate);
+            Func<Task> actual = async () => await StoreApi.ProvisionAsync(specUri, keyMethod, passKey, profile, recreate);
 
             //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            _ = await actual.Should().ThrowAsync<Exception>();
 
         }
 
-        //Todo fix test
-        /**
-        [Test, TestCase(TestName = "OpenAsync call works.")]
-        public async Task OpenAsyncWorks()
-        {
-            //Arrange
-            //Need to set up a postgre database
-            string customSpecUri = "postgres://postgres:mysecretpassword@localhost:5432/askar-test";
-
-            Store store = await StoreApi.ProvisionAsync(customSpecUri, testKeyMethod, testPassKey, testProfile, true);
-            Session session = await store.StartSessionAsync();
-            bool res = await session.InsertAsync(
-                testEntry["category"],
-                testEntry["name"],
-                testEntry["value"],
-                testEntry["tags"]);
-            await session.CloseAndCommitAsync();
-            //string profile = await store.CreateProfileAsync();
-           
-            //Session sessionWithProfile = await store.StartSessionAsync(profile);
-            //long count = await sessionWithProfile.CountAsync(
-            //    testEntry["category"],
-            //    testEntry["tags"]);
-            //count.Should().Be(0);
-
-            //bool res2 = await sessionWithProfile.InsertAsync(
-            //    testEntry["category"],
-            //    testEntry["name"],
-            //    testEntry["value"],
-            //    testEntry["tags"]);
-            //long count2 = await sessionWithProfile.CountAsync(
-            //    testEntry["category"],
-            //    testEntry["tags"]);
-            //count2.Should().Be(1);
-            //await store.CloseAsync();
-
-            //Act
-            //Todo we need to create a database with a store config?
-            Store actual = await StoreApi.OpenAsync(customSpecUri, testKeyMethod, testPassKey, testProfile);
-
-            //Assert
-            actual.storeHandle.Should().NotBe((IntPtr)0);
-        }**/
         private static IEnumerable<TestCaseData> CreateCasesOpenAsyncThrows()
         {
             yield return new TestCaseData(null)
@@ -166,10 +120,10 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             //Arrange
             //Act
-            Func<Task> actual = async() => await StoreApi.OpenAsync(specUri);
-  
+            Func<Task> actual = async () => await StoreApi.OpenAsync(specUri);
+
             //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            _ = await actual.Should().ThrowAsync<Exception>();
         }
         #endregion
 
@@ -179,13 +133,13 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             //Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile, true);
-            await store.StartSessionAsync();
+            _ = await store.StartSessionAsync();
 
             //Act
             bool actual = await store.RemoveAsync(testSpecUri);
 
             //Assert
-            actual.Should().Be(true);
+            _ = actual.Should().Be(true);
         }
         private static IEnumerable<TestCaseData> CreateCasesRemoveAsyncThrows()
         {
@@ -207,7 +161,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Func<Task> actual = async () => await store.RemoveAsync(specUri);
 
             //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            _ = await actual.Should().ThrowAsync<Exception>();
         }
         #endregion
 
@@ -217,13 +171,13 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             //Arrange
             string newProfile = "newStoreProfile";
-            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile,testRecreate);
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile, testRecreate);
 
             //Act
             string actual = await store.CreateProfileAsync(newProfile);
 
             //Assert
-            actual.Should().Be(newProfile);
+            _ = actual.Should().Be(newProfile);
         }
 
         [Test, TestCase(TestName = "CreateProfileAsync callback call throws when creating profile with already existing name.")]
@@ -237,7 +191,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Func<Task> actual = async () => await store.CreateProfileAsync(newProfile);
 
             //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            _ = await actual.Should().ThrowAsync<Exception>();
         }
 
         [Test, TestCase(TestName = "GetProfileNameAsync call works and returns active profile.")]
@@ -245,12 +199,12 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             //Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile, testRecreate);
-            
+
             //Act
             string actual = await store.GetProfileNameAsync();
 
             //Assert
-            actual.Should().Be(testProfile);
+            _ = actual.Should().Be(testProfile);
         }
 
         [Test, TestCase(TestName = "GetProfileNameAsync callback throws with invalid storeHandle.")]
@@ -263,7 +217,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Func<Task> actual = async () => await store.GetProfileNameAsync();
 
             //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            _ = await actual.Should().ThrowAsync<Exception>();
         }
 
         [Test, TestCase(TestName = "RemoveProfileAsync call works and returns true for existing profiles and false for non existing profiles.")]
@@ -278,9 +232,9 @@ namespace aries_askar_dotnet_tests.AriesAskar
             bool actual3 = await store.RemoveProfileAsync("nonExistingProfile");
 
             //Assert
-            actual1.Should().Be(true);
-            actual2.Should().Be(true);
-            actual3.Should().Be(false);
+            _ = actual1.Should().Be(true);
+            _ = actual2.Should().Be(true);
+            _ = actual3.Should().Be(false);
         }
 
         [Test, TestCase(TestName = "RemoveProfileAsync call throws with no profile provided.")]
@@ -288,12 +242,12 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             //Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile, testRecreate);
- 
+
             //Act
-            Func<Task> actual = async() => await store.RemoveProfileAsync(null);
+            Func<Task> actual = async () => await store.RemoveProfileAsync(null);
 
             //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            _ = await actual.Should().ThrowAsync<Exception>();
         }
         #endregion
 
@@ -309,7 +263,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             bool actual = await store.RekeyAsync(KeyMethod.RAW, newTestPassKey);
 
             //Assert
-            actual.Should().Be(true);
+            _ = actual.Should().Be(true);
         }
 
         [Test, TestCase(TestName = "RekeyAsync callback throws with invalid storeHandle.")]
@@ -321,10 +275,10 @@ namespace aries_askar_dotnet_tests.AriesAskar
             string newTestPassKey = await StoreApi.GenerateRawKeyAsync(newTestSeed);
             store.storeHandle = (IntPtr)99;
             //Act
-            Func<Task> actual = async() => await store.RekeyAsync(KeyMethod.RAW, newTestPassKey);
+            Func<Task> actual = async () => await store.RekeyAsync(KeyMethod.RAW, newTestPassKey);
 
             //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            _ = await actual.Should().ThrowAsync<Exception>();
         }
 
         private static IEnumerable<TestCaseData> CreateCasesCloseAsyncWorks()
@@ -334,7 +288,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             yield return new TestCaseData(true, true)
                 .SetName("CloseAsync works and removes store with removeStore equals true.");
         }
-        
+
         [Test, TestCaseSource(nameof(CreateCasesCloseAsyncWorks))]
         public async Task CloseAsync(bool removeStore, bool expected)
         {
@@ -346,9 +300,9 @@ namespace aries_askar_dotnet_tests.AriesAskar
             bool actual = await store.CloseAsync(removeStore);
 
             //Assert
-            actual.Should().Be(expected);
-            store.session.Should().Be(null);
-            store.storeHandle.Should().Be((IntPtr)0);
+            _ = actual.Should().Be(expected);
+            _ = store.session.Should().Be(null);
+            _ = store.storeHandle.Should().Be((IntPtr)0);
         }
         #endregion
 
@@ -362,7 +316,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             string actual = await StoreApi.GenerateRawKeyAsync(testSeed);
 
             //Assert
-            actual.Should().NotBe("");
+            _ = actual.Should().NotBe("");
         }
 
         [Test, TestCase(TestName = "GenerateRawKey throws with wrong seed format provided.")]
@@ -374,7 +328,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Func<Task> actual = async () => await StoreApi.GenerateRawKeyAsync("wrongSeed");
 
             //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            _ = await actual.Should().ThrowAsync<Exception>();
         }
         #endregion
 
@@ -389,9 +343,9 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Session actual = await store.StartSessionAsync(testProfile, testAsTransactions);
 
             //Assert
-            actual.Should().NotBe(null);
-            actual.sessionHandle.Should().NotBe(new IntPtr());
-            actual.Should().BeEquivalentTo(store.session);
+            _ = actual.Should().NotBe(null);
+            _ = actual.sessionHandle.Should().NotBe(new IntPtr());
+            _ = actual.Should().BeEquivalentTo(store.session);
         }
 
         [Test, TestCase(TestName = "StartSessionAsync throws with invalid store handle.")]
@@ -399,13 +353,13 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             //Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
-            await store.RemoveAsync(testSpecUri);
+            _ = await store.RemoveAsync(testSpecUri);
 
             //Act
             Func<Task> actual = async () => await store.StartSessionAsync(testProfile, testAsTransactions);
 
             //Assert
-            await actual.Should().ThrowAsync<AriesAskarException>().WithMessage("'Wrapper' error occured with ErrorCode '99' : Cannot start session from closed store.");
+            _ = await actual.Should().ThrowAsync<AriesAskarException>().WithMessage("'Wrapper' error occured with ErrorCode '99' : Cannot start session from closed store.");
         }
 
         [Test, TestCase(TestName = "StartSessionAsync throws with session already open.")]
@@ -419,7 +373,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Func<Task> actual = async () => await store.StartSessionAsync(testProfile, testAsTransactions);
 
             //Assert
-            await actual.Should().ThrowAsync<AriesAskarException>().WithMessage("'Wrapper' error occured with ErrorCode '99' : Session already opened.");
+            _ = await actual.Should().ThrowAsync<AriesAskarException>().WithMessage("'Wrapper' error occured with ErrorCode '99' : Session already opened.");
         }
 
         [Test, TestCase(TestName = "CreateSessionWorks and returns session as session.")]
@@ -432,10 +386,10 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Session actual = store.CreateSession();
 
             //Assert
-            actual.Should().NotBe(null);
-            actual.sessionHandle.Should().Be((IntPtr)0);
-            actual.isTransaction.Should().Be(false);
-            actual.storeHandle.Should().Be(store.storeHandle);  
+            _ = actual.Should().NotBe(null);
+            _ = actual.sessionHandle.Should().Be((IntPtr)0);
+            _ = actual.isTransaction.Should().Be(false);
+            _ = actual.storeHandle.Should().Be(store.storeHandle);
         }
 
         [Test, TestCase(TestName = "CreateSessionWorks and returns session as transaction.")]
@@ -448,10 +402,10 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Session actual = store.CreateTransaction();
 
             //Assert
-            actual.Should().NotBe(null);
-            actual.sessionHandle.Should().Be((IntPtr)0);
-            actual.isTransaction.Should().Be(true);
-            actual.storeHandle.Should().Be(store.storeHandle);
+            _ = actual.Should().NotBe(null);
+            _ = actual.sessionHandle.Should().Be((IntPtr)0);
+            _ = actual.isTransaction.Should().Be(true);
+            _ = actual.storeHandle.Should().Be(store.storeHandle);
         }
         #endregion
 
@@ -466,10 +420,10 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Scan actual = await store.StartScanAsync(testEntry["category"].ToString());
 
             //Assert
-            actual.parameters.Should().Contain(testEntry["category"].ToString());
-            actual.parameters.Count.Should().Be(numStartScanInputs);
-            actual.storeHandle.Should().Be(store.storeHandle);
-            actual.scanHandle.Should().NotBe(new IntPtr());
+            _ = actual.parameters.Should().Contain(testEntry["category"].ToString());
+            _ = actual.parameters.Count.Should().Be(numStartScanInputs);
+            _ = actual.storeHandle.Should().Be(store.storeHandle);
+            _ = actual.scanHandle.Should().NotBe(new IntPtr());
         }
 
         [Test, TestCase(TestName = "StartScanAsync throws with category equals null.")]
@@ -479,10 +433,10 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
 
             //Act
-            Func<Task> actual = async() => await store.StartScanAsync(null);
+            Func<Task> actual = async () => await store.StartScanAsync(null);
 
             //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            _ = await actual.Should().ThrowAsync<Exception>();
         }
         #endregion
 
@@ -501,8 +455,8 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Session actual = await sessionTxn.StartAsync();
 
             //Assert
-            actual.Should().Be(store.session);
-            actual.sessionHandle.Should().NotBe((IntPtr)0);
+            _ = actual.Should().Be(store.session);
+            _ = actual.sessionHandle.Should().NotBe((IntPtr)0);
         }
 
         [Test, TestCase(TestName = "StartAsync of session throws with invalid store handle.")]
@@ -511,13 +465,13 @@ namespace aries_askar_dotnet_tests.AriesAskar
             //Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session sessionTxn = store.CreateTransaction();
-            await store.CloseAsync(true);
+            _ = await store.CloseAsync(true);
 
             //Act
             Func<Task> actual = async () => await sessionTxn.StartAsync();
 
             //Assert
-            await actual.Should().ThrowAsync<AriesAskarException>().WithMessage("'Wrapper' error occured with ErrorCode '99' : Cannot start session from closed store.");
+            _ = await actual.Should().ThrowAsync<AriesAskarException>().WithMessage("'Wrapper' error occured with ErrorCode '99' : Cannot start session from closed store.");
         }
 
         [Test, TestCase(TestName = "StartAsync of session throws with session already open.")]
@@ -532,7 +486,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Func<Task> actual = async () => await sessionTxn.StartAsync();
 
             //Assert
-            await actual.Should().ThrowAsync<AriesAskarException>().WithMessage("'Wrapper' error occured with ErrorCode '99' : Session already opened.");
+            _ = await actual.Should().ThrowAsync<AriesAskarException>().WithMessage("'Wrapper' error occured with ErrorCode '99' : Session already opened.");
         }
         #endregion
 
@@ -543,14 +497,14 @@ namespace aries_askar_dotnet_tests.AriesAskar
             //Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
-            bool testInsert1 = await session.InsertAsync(testEntry["category"].ToString(), "testName1");
-            bool testInsert2 = await session.InsertAsync(testEntry["category"].ToString(), "testName2");
+            _ = await session.InsertAsync(testEntry["category"].ToString(), "testName1");
+            _ = await session.InsertAsync(testEntry["category"].ToString(), "testName2");
 
             //Act
             long actual = await session.CountAsync(testEntry["category"].ToString());
 
             //Assert
-            actual.Should().Be(2);
+            _ = actual.Should().Be(2);
             Console.WriteLine(actual);
         }
 
@@ -564,10 +518,10 @@ namespace aries_askar_dotnet_tests.AriesAskar
             bool testInsert2 = await session.InsertAsync(testEntry["category"].ToString(), "testName2");
 
             //Act
-            Func<Task> actual = async() => await session.CountAsync(null);
+            Func<Task> actual = async () => await session.CountAsync(null);
 
             //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            _ = await actual.Should().ThrowAsync<Exception>();
         }
 
         [Test, TestCase(TestName = "CountAsync throws with session handle equals 0.")]
@@ -577,12 +531,12 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
             bool testInsert1 = await session.InsertAsync(testEntry["category"].ToString(), "testName1");
-            await store.CloseAsync();
+            _ = await store.CloseAsync();
             //Act
             Func<Task> actual = async () => await session.CountAsync(testEntry["category"].ToString());
 
             //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            _ = await actual.Should().ThrowAsync<Exception>();
         }
 
         [Test, TestCase(TestName = "CountAsync callback throws with invalid sessionHandle.")]
@@ -598,7 +552,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Func<Task> actual = async () => await session.CountAsync(testEntry["category"].ToString());
 
             //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            _ = await actual.Should().ThrowAsync<Exception>();
         }
         #endregion
 
@@ -623,9 +577,9 @@ namespace aries_askar_dotnet_tests.AriesAskar
             long finalCount = await session.CountAsync(testEntry["category"].ToString());
 
             //Assert
-            actual.Should().BeTrue();
-            initCount.Should().Be(0);
-            finalCount.Should().Be(1);
+            _ = actual.Should().BeTrue();
+            _ = initCount.Should().Be(0);
+            _ = finalCount.Should().Be(1);
         }
 
         private static IEnumerable<TestCaseData> CreateCasesSessionInsertAsyncThrows()
@@ -647,16 +601,21 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
-            if(doubleInsert)
-                await session.InsertAsync(category, name, "testValue");
+            if (doubleInsert)
+            {
+                _ = await session.InsertAsync(category, name, "testValue");
+            }
+
             if (!sessionHandleExisting)
-                await store.CloseAsync();
+            {
+                _ = await store.CloseAsync();
+            }
 
             //Act
-            Func<Task> actual = async() => await session.InsertAsync(category, name, "testValue");
+            Func<Task> actual = async () => await session.InsertAsync(category, name, "testValue");
 
             //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            _ = await actual.Should().ThrowAsync<Exception>();
         }
         #endregion
 
@@ -667,7 +626,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             //Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
-            bool initInsert = await session.InsertAsync(testEntry["category"].ToString(), "testName1");
+            _ = await session.InsertAsync(testEntry["category"].ToString(), "testName1");
             long initCount = await session.CountAsync(testEntry["category"].ToString());
 
             //Act
@@ -675,9 +634,9 @@ namespace aries_askar_dotnet_tests.AriesAskar
             long finalCount = await session.CountAsync(testEntry["category"].ToString());
 
             //Assert
-            actual.Should().BeTrue();
-            initCount.Should().Be(1);
-            finalCount.Should().Be(0);
+            _ = actual.Should().BeTrue();
+            _ = initCount.Should().Be(1);
+            _ = finalCount.Should().Be(0);
         }
 
         private static IEnumerable<TestCaseData> CreateCasesSessionRemoveAsyncThrows()
@@ -701,13 +660,15 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
             if (!sessionHandleExisting)
-                await store.CloseAsync();
+            {
+                _ = await store.CloseAsync();
+            }
 
             //Act
             Func<Task> actual = async () => await session.RemoveAsync(category, name);
 
             //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            _ = await actual.Should().ThrowAsync<Exception>();
         }
 
         [Test, TestCase(TestName = "RemoveAllAsync works for session.")]
@@ -716,8 +677,8 @@ namespace aries_askar_dotnet_tests.AriesAskar
             //Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
-            bool initInsert1 = await session.InsertAsync(testEntry["category"].ToString(), "testName1");
-            bool initInsert2 = await session.InsertAsync(testEntry["category"].ToString(), "testName2");
+            _ = await session.InsertAsync(testEntry["category"].ToString(), "testName1");
+            _ = await session.InsertAsync(testEntry["category"].ToString(), "testName2");
             long initCount = await session.CountAsync(testEntry["category"].ToString());
 
             //Act
@@ -725,9 +686,9 @@ namespace aries_askar_dotnet_tests.AriesAskar
             long finalCount = await session.CountAsync(testEntry["category"].ToString());
 
             //Assert
-            actual.Should().Be(2);
-            initCount.Should().Be(2);
-            finalCount.Should().Be(0);
+            _ = actual.Should().Be(2);
+            _ = initCount.Should().Be(2);
+            _ = finalCount.Should().Be(0);
         }
 
         [Test, TestCase(TestName = "RemoveAllAsync throws with no category provided.")]
@@ -741,7 +702,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Func<Task> actual = async () => await session.RemoveAllAsync(null);
 
             //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            _ = await actual.Should().ThrowAsync<Exception>();
         }
 
         [Test, TestCase(TestName = "RemoveAllAsync throws wrapper error with session handle equals 0.")]
@@ -750,13 +711,13 @@ namespace aries_askar_dotnet_tests.AriesAskar
             //Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
-            await store.CloseAsync();
+            _ = await store.CloseAsync();
 
             //Act
             Func<Task> actual = async () => await session.RemoveAllAsync("testCategory");
 
             //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            _ = await actual.Should().ThrowAsync<Exception>();
         }
         #endregion
 
@@ -771,12 +732,12 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
-            bool initInsert1 = await session.InsertAsync(testEntry["category"].ToString(), testName, testValue);
+            _ = await session.InsertAsync(testEntry["category"].ToString(), testName, testValue);
 
             string entryVal1 = await ResultListApi.EntryListGetValueAsync(
                 await session.FetchAsync(
-                    testEntry["category"].ToString(), 
-                    testName), 
+                    testEntry["category"].ToString(),
+                    testName),
                 0);
 
             //Act
@@ -784,14 +745,14 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             string entryVal2 = await ResultListApi.EntryListGetValueAsync(
                 await session.FetchAsync(
-                    testEntry["category"].ToString(), 
+                    testEntry["category"].ToString(),
                     testName),
                 0);
-            
+
             //Assert
-            actual.Should().BeTrue();
-            entryVal1.Should().Be(testValue);
-            entryVal2.Should().Be(replacedTestValue);
+            _ = actual.Should().BeTrue();
+            _ = entryVal1.Should().Be(testValue);
+            _ = entryVal2.Should().Be(replacedTestValue);
         }
 
         private static IEnumerable<TestCaseData> CreateCasesSessionReplaceAsyncThrows()
@@ -816,13 +777,15 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Session session = await store.StartSessionAsync();
             bool initInsert1 = await session.InsertAsync(testCategory, testName);
             if (!sessionHandleExisting)
-                await store.CloseAsync();
+            {
+                _ = await store.CloseAsync();
+            }
 
             //Act
-            Func<Task> actual = async() => await session.ReplaceAsync(category, name);
-          
+            Func<Task> actual = async () => await session.ReplaceAsync(category, name);
+
             //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            _ = await actual.Should().ThrowAsync<Exception>();
         }
 
         [Test, TestCase(TestName = "ReplaceAsync throws with no category name provided.")]
@@ -839,7 +802,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Func<Task> actual = async () => await session.ReplaceAsync(null, testName);
 
             //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            _ = await actual.Should().ThrowAsync<Exception>();
         }
         #endregion
 
@@ -864,15 +827,15 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync(asTransactions: asTxn);
-            bool initInsert1 = await session.InsertAsync(testEntry["category"].ToString(), testName, testValue);
+            _ = await session.InsertAsync(testEntry["category"].ToString(), testName, testValue);
 
             //Act
             IntPtr actual = await session.FetchAsync(testEntry["category"].ToString(), testName, forUpdate);
             string testVal = await ResultListApi.EntryListGetValueAsync(actual, 0);
 
             //Assert
-            actual.Should().NotBe(new IntPtr());
-            testVal.Should().Be(testValue);
+            _ = actual.Should().NotBe(new IntPtr());
+            _ = testVal.Should().Be(testValue);
         }
 
         private static IEnumerable<TestCaseData> CreateCasesFetchAsyncThrows()
@@ -895,13 +858,15 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Session session = await store.StartSessionAsync();
             bool initInsert1 = await session.InsertAsync(testEntry["category"].ToString(), testName, testValue);
             if (!sessionHandleExisting)
-                await store.CloseAsync();
+            {
+                _ = await store.CloseAsync();
+            }
 
             //Act
-            Func<Task> actual = async() => await session.FetchAsync(category, name);
+            Func<Task> actual = async () => await session.FetchAsync(category, name);
 
             //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            _ = await actual.Should().ThrowAsync<Exception>();
         }
 
         private static IEnumerable<TestCaseData> CreateCasesFetchAllAsyncWorks()
@@ -925,8 +890,8 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync(asTransactions: asTxn);
-            bool initInsert1 = await session.InsertAsync(testEntry["category"].ToString(), testName1, testValue, testEntry["tags"].ToString());
-            bool initInsert2 = await session.InsertAsync(testEntry["category"].ToString(), testName2, testValue);
+            _ = await session.InsertAsync(testEntry["category"].ToString(), testName1, testValue, testEntry["tags"].ToString());
+            _ = await session.InsertAsync(testEntry["category"].ToString(), testName2, testValue);
 
             //Act
             IntPtr actual = await session.FetchAllAsync(testEntry["category"].ToString());
@@ -937,11 +902,11 @@ namespace aries_askar_dotnet_tests.AriesAskar
             List<string> names = new() { name1, name2 };
 
             //Assert
-            actual.Should().NotBe(new IntPtr());
-            val1.Should().Be(testValue);
-            val2.Should().Be(testValue);
-            names.Should().Contain(testName1);
-            names.Should().Contain(testName2);
+            _ = actual.Should().NotBe(new IntPtr());
+            _ = val1.Should().Be(testValue);
+            _ = val2.Should().Be(testValue);
+            _ = names.Should().Contain(testName1);
+            _ = names.Should().Contain(testName2);
         }
         private static IEnumerable<TestCaseData> CreateCasesFetchAllAsyncThrows()
         {
@@ -957,12 +922,14 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
             if (!sessionHandleExisting)
-                await store.CloseAsync();
+            {
+                _ = await store.CloseAsync();
+            }
             //Act
-            Func<Task> actual = async() => await session.FetchAllAsync(category);
+            Func<Task> actual = async () => await session.FetchAllAsync(category);
 
             //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            _ = await actual.Should().ThrowAsync<Exception>();
         }
         #endregion
 
@@ -990,12 +957,12 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             IntPtr fetchedKeyHandle = await session.FetchKeyAsync(testKeyName);
             string fetchedKeyName = await ResultListApi.KeyEntryListGetNameAsync(fetchedKeyHandle, 0);
-            
+
             //Assert
-            actual.Should().BeTrue();
-            initialKeyHandle.Should().Be(new IntPtr());
-            fetchedKeyHandle.Should().NotBe(new IntPtr());
-            fetchedKeyName.Should().Be(testKeyName);
+            _ = actual.Should().BeTrue();
+            _ = initialKeyHandle.Should().Be(new IntPtr());
+            _ = fetchedKeyHandle.Should().NotBe(new IntPtr());
+            _ = fetchedKeyName.Should().Be(testKeyName);
         }
         private static IEnumerable<TestCaseData> CreateCasesInsertKeyAsyncThrows()
         {
@@ -1018,15 +985,20 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
             if (doubleInsert)
-                await session.InsertKeyAsync(keyHandle, testName);
+            {
+                _ = await session.InsertKeyAsync(keyHandle, testName);
+            }
+
             if (!sessionHandleExisting)
-                await store.CloseAsync();
+            {
+                _ = await store.CloseAsync();
+            }
 
             //Act
             Func<Task> actual = async () => await session.InsertKeyAsync(keyHandle, testName);
 
             //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            _ = await actual.Should().ThrowAsync<Exception>();
         }
         #endregion
 
@@ -1053,8 +1025,8 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Session session = await store.StartSessionAsync(asTransactions: asTxn);
             bool insertResult = await session.InsertKeyAsync(keyHandle, testKeyName, testMetadata, testTag);
             IntPtr initialKeyHandle = await session.FetchKeyAsync(testKeyName);
-            string initialKeyMetadata = await ResultListApi.KeyEntryListGetMetadataAsync(initialKeyHandle, 0);
-            string initialKeyTags = await ResultListApi.KeyEntryListGetTagsAsync(initialKeyHandle, 0);
+            _ = await ResultListApi.KeyEntryListGetMetadataAsync(initialKeyHandle, 0);
+            _ = await ResultListApi.KeyEntryListGetTagsAsync(initialKeyHandle, 0);
 
             //Act
             bool actual = await session.UpdateKeyAsync(testKeyName, newTestMetadata, newTestTag);
@@ -1064,13 +1036,13 @@ namespace aries_askar_dotnet_tests.AriesAskar
             string fetchedKeyTags = await ResultListApi.KeyEntryListGetTagsAsync(fetchedKeyHandle, 0);
 
             //Assert
-            actual.Should().BeTrue();
-            insertResult.Should().BeTrue();
-            fetchedKeyHandle.Should().NotBe(new IntPtr());
-            fetchedKeyMetadata.Should().Be(newTestMetadata);
-            fetchedKeyTags.Should().Be(newTestTag);
+            _ = actual.Should().BeTrue();
+            _ = insertResult.Should().BeTrue();
+            _ = fetchedKeyHandle.Should().NotBe(new IntPtr());
+            _ = fetchedKeyMetadata.Should().Be(newTestMetadata);
+            _ = fetchedKeyTags.Should().Be(newTestTag);
         }
-        
+
         private static IEnumerable<TestCaseData> CreateCasesUpdateKeyAsyncThrows()
         {
             yield return new TestCaseData(null, true)
@@ -1093,13 +1065,15 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Session session = await store.StartSessionAsync();
             bool insertResult = await session.InsertKeyAsync(keyHandle, testKeyName, testMetadata, testTag);
             if (!sessionHandleExisting)
-                await store.CloseAsync();
+            {
+                _ = await store.CloseAsync();
+            }
 
             //Act
-            Func<Task> actual = async() => await session.UpdateKeyAsync(testCaseKeyName);
+            Func<Task> actual = async () => await session.UpdateKeyAsync(testCaseKeyName);
 
             //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            _ = await actual.Should().ThrowAsync<Exception>();
         }
         #endregion
 
@@ -1120,7 +1094,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync(asTransactions: asTxn);
-            await session.InsertKeyAsync(keyHandle, testKeyName);
+            _ = await session.InsertKeyAsync(keyHandle, testKeyName);
             IntPtr initialKeyHandle = await session.FetchKeyAsync(testKeyName);
 
             //Act
@@ -1128,9 +1102,9 @@ namespace aries_askar_dotnet_tests.AriesAskar
             IntPtr fetchedKeyHandle = await session.FetchKeyAsync(testKeyName);
 
             //Assert
-            actual.Should().BeTrue();
-            initialKeyHandle.Should().NotBe(new IntPtr());
-            fetchedKeyHandle.Should().Be(new IntPtr());
+            _ = actual.Should().BeTrue();
+            _ = initialKeyHandle.Should().NotBe(new IntPtr());
+            _ = fetchedKeyHandle.Should().Be(new IntPtr());
         }
 
         private static IEnumerable<TestCaseData> CreateCasesRemoveKeyAsyncThrows()
@@ -1156,17 +1130,22 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync(asTransactions: asTxn);
-            await session.InsertKeyAsync(keyHandle, testKeyName);
-            if(doubleRemove)
-                await session.RemoveKeyAsync(testCaseInputKeyName);
+            _ = await session.InsertKeyAsync(keyHandle, testKeyName);
+            if (doubleRemove)
+            {
+                _ = await session.RemoveKeyAsync(testCaseInputKeyName);
+            }
+
             if (!sessionHandleExisting)
-                await store.CloseAsync();
+            {
+                _ = await store.CloseAsync();
+            }
 
             //Act
-            Func<Task> actual = async() => await session.RemoveKeyAsync(testCaseInputKeyName);
+            Func<Task> actual = async () => await session.RemoveKeyAsync(testCaseInputKeyName);
 
             //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            _ = await actual.Should().ThrowAsync<Exception>();
         }
         #endregion
 
@@ -1191,15 +1170,15 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync(asTransactions: asTxn);
-            bool initInsert1 = await session.InsertKeyAsync(keyHandle, testKeyName);
+            _ = await session.InsertKeyAsync(keyHandle, testKeyName);
 
             //Act
             IntPtr actual = await session.FetchKeyAsync(testKeyName, forUpdate);
-            string fetchedKeyName = await ResultListApi.KeyEntryListGetNameAsync(actual,0);
+            string fetchedKeyName = await ResultListApi.KeyEntryListGetNameAsync(actual, 0);
 
             //Assert
-            actual.Should().NotBe(new IntPtr());
-            fetchedKeyName.Should().Be(testKeyName);
+            _ = actual.Should().NotBe(new IntPtr());
+            _ = fetchedKeyName.Should().Be(testKeyName);
         }
 
         private static IEnumerable<TestCaseData> CreateCasesFetchKeyAsyncThrows()
@@ -1214,18 +1193,20 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             //Arrange
             string testKeyName = "testKeyName";
-            IntPtr keyHandle = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, true);            
+            IntPtr keyHandle = await KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, true);
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
             bool initInsert1 = await session.InsertKeyAsync(keyHandle, testKeyName);
             if (!sessionHandleExisting)
-                await store.CloseAsync();
+            {
+                _ = await store.CloseAsync();
+            }
 
             //Act
             Func<Task> actual = async () => await session.FetchKeyAsync(testCaseKeyName);
 
             //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            _ = await actual.Should().ThrowAsync<Exception>();
         }
 
         private static IEnumerable<TestCaseData> CreateCasesFetchAllKeyAsyncWorks()
@@ -1248,9 +1229,9 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync(asTransactions: asTxn);
-            bool initInsert1 = await session.InsertKeyAsync(keyHandle1, testKeyName1);
-            bool initInsert2 = await session.InsertKeyAsync(keyHandle2, testKeyName2);
-            bool initInsert3 = await session.InsertKeyAsync(keyHandle3, testKeyName3);
+            _ = await session.InsertKeyAsync(keyHandle1, testKeyName1);
+            _ = await session.InsertKeyAsync(keyHandle2, testKeyName2);
+            _ = await session.InsertKeyAsync(keyHandle3, testKeyName3);
 
             //Act
             IntPtr actual = await session.FetchAllKeysAsync(KeyAlg.A128CBC_HS256);
@@ -1259,10 +1240,10 @@ namespace aries_askar_dotnet_tests.AriesAskar
             List<string> names = new() { fetchedKeyName1, fetchedKeyName2 };
 
             //Assert
-            actual.Should().NotBe(new IntPtr());
-            names.Should().Contain(testKeyName1);
-            names.Should().Contain(testKeyName2);
-            names.Should().NotContain(testKeyName3);
+            _ = actual.Should().NotBe(new IntPtr());
+            _ = names.Should().Contain(testKeyName1);
+            _ = names.Should().Contain(testKeyName2);
+            _ = names.Should().NotContain(testKeyName3);
         }
 
         private static IEnumerable<TestCaseData> CreateCasesFetchAllKeyAsyncThrows()
@@ -1281,13 +1262,15 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Session session = await store.StartSessionAsync();
             bool initInsert1 = await session.InsertKeyAsync(keyHandle1, testKeyName1);
             if (!sessionHandleExisting)
-                await store.CloseAsync();
+            {
+                _ = await store.CloseAsync();
+            }
 
             //Act
-            Func<Task> actual = async() => await session.FetchAllKeysAsync(KeyAlg.A128CBC_HS256);
+            Func<Task> actual = async () => await session.FetchAllKeysAsync(KeyAlg.A128CBC_HS256);
 
             //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            _ = await actual.Should().ThrowAsync<Exception>();
         }
         #endregion
 
@@ -1311,8 +1294,8 @@ namespace aries_askar_dotnet_tests.AriesAskar
             bool actual = await session.CloseAndCommitAsync();
 
             //Assert
-            actual.Should().BeTrue();
-            session.sessionHandle.Should().Be(new IntPtr());
+            _ = actual.Should().BeTrue();
+            _ = session.sessionHandle.Should().Be(new IntPtr());
         }
 
         [Test, TestCase(TestName = "CloseAndCommitAsyncThrows for session handle equals 0.")]
@@ -1321,13 +1304,13 @@ namespace aries_askar_dotnet_tests.AriesAskar
             //Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync(testProfile, true);
-            await session.CloseAndCommitAsync();
+            _ = await session.CloseAndCommitAsync();
 
             //Act
-            Func<Task> actual = async() => await session.CloseAndCommitAsync();
+            Func<Task> actual = async () => await session.CloseAndCommitAsync();
 
             //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            _ = await actual.Should().ThrowAsync<Exception>();
         }
 
         [Test, TestCase(TestName = "CloseAndCommitAsyncThrows for session equals null.")]
@@ -1340,7 +1323,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Func<Task> actual = async () => await store.session.CloseAndCommitAsync();
 
             //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            _ = await actual.Should().ThrowAsync<Exception>();
         }
         #endregion
 
@@ -1364,8 +1347,8 @@ namespace aries_askar_dotnet_tests.AriesAskar
             bool actual = await session.CloseAndRollbackAsync();
 
             //Assert
-            actual.Should().BeTrue();
-            session.sessionHandle.Should().Be(new IntPtr());
+            _ = actual.Should().BeTrue();
+            _ = session.sessionHandle.Should().Be(new IntPtr());
         }
 
         [Test, TestCase(TestName = "CloseAndRollbackAsyncThrows for session handle equals 0.")]
@@ -1374,13 +1357,13 @@ namespace aries_askar_dotnet_tests.AriesAskar
             //Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync(testProfile, true);
-            await session.CloseAndCommitAsync();
+            _ = await session.CloseAndCommitAsync();
 
             //Act
             Func<Task> actual = async () => await session.CloseAndRollbackAsync();
 
             //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            _ = await actual.Should().ThrowAsync<Exception>();
         }
 
         [Test, TestCase(TestName = "CloseAndRollbackAsyncThrows for session equals null.")]
@@ -1393,7 +1376,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Func<Task> actual = async () => await store.session.CloseAndRollbackAsync();
 
             //Assert
-            await actual.Should().ThrowAsync<Exception>();
+            _ = await actual.Should().ThrowAsync<Exception>();
         }
         #endregion
 
@@ -1423,33 +1406,34 @@ namespace aries_askar_dotnet_tests.AriesAskar
             long maxElements = testNames.Count;
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
-            bool insert1 = await session.InsertAsync(testEntry["category"].ToString(), testNames[0], testValues[0], tag);
-            bool insert2 = await session.InsertAsync(testEntry["category"].ToString(), testNames[1], testValues[1], tag);
-            bool insert3 = await session.InsertAsync(testEntry["category"].ToString(), testNames[2], testValues[2], tag);
+            _ = await session.InsertAsync(testEntry["category"].ToString(), testNames[0], testValues[0], tag);
+            _ = await session.InsertAsync(testEntry["category"].ToString(), testNames[1], testValues[1], tag);
+            _ = await session.InsertAsync(testEntry["category"].ToString(), testNames[2], testValues[2], tag);
             Scan scan = await store.StartScanAsync(testEntry["category"].ToString(), tag, offset, limit, profile);
 
             //Act
             IntPtr actual = await scan.NextAsync();
-            
+
             int max = (int)limit;
             if (limit == -1)
             {
-                max = (int)(maxElements-offset);
+                max = (int)(maxElements - offset);
             }
             List<string> names = new();
             List<string> values = new();
 
-            for (int n = 0; n < max; n++) {
+            for (int n = 0; n < max; n++)
+            {
                 string name = await ResultListApi.EntryListGetNameAsync(actual, n);
                 string value = await ResultListApi.EntryListGetValueAsync(actual, n);
                 names.Add(name);
                 values.Add(value);
             }
-    
+
             //Assert
-            actual.Should().NotBe(new IntPtr());
-            names.Count.Should().Be(expected);
-            values.Count.Should().Be(expected);
+            _ = actual.Should().NotBe(new IntPtr());
+            _ = names.Count.Should().Be(expected);
+            _ = values.Count.Should().Be(expected);
 
         }
         #endregion
@@ -1466,10 +1450,10 @@ namespace aries_askar_dotnet_tests.AriesAskar
             bool actual = await scan.FreeAsync();
 
             //Assert
-            actual.Should().BeTrue();
-            scan.scanHandle.Should().Be(new IntPtr());
-            scan.storeHandle.Should().Be(new IntPtr());
-            scan.parameters.Should().BeNullOrEmpty();
+            _ = actual.Should().BeTrue();
+            _ = scan.scanHandle.Should().Be(new IntPtr());
+            _ = scan.storeHandle.Should().Be(new IntPtr());
+            _ = scan.parameters.Should().BeNullOrEmpty();
         }
         #endregion
 

@@ -18,7 +18,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             string actual = await ErrorApi.GetCurrentErrorAsync();
 
             //Assert
-            actual.Should().Be(expected);
+            _ = actual.Should().Be(expected);
         }
     }
 }

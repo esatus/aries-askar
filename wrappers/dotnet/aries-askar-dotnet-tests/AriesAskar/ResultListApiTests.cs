@@ -6,7 +6,6 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using static indy_vdr_dotnet.models.Structures;
 
 namespace aries_askar_dotnet_tests.AriesAskar
 {
@@ -68,7 +67,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             // Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
-            bool wasInserted = await session.InsertAsync(
+            _ = await session.InsertAsync(
                 testEntry["category"].ToString(),
                 testEntry["name"].ToString(),
                 testEntry["value"].ToString(),
@@ -80,7 +79,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             int count = await ResultListApi.EntryListCountAsync(entryListHandle);
 
             // Assert
-            count.Should().Be(1);
+            _ = count.Should().Be(1);
         }
 
         [Test, TestCase(TestName = "EntryListCountAsync returns the count with multiple entries.")]
@@ -89,12 +88,12 @@ namespace aries_askar_dotnet_tests.AriesAskar
             // Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
-            bool wasInserted = await session.InsertAsync(
+            _ = await session.InsertAsync(
                 testEntry["category"].ToString(),
                 testEntry["name"].ToString(),
                 testEntry["value"].ToString(),
                 testEntry["tags"].ToString());
-            bool wasInserted2 = await session.InsertAsync(
+            _ = await session.InsertAsync(
                 testEntry2["category"].ToString(),
                 testEntry2["name"].ToString(),
                 testEntry2["value"].ToString(),
@@ -106,7 +105,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             int count = await ResultListApi.EntryListCountAsync(entryListHandle);
 
             // Assert
-            count.Should().Be(2);
+            _ = count.Should().Be(2);
         }
 
         [Test, TestCase(TestName = "EntryListCountAsync with invalid entryListHandle throws.")]
@@ -120,7 +119,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Func<Task<int>> func = async () => await ResultListApi.EntryListCountAsync(entryListHandle);
 
             // Assert
-            await func.Should().ThrowAsync<AriesAskarException>();
+            _ = await func.Should().ThrowAsync<AriesAskarException>();
         }
 
         [Test, TestCase(TestName = "EntryListGetCategoryAsync returns the category.")]
@@ -129,7 +128,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             // Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
-            bool wasInserted = await session.InsertAsync(
+            _ = await session.InsertAsync(
                 testEntry["category"].ToString(),
                 testEntry["name"].ToString(),
                 testEntry["value"].ToString(),
@@ -142,20 +141,20 @@ namespace aries_askar_dotnet_tests.AriesAskar
             string category = await ResultListApi.EntryListGetCategoryAsync(entryListHandle, 0);
             // Assert
 
-            category.Should().Be("testCategory");
+            _ = category.Should().Be("testCategory");
         }
         [Test, TestCase(TestName = "EntryListGetCategoryAsync with invalid entryListHandle throws")]
         public async Task EntryListGetCategoryAsyncThrows()
         {
             // Arrange
             IntPtr entryListHandle = new();
-            
+
             // Act
 
-            Func<Task> func= async () => await ResultListApi.EntryListGetCategoryAsync(entryListHandle, 0);
+            Func<Task> func = async () => await ResultListApi.EntryListGetCategoryAsync(entryListHandle, 0);
             // Assert
 
-            await func.Should().ThrowAsync<AriesAskarException>();
+            _ = await func.Should().ThrowAsync<AriesAskarException>();
         }
 
         [Test, TestCase(TestName = "EntryListGetNameAsync returns the name.")]
@@ -164,7 +163,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             // Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
-            bool wasInserted = await session.InsertAsync(
+            _ = await session.InsertAsync(
                 testEntry["category"].ToString(),
                 testEntry["name"].ToString(),
                 testEntry["value"].ToString(),
@@ -177,7 +176,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             string category = await ResultListApi.EntryListGetNameAsync(entryListHandle, 0);
 
             // Assert
-            category.Should().Be("testName");
+            _ = category.Should().Be("testName");
         }
 
         [Test, TestCase(TestName = "EntryListGetNameAsync with invalid keyListHandle throws.")]
@@ -191,7 +190,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Func<Task> func = async () => await ResultListApi.EntryListGetNameAsync(entryListHandle, 0);
 
             // Assert
-            await func.Should().ThrowAsync<AriesAskarException>();
+            _ = await func.Should().ThrowAsync<AriesAskarException>();
         }
 
         [Test, TestCase(TestName = "EntryListGetValueAsync returns the value.")]
@@ -200,7 +199,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             // Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
-            bool wasInserted = await session.InsertAsync(
+            _ = await session.InsertAsync(
                 testEntry["category"].ToString(),
                 testEntry["name"].ToString(),
                 testEntry["value"].ToString(),
@@ -212,7 +211,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             string bufferString = await ResultListApi.EntryListGetValueAsync(entryListHandle, 0);
             // Assert
-            bufferString.Should().Be("testValue");
+            _ = bufferString.Should().Be("testValue");
         }
 
         [Test, TestCase(TestName = "EntryListGetValueAsync with invalid keyListHandle throws.")]
@@ -226,7 +225,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Func<Task> func = async () => await ResultListApi.EntryListGetValueAsync(entryListHandle, 0);
 
             // Assert
-            await func.Should().ThrowAsync<AriesAskarException>();
+            _ = await func.Should().ThrowAsync<AriesAskarException>();
         }
 
         [Test, TestCase(TestName = "EntryListGetTagsAsync returns the tag.")]
@@ -235,7 +234,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             // Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
-            bool wasInserted = await session.InsertAsync(
+            _ = await session.InsertAsync(
                 testEntry["category"].ToString(),
                 testEntry["name"].ToString(),
                 testEntry["value"].ToString(),
@@ -247,7 +246,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             string tag = await ResultListApi.EntryListGetTagsAsync(entryListHandle, 0);
             // Assert
-            tag.Should().Be("{\"enctag\":\"b\",\"~plaintag\":\"a\"}");
+            _ = tag.Should().Be("{\"enctag\":\"b\",\"~plaintag\":\"a\"}");
         }
 
         [Test, TestCase(TestName = "EntryListGetTagsAsync with invalid keyListHandle throws.")]
@@ -261,7 +260,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Func<Task> func = async () => await ResultListApi.EntryListGetTagsAsync(entryListHandle, 0);
 
             // Assert
-            await func.Should().ThrowAsync<AriesAskarException>();
+            _ = await func.Should().ThrowAsync<AriesAskarException>();
         }
 
         [Test, TestCase(TestName = "KeyEntryListCountAsync returns the count.")]
@@ -270,7 +269,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             // Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
-            bool wasInserted = await session.InsertKeyAsync(
+            _ = await session.InsertKeyAsync(
                 KeyApi.CreateKeyAsync(KeyAlg.ED25519, true).GetAwaiter().GetResult(),
                 testKeyEntry["key_name"],
                 testKeyEntry["metadata"],
@@ -280,7 +279,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             int count = await ResultListApi.KeyEntryListCountAsync(keyEntryListHandle);
 
             // Assert
-            count.Should().Be(1);
+            _ = count.Should().Be(1);
         }
 
         [Test, TestCase(TestName = "KeyEntryListCountAsync returns the count with multiple key entries.")]
@@ -289,13 +288,12 @@ namespace aries_askar_dotnet_tests.AriesAskar
             // Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
-            bool wasInserted = await session.InsertKeyAsync(
+            _ = await session.InsertKeyAsync(
                 KeyApi.CreateKeyAsync(KeyAlg.ED25519, true).GetAwaiter().GetResult(),
                 testKeyEntry["key_name"],
                 testKeyEntry["metadata"],
                 testKeyEntry["tags"]);
-
-            bool wasInserted2 = await session.InsertKeyAsync(
+            _ = await session.InsertKeyAsync(
                 KeyApi.CreateKeyAsync(KeyAlg.ED25519, true).GetAwaiter().GetResult(),
                 testKeyEntry2["key_name"],
                 testKeyEntry2["metadata"],
@@ -305,7 +303,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             int count = await ResultListApi.KeyEntryListCountAsync(keyEntryListHandle);
 
             // Assert
-            count.Should().Be(2);
+            _ = count.Should().Be(2);
         }
 
         [Test, TestCase(TestName = "KeyEntryListCountAsync with invalid keyEntryListHandle throws.")]
@@ -318,7 +316,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Func<Task<int>> func = async () => await ResultListApi.KeyEntryListCountAsync(keyEntryListHandle);
 
             // Assert
-            await func.Should().ThrowAsync<AriesAskarException>();
+            _ = await func.Should().ThrowAsync<AriesAskarException>();
         }
 
         [Test, TestCase(TestName = "KeyEntryListGetAlgorithmAsyncWorks returns the algorithm.")]
@@ -327,7 +325,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             // Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
-            bool wasInserted = await session.InsertKeyAsync(
+            _ = await session.InsertKeyAsync(
                 KeyApi.CreateKeyAsync(KeyAlg.ED25519, true).GetAwaiter().GetResult(),
                 testKeyEntry["key_name"],
                 testKeyEntry["metadata"],
@@ -338,7 +336,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             string algo = await ResultListApi.KeyEntryListGetAlgorithmAsync(keyEntryListHandle, 0);
 
             // Assert
-            algo.Should().Be("ed25519");
+            _ = algo.Should().Be("ed25519");
         }
 
         [Test, TestCase(TestName = "KeyEntryListGetAlgorithmAsyncWorks with invalid keyEntryListHandle throws.")]
@@ -351,7 +349,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Func<Task<string>> func = async () => await ResultListApi.KeyEntryListGetAlgorithmAsync(keyEntryListHandle, 0);
 
             // Assert
-            await func.Should().ThrowAsync<AriesAskarException>();
+            _ = await func.Should().ThrowAsync<AriesAskarException>();
         }
 
         [Test, TestCase(TestName = "KeyEntryListGetNameAsync returns the name.")]
@@ -360,7 +358,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             // Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
-            bool wasInserted = await session.InsertKeyAsync(
+            _ = await session.InsertKeyAsync(
                 KeyApi.CreateKeyAsync(KeyAlg.ED25519, true).GetAwaiter().GetResult(),
                 testKeyEntry["key_name"],
                 testKeyEntry["metadata"],
@@ -371,7 +369,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             string algo = await ResultListApi.KeyEntryListGetNameAsync(keyEntryListHandle, 0);
 
             // Assert
-            algo.Should().Be("testKey");
+            _ = algo.Should().Be("testKey");
         }
 
         [Test, TestCase(TestName = "KeyEntryListGetNameAsync with invalid keyEntryListHandle throws.")]
@@ -384,7 +382,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Func<Task<string>> func = async () => await ResultListApi.KeyEntryListGetNameAsync(keyEntryListHandle, 0);
 
             // Assert
-            await func.Should().ThrowAsync<AriesAskarException>();
+            _ = await func.Should().ThrowAsync<AriesAskarException>();
         }
 
         [Test, TestCase(TestName = "KeyEntryListGetMetadataAsync returns the metadata.")]
@@ -393,7 +391,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             // Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
-            bool wasInserted = await session.InsertKeyAsync(
+            _ = await session.InsertKeyAsync(
                 KeyApi.CreateKeyAsync(KeyAlg.ED25519, true).GetAwaiter().GetResult(),
                 testKeyEntry["key_name"],
                 testKeyEntry["metadata"],
@@ -404,7 +402,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             string algo = await ResultListApi.KeyEntryListGetMetadataAsync(keyEntryListHandle, 0);
 
             // Assert
-            algo.Should().Be("testMetadata");
+            _ = algo.Should().Be("testMetadata");
         }
 
         [Test, TestCase(TestName = "KeyEntryListGetMetadataAsync with invalid keyEntryListHandle throws.")]
@@ -417,7 +415,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Func<Task<string>> func = async () => await ResultListApi.KeyEntryListGetMetadataAsync(keyEntryListHandle, 0);
 
             // Assert
-            await func.Should().ThrowAsync<AriesAskarException>();
+            _ = await func.Should().ThrowAsync<AriesAskarException>();
         }
 
         [Test, TestCase(TestName = "KeyEntryListGetTagsAsync returns the metadata.")]
@@ -426,7 +424,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             // Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
-            bool wasInserted = await session.InsertKeyAsync(
+            _ = await session.InsertKeyAsync(
                 KeyApi.CreateKeyAsync(KeyAlg.ED25519, true).GetAwaiter().GetResult(),
                 testKeyEntry["key_name"],
                 testKeyEntry["metadata"],
@@ -437,7 +435,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             string algo = await ResultListApi.KeyEntryListGetTagsAsync(keyEntryListHandle, 0);
 
             // Assert
-            algo.Should().Be($"{{\"a\":\"b\"}}");
+            _ = algo.Should().Be($"{{\"a\":\"b\"}}");
         }
 
         [Test, TestCase(TestName = "KeyEntryListGetTagsAsync with invalid keyEntryListHandle throws.")]
@@ -450,7 +448,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Func<Task<string>> func = async () => await ResultListApi.KeyEntryListGetTagsAsync(keyEntryListHandle, 0);
 
             // Assert
-            await func.Should().ThrowAsync<AriesAskarException>();
+            _ = await func.Should().ThrowAsync<AriesAskarException>();
         }
 
         [Test, TestCase(TestName = "LoadLocalKeyHandleFromKeyEntryListAsync returns a localKeyHandle.")]
@@ -459,7 +457,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             // Arrange
             Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
             Session session = await store.StartSessionAsync();
-            bool wasInserted = await session.InsertKeyAsync(
+            _ = await session.InsertKeyAsync(
                 KeyApi.CreateKeyAsync(KeyAlg.ED25519, true).GetAwaiter().GetResult(),
                 testKeyEntry["key_name"],
                 testKeyEntry["metadata"],
@@ -467,11 +465,11 @@ namespace aries_askar_dotnet_tests.AriesAskar
             IntPtr keyEntryListHandle = await session.FetchKeyAsync(
                 testKeyEntry["key_name"]);
             // Act
-            IntPtr localKeyHandle = new();
-             localKeyHandle = await ResultListApi.LoadLocalKeyHandleFromKeyEntryListAsync(keyEntryListHandle, 0);
+            _ = new();
+            IntPtr localKeyHandle = await ResultListApi.LoadLocalKeyHandleFromKeyEntryListAsync(keyEntryListHandle, 0);
 
             // Assert
-            localKeyHandle.Should().NotBe((IntPtr)0);
+            _ = localKeyHandle.Should().NotBe((IntPtr)0);
         }
 
         [Test, TestCase(TestName = "LoadLocalKeyHandleFromKeyEntryListAsync with invalid keyEntryListHandle throws.")]
@@ -484,7 +482,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             Func<Task<IntPtr>> func = async () => await ResultListApi.LoadLocalKeyHandleFromKeyEntryListAsync(keyEntryListHandle, 0);
 
             // Assert
-            await func.Should().ThrowAsync<AriesAskarException>();
+            _ = await func.Should().ThrowAsync<AriesAskarException>();
         }
     }
 }

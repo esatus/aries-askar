@@ -14,7 +14,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
 {
     public class KeyApiTests
     {
-        UTF8Encoding Decoder = new UTF8Encoding(true, true);
+        private readonly UTF8Encoding Decoder = new(true, true);
 
         #region Create
         #region CreateKeyAsync
@@ -1069,12 +1069,12 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             KeyAlg keyRecipientAlg = testKeyAlg;
             bool testEphemeral = true;
-            IntPtr testRecipientHandle = await KeyApi.CreateKeyAsync(
+            _ = await KeyApi.CreateKeyAsync(
                     keyRecipientAlg,
                     testEphemeral);
 
             KeyAlg keySenderAlg = testKeyAlg;
-            IntPtr testSenderHandle = await KeyApi.CreateKeyAsync(
+            _ = await KeyApi.CreateKeyAsync(
                     keySenderAlg,
                     testEphemeral);
 
@@ -1155,7 +1155,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
                 testNonce);
 
             //Assert
-            await func.Should().ThrowAsync<AriesAskarException>();
+            _ = await func.Should().ThrowAsync<AriesAskarException>();
         }
 
         private static IEnumerable<TestCaseData> CryptoBoxAsyncErrorCases()
@@ -1199,7 +1199,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
                 testNonce);
 
             //Assert
-            _ =actual.Should().Be(testMessage);
+            _ = actual.Should().Be(testMessage);
         }
 
         private static IEnumerable<TestCaseData> OpenCryptoBoxAsyncCases()
@@ -1240,7 +1240,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
                 testNonce);
 
             //Assert
-            await func.Should().ThrowAsync<AriesAskarException>();
+            _ = await func.Should().ThrowAsync<AriesAskarException>();
         }
 
         private static IEnumerable<TestCaseData> OpenCryptoBoxAsyncErrorCases()
@@ -1251,7 +1251,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         #endregion
 
         #region SealCryptoBoxAsync
-        
+
         [Test, TestCaseSource(nameof(SealCryptoBoxAsyncCases)), Category("Crypto")]
         public async Task SealCryptoBoxAsyncTests(KeyAlg testKeyAlg)
         {
@@ -1282,7 +1282,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         public async Task SealCryptoBoxAsynccErrorTests()
         {
             //Arrange
-            IntPtr testKeyHandle = new IntPtr();
+            IntPtr testKeyHandle = new();
 
             string testMessage = "testMessage";
 
@@ -1292,7 +1292,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
                 testMessage);
 
             //Assert
-            await func.Should().ThrowAsync<AriesAskarException>();
+            _ = await func.Should().ThrowAsync<AriesAskarException>();
         }
 
         private static IEnumerable<TestCaseData> SealCryptoBoxAsyncErrorCases()
@@ -1356,7 +1356,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
                 sealedBox);
 
             //Assert
-            await func.Should().ThrowAsync<AriesAskarException>();
+            _ = await func.Should().ThrowAsync<AriesAskarException>();
         }
 
         private static IEnumerable<TestCaseData> OpenSealCryptoBoxAsyncErrorCases()
@@ -1503,7 +1503,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             string enc = "A256GCM";
             string apu = "Alice";
             string apv = "Bob";
-            EcdhEs ecdhEs = new(algId,apu, apv);
+            EcdhEs ecdhEs = new(algId, apu, apv);
             string msgSend = "testMessage";
 
             IntPtr keyBob = await KeyApi.CreateKeyAsync(keyAlg, testEphemeral);
@@ -1517,7 +1517,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             //Act
             (byte[] testAeadCiphertext, byte[] testAeadTag, byte[] testAeadNonce) = await KeyApi.EncryptKeyWithAeadAsync(cek, msgSend, null, testAeadContent);
 
-            (byte[] encryptCiphertext, _, _ ) = await ecdhEs.SenderWrapKeyAsync(
+            (byte[] encryptCiphertext, _, _) = await ecdhEs.SenderWrapKeyAsync(
                 KeyAlg.A128KW,
                 keyEphemeral,
                 keyBob,
@@ -1535,8 +1535,8 @@ namespace aries_askar_dotnet_tests.AriesAskar
             string cekReceiverSecret = Decoder.GetString(await KeyApi.GetJwkSecretFromKeyAsync(cekReceiver));
 
             //Assert
-            msgReceive.Should().Be(msgSend);
-            cekSecret.Should().Be(cekReceiverSecret);
+            _ = msgReceive.Should().Be(msgSend);
+            _ = cekSecret.Should().Be(cekReceiverSecret);
         }
 
         [Test, TestCase(TestName = "EcdhEs EncryptDirectAsync and DecryptDirectAsync works and returns the input message."), Category("Utils")]
@@ -1558,7 +1558,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             string jwkEphemeral = await KeyApi.GetJwkPublicFromKeyAsync(keyEphemeral, keyAlg);
 
             KeyAlg keyAlgCek = KeyAlg.A256GCM;
-            IntPtr cek = await KeyApi.CreateKeyAsync(keyAlgCek, testEphemeral);
+            _ = await KeyApi.CreateKeyAsync(keyAlgCek, testEphemeral);
             string testAeadContent = $"{{ \"alg\":{algId}, \"enc\":{enc}, \"apu\":{apu}, \"apv\":{apv}, \"epk\":{jwkEphemeral}}}";
 
             //Act
@@ -1580,7 +1580,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
                 testAeadContent);
 
             //Assert
-            msgReceived.Should().Be(msgSend);
+            _ = msgReceived.Should().Be(msgSend);
         }
 
         [Test, TestCase(TestName = "Ecdh1Pu SenderWrapKeyAsync and ReceiverUnwrapKeyAsyncworks works and returns the input message."), Category("Utils")]
@@ -1631,8 +1631,8 @@ namespace aries_askar_dotnet_tests.AriesAskar
             string cekReceiverSecret = Decoder.GetString(await KeyApi.GetJwkSecretFromKeyAsync(cekReceiver));
 
             //Assert
-            msgReceive.Should().Be(msgSend);
-            cekSecret.Should().Be(cekReceiverSecret);
+            _ = msgReceive.Should().Be(msgSend);
+            _ = cekSecret.Should().Be(cekReceiverSecret);
         }
 
         [Test, TestCase(TestName = "Ecdh1Pu EncryptDirectAsync and DecryptDirectAsync works and returns the input message."), Category("Utils")]
@@ -1655,7 +1655,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             string jwkEphemeral = await KeyApi.GetJwkPublicFromKeyAsync(keyEphemeral, keyAlg);
 
             KeyAlg keyAlgCek = KeyAlg.A256GCM;
-            IntPtr cek = await KeyApi.CreateKeyAsync(keyAlgCek, testEphemeral);
+            _ = await KeyApi.CreateKeyAsync(keyAlgCek, testEphemeral);
             string testAeadContent = $"{{ \"alg\":{algId}, \"enc\":{enc}, \"apu\":{apu}, \"apv\":{apv}, \"epk\":{jwkEphemeral}}}";
 
             //Act
@@ -1679,7 +1679,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
                 testAeadContent);
 
             //Assert
-            msgReceived.Should().Be(msgSend);
+            _ = msgReceived.Should().Be(msgSend);
         }
         #endregion
     }
