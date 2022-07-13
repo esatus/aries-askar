@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32526.322
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "aries-askar-dotnet", "aries-askar-dotnet.csproj", "{34277685-49CF-4F7F-B2B0-318E50C2C289}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "aries-askar-dotnet-tests", "..\aries-askar-dotnet-tests\aries-askar-dotnet-tests.csproj", "{8BA4A73C-F231-4685-9EF7-F28B814DD0BE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{34277685-49CF-4F7F-B2B0-318E50C2C289}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34277685-49CF-4F7F-B2B0-318E50C2C289}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34277685-49CF-4F7F-B2B0-318E50C2C289}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34277685-49CF-4F7F-B2B0-318E50C2C289}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BA4A73C-F231-4685-9EF7-F28B814DD0BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BA4A73C-F231-4685-9EF7-F28B814DD0BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BA4A73C-F231-4685-9EF7-F28B814DD0BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BA4A73C-F231-4685-9EF7-F28B814DD0BE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {ABB30C81-381B-4113-B6CF-CEC4021A108F}
+	EndGlobalSection
+EndGlobal
