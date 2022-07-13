@@ -11,7 +11,7 @@
 	<Company>Hyperledger Aries</Company>
 	<Product>Hyperledger Aries-Askar</Product>
 	<Description>
-		.NET wrapper for the Hyperledger aries-askar.
+		.NET wrapper for the Hyperledger Aries-Askar.
 	</Description>
 	<PackageProjectUrl>https://github.com/hyperledger/aries-askar</PackageProjectUrl>
 	<RepositoryUrl>https://github.com/hyperledger/aries-askar</RepositoryUrl>
