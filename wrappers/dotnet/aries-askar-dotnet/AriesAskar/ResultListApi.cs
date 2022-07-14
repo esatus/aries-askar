@@ -101,7 +101,7 @@ namespace aries_askar_dotnet.AriesAskar
             IntPtr entryListHandle,
             int index)
         {
-            ByteBuffer value = new();
+            ByteBuffer value = new ByteBuffer();
             int errorCode = NativeMethods.askar_entry_list_get_value(
                 entryListHandle,
                 index,
@@ -320,7 +320,7 @@ namespace aries_askar_dotnet.AriesAskar
             IntPtr keyEntryListHandle,
             int index)
         {
-            IntPtr output = new();
+            IntPtr output = new IntPtr();
             int errorCode = NativeMethods.askar_key_entry_list_load_local(
                 keyEntryListHandle,
                 index,

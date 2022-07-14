@@ -107,7 +107,7 @@ namespace aries_askar_dotnet.Models
             byte[] tag,
             string aad = null)
         {
-            UTF8Encoding Decoder = new(true, true);
+            UTF8Encoding Decoder = new UTF8Encoding(true, true);
             IntPtr derivedKey = await ecdhEs.DeriveKeyAsync(encKeyAlg, ephemeralKey, receiverKey, true);
             return Decoder.GetString(await KeyApi.DecryptKeyWithAeadAsync(derivedKey, ciphertext, nonce, tag, aad));
         }

@@ -13,7 +13,7 @@ namespace aries_askar_dotnet.Models
 
             public static FfiStr Create(string arg)
             {
-                FfiStr FfiString = new()
+                FfiStr FfiString = new FfiStr()
                 {
                     data = new IntPtr()
                 };
@@ -33,10 +33,10 @@ namespace aries_askar_dotnet.Models
 
             public static ByteBuffer Create(string json)
             {
-                ByteBuffer buffer = new();
+                ByteBuffer buffer = new ByteBuffer();
                 if (!string.IsNullOrEmpty(json))
                 {
-                    UTF8Encoding decoder = new(true, true);
+                    UTF8Encoding decoder = new UTF8Encoding(true, true);
                     byte[] bytes = new byte[json.Length];
                     _ = decoder.GetBytes(json, 0, json.Length, bytes, 0);
                     buffer.len = json.Length;
@@ -55,7 +55,7 @@ namespace aries_askar_dotnet.Models
 
             public static ByteBuffer Create(byte[] bytes)
             {
-                ByteBuffer buffer = new();
+                ByteBuffer buffer = new ByteBuffer();
                 buffer.len = bytes != null ? bytes.Length : 0;
 
                 if (buffer.len > 0)
