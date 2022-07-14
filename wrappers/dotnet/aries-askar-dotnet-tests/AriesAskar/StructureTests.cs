@@ -11,7 +11,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
     {
         #region EncryptedBuffer
         [Test, TestCaseSource(nameof(EncryptedBufferCases)), Category("EncryptedBuffer")]
-        public async Task EncryptedBufferTests(string expectedValue, string expectedTag, string expectedNonce, long tagPos, long noncePos)
+        public Task EncryptedBufferTests(string expectedValue, string expectedTag, string expectedNonce, long tagPos, long noncePos)
         {
             //Arrange
             ByteBuffer testValue = ByteBuffer.Create(expectedValue + expectedTag + expectedNonce);
@@ -35,6 +35,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = actualValue.Should().Be(expectedValue);
             _ = actualTag.Should().Be(expectedTag);
             _ = actualNonce.Should().Be(expectedNonce);
+            return Task.CompletedTask;
         }
 
         private static IEnumerable<TestCaseData> EncryptedBufferCases()

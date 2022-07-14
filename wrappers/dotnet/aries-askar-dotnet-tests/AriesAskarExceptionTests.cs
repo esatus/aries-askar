@@ -40,7 +40,7 @@ namespace aries_askar_dotnet_tests
         }
 
         [Test, TestCaseSource(nameof(CreateErrorCodeCases))]
-        public async Task AriesAskarExceptionsRightMessages(string testMessage, string errorCode, string expected)
+        public Task AriesAskarExceptionsRightMessages(string testMessage, string errorCode, string expected)
         {
             //Arrange
             string testErrorMessage = $"{{\"code\":\"{errorCode}\",\"message\":\"{testMessage}\"}}";
@@ -56,6 +56,7 @@ namespace aries_askar_dotnet_tests
             //Assert
             actual.Should().Be(expected);
             Console.WriteLine(testException.Message);
+            return Task.CompletedTask;
         }
     }
 }

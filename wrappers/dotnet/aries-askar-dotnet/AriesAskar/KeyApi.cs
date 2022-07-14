@@ -27,7 +27,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             if (errorCode != (int)ErrorCode.Success)
             {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
@@ -56,7 +56,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             if (errorCode != (int)ErrorCode.Success)
             {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
@@ -79,7 +79,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             if (errorCode != (int)ErrorCode.Success)
             {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
@@ -105,7 +105,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             if (errorCode != (int)ErrorCode.Success)
             {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
@@ -131,7 +131,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             if (errorCode != (int)ErrorCode.Success)
             {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
@@ -160,7 +160,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             if (errorCode != (int)ErrorCode.Success)
             {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
@@ -185,7 +185,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             if (errorCode != (int)ErrorCode.Success)
             {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
@@ -208,7 +208,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             if (errorCode != (int)ErrorCode.Success)
             {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
@@ -231,7 +231,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             if (errorCode != (int)ErrorCode.Success)
             {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
@@ -254,7 +254,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             if (errorCode != (int)ErrorCode.Success)
             {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
@@ -280,7 +280,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             if (errorCode != (int)ErrorCode.Success)
             {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
@@ -303,7 +303,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             if (errorCode != (int)ErrorCode.Success)
             {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
@@ -329,7 +329,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             if (errorCode != (int)ErrorCode.Success)
             {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
@@ -354,7 +354,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             if (errorCode != (int)ErrorCode.Success)
             {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
@@ -378,7 +378,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             if (errorCode != (int)ErrorCode.Success)
             {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
@@ -404,7 +404,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             if (errorCode != (int)ErrorCode.Success)
             {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
@@ -442,7 +442,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             if (errorCode != (int)ErrorCode.Success)
             {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
@@ -477,7 +477,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             if (errorCode != (int)ErrorCode.Success)
             {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
@@ -499,7 +499,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             if (errorCode != (int)ErrorCode.Success)
             {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
@@ -532,7 +532,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             if (errorCode != (int)ErrorCode.Success)
             {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
@@ -564,7 +564,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             if (errorCode != (int)ErrorCode.Success)
             {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
@@ -590,7 +590,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             if (errorCode != (int)ErrorCode.Success)
             {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
@@ -616,7 +616,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             if (errorCode != (int)ErrorCode.Success)
             {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
@@ -644,7 +644,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             if (errorCode != (int)ErrorCode.Success)
             {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
@@ -655,10 +655,11 @@ namespace aries_askar_dotnet.AriesAskar
         /// Free the key object in the backend.
         /// </summary>
         /// <param name="inputHandle">The handle of the key as <see cref="IntPtr"/>.</param>
-        public static async Task FreeKeyAsync(
+        public static Task FreeKeyAsync(
             IntPtr inputHandle)
         {
             NativeMethods.askar_key_free(inputHandle);
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -685,7 +686,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             if (errorCode != (int)ErrorCode.Success)
             {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
@@ -719,7 +720,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             if (errorCode != (int)ErrorCode.Success)
             {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
@@ -755,7 +756,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             if (errorCode != (int)ErrorCode.Success)
             {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
@@ -792,7 +793,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             if (errorCode != (int)ErrorCode.Success)
             {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
@@ -835,7 +836,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             if (errorCode != (int)ErrorCode.Success)
             {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
@@ -884,7 +885,7 @@ namespace aries_askar_dotnet.AriesAskar
 
             if (errorCode != (int)ErrorCode.Success)
             {
-                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                string error = await ErrorApi.GetCurrentErrorAsync();
                 Console.WriteLine(error);
                 throw AriesAskarException.FromSdkError(error);
             }
