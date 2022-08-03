@@ -163,7 +163,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
         private static IEnumerable<TestCaseData> CreateKeyFromSeedAsyncErrorCases()
         {
-            yield return new TestCaseData(KeyAlg.NONE)
+            yield return new TestCaseData(KeyAlg.ED25519)
                 .SetName("CreateKeyFromSeedAsync throws an AriesAskarException if the seed length is not exactly 32.");
         }
         #endregion
