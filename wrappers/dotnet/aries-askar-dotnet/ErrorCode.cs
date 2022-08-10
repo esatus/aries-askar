@@ -7,21 +7,33 @@
     {
         public static string ToErrorCodeString(this ErrorCode errorCode)
         {
-            return errorCode switch
+            switch (errorCode)
             {
-                ErrorCode.Success => "Success",
-                ErrorCode.Backend => "Backend",
-                ErrorCode.Busy => "Busy",
-                ErrorCode.Duplicate => "Duplicate",
-                ErrorCode.Encryption => "Encryption",
-                ErrorCode.Input => "Input",
-                ErrorCode.NotFound => "NotFound",
-                ErrorCode.Unexpected => "Unexpected",
-                ErrorCode.Unsupported => "Unsupported",
-                ErrorCode.Wrapper => "Wrapper",
-                ErrorCode.Custom => "Custom",
-                _ => "Unknown error code"
-            };
+                case ErrorCode.Success:
+                    return "Success";
+                case ErrorCode.Backend:
+                    return "Backend";
+                case ErrorCode.Busy:
+                    return "Busy";
+                case ErrorCode.Duplicate:
+                    return "Duplicate";
+                case ErrorCode.Encryption:
+                    return "Encryption";
+                case ErrorCode.Input:
+                    return "Input";
+                case ErrorCode.NotFound:
+                    return "NotFound";
+                case ErrorCode.Unexpected:
+                    return "Unexpected";
+                case ErrorCode.Unsupported:
+                    return "Unsupported";
+                case ErrorCode.Wrapper:
+                    return "Wrapper";
+                case ErrorCode.Custom:
+                    return "Custom";
+                default:
+                    return "Unknown error code";
+            }
         }
     }
 

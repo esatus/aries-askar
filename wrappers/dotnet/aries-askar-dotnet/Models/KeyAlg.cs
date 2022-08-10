@@ -7,47 +7,47 @@
     {
         public static string ToKeyAlgString(this KeyAlg keyAlg)
         {
-            return keyAlg switch
+            switch (keyAlg)
             {
-                KeyAlg.A128GCM => "a128gcm",
-                KeyAlg.A256GCM => "a256gcm",
-                KeyAlg.A128CBC_HS256 => "a128cbchs256",
-                KeyAlg.A256CBC_HS512 => "a256cbchs512",
-                KeyAlg.A128KW => "a128kw",
-                KeyAlg.A256KW => "a256kw",
-                KeyAlg.BLS12_381_G1 => "bls12381g1",
-                KeyAlg.BLS12_381_G2 => "bls12381g2",
-                KeyAlg.BLS12_381_G1G2 => "bls12381g1g2",
-                KeyAlg.C20P => "c20p",
-                KeyAlg.XC20P => "xc20p",
-                KeyAlg.ED25519 => "ed25519",
-                KeyAlg.X25519 => "x25519",
-                KeyAlg.K256 => "k256",
-                KeyAlg.P256 => "p256",
-                _ => null
+                case KeyAlg.A128GCM: return "a128gcm";
+                case KeyAlg.A256GCM: return "a256gcm";
+                case KeyAlg.A128CBC_HS256: return "a128cbchs256";
+                case KeyAlg.A256CBC_HS512: return "a256cbchs512";
+                case KeyAlg.A128KW: return "a128kw";
+                case KeyAlg.A256KW: return "a256kw";
+                case KeyAlg.BLS12_381_G1: return "bls12381g1";
+                case KeyAlg.BLS12_381_G2: return "bls12381g2";
+                case KeyAlg.BLS12_381_G1G2: return "bls12381g1g2";
+                case KeyAlg.C20P: return "c20p";
+                case KeyAlg.XC20P: return "xc20p";
+                case KeyAlg.ED25519: return "ed25519";
+                case KeyAlg.X25519: return "x25519";
+                case KeyAlg.K256: return "k256";
+                case KeyAlg.P256: return "p256";
+                default: return null;
             };
         }
 
         public static string ToJwkCrvString(this KeyAlg keyAlg)
         {
-            return keyAlg switch
+            switch (keyAlg)
             {
-                KeyAlg.A128GCM => "A128GCM",
-                KeyAlg.A256GCM => "A256GCM",
-                KeyAlg.A128CBC_HS256 => "A128CBC_HS256",
-                KeyAlg.A256CBC_HS512 => "A256CBC_HS512",
-                KeyAlg.A128KW => "A128KW",
-                KeyAlg.A256KW => "A256KW",
-                KeyAlg.BLS12_381_G1 => "BLS12381_G1",
-                KeyAlg.BLS12_381_G2 => "BLS12381_G2",
-                KeyAlg.BLS12_381_G1G2 => "BLS12381_G1G2",
-                KeyAlg.C20P => "C20P",
-                KeyAlg.XC20P => "XC20P",
-                KeyAlg.ED25519 => "ED25519",
-                KeyAlg.X25519 => "X25519",
-                KeyAlg.K256 => "K256",
-                KeyAlg.P256 => "P256",
-                _ => null
+                case KeyAlg.A128GCM: return "A128GCM";
+                case KeyAlg.A256GCM: return "A256GCM";
+                case KeyAlg.A128CBC_HS256: return "A128CBC_HS256";
+                case KeyAlg.A256CBC_HS512: return "A256CBC_HS512";
+                case KeyAlg.A128KW: return "A128KW";
+                case KeyAlg.A256KW: return "A256KW";
+                case KeyAlg.BLS12_381_G1: return "BLS12381_G1";
+                case KeyAlg.BLS12_381_G2: return "BLS12381_G2";
+                case KeyAlg.BLS12_381_G1G2: return "BLS12381_G1G2";
+                case KeyAlg.C20P: return "C20P";
+                case KeyAlg.XC20P: return "XC20P";
+                case KeyAlg.ED25519: return "ED25519";
+                case KeyAlg.X25519: return "X25519";
+                case KeyAlg.K256: return "K256";
+                case KeyAlg.P256: return "P256";
+                default: return null;
             };
         }
     }

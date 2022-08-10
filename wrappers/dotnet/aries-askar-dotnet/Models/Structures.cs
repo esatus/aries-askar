@@ -19,7 +19,7 @@ namespace aries_askar_dotnet.Models
                 };
                 if (arg != null)
                 {
-                    FfiString.data = Marshal.StringToCoTaskMemUTF8(arg);
+                    FfiString.data = Marshal.StringToCoTaskMemAnsi(arg);
                 }
                 return FfiString;
             }
@@ -58,7 +58,7 @@ namespace aries_askar_dotnet.Models
                 ByteBuffer buffer = new ByteBuffer();
                 buffer.len = bytes != null ? bytes.Length : 0;
 
-                if (buffer.len > 0)
+                if (buffer.len > 0 && bytes != null)
                 {
                     fixed (byte* bytebuffer_p = &bytes[0])
                     {
@@ -74,6 +74,23 @@ namespace aries_askar_dotnet.Models
             }
         }
 
+        public static unsafe string DecodeToString(this ByteBuffer buffer)
+        {
+            switch (buffer.len)
+            {
+                case 0: return "";
+                default:
+                    char[] charArray = new char[buffer.len];
+                    UTF8Encoding utf8Decoder = new UTF8Encoding(true, true);
+
+                    fixed (char* char_ptr = &charArray[0])
+                    {
+                        _ = utf8Decoder.GetChars((byte*)buffer.value, (int)buffer.len, char_ptr, (int)buffer.len);
+                    }
+                    return new string(charArray);
+            }
+        }
+
         public static unsafe byte[] Decode(this ByteBuffer buffer)
         {
             byte[] managedArray = new byte[buffer.len];
@@ -84,14 +101,6 @@ namespace aries_askar_dotnet.Models
             }
 
             return managedArray;
-        }
-        public static unsafe string DecodeToString(this ByteBuffer buffer)
-        {
-            return buffer.len switch
-            {
-                0 => "",
-                _ => Marshal.PtrToStringUTF8(buffer.value, (int)buffer.len)
-            };
         }
 
         public static unsafe (byte[], byte[], byte[]) Decode(this EncryptedBuffer encryptedBuffer)

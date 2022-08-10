@@ -7,13 +7,13 @@
     {
         public static string ToSigTypeString(this SignatureType sigType)
         {
-            return sigType switch
+            switch (sigType)
             {
-                SignatureType.EdDSA => "EDDSA",
-                SignatureType.ES256 => "ES256",
-                SignatureType.ES256K => "ES256K",
-                _ => null
-            };
+                case SignatureType.EdDSA: return "EDDSA";
+                case SignatureType.ES256: return "ES256";
+                case SignatureType.ES256K: return "ES256K";
+                default: return null;
+            }
         }
     }
     /// <summary>

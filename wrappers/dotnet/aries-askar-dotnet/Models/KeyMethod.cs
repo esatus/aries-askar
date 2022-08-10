@@ -7,12 +7,12 @@
     {
         public static string ToKeyMethodString(this KeyMethod keyMethod)
         {
-            return keyMethod switch
+            switch (keyMethod)
             {
-                KeyMethod.KDF_ARGON2I => "kdf:argon2i",
-                KeyMethod.RAW => "raw",
-                KeyMethod.NONE => "none",
-                _ => null
+                case KeyMethod.KDF_ARGON2I: return "kdf:argon2i";
+                case KeyMethod.RAW: return "raw";
+                case KeyMethod.NONE: return "none";
+                default: return null;
             };
         }
     }
