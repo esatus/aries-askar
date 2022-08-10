@@ -30,7 +30,7 @@ namespace aries_askar_dotnet.AriesAskar
         /// <param name="keyMethod">The key method from enum <see cref="KeyMethod"/>, which represents supported methods for generating or referencing a new store key; default none.</param>
         /// <param name="passKey">The pass key <see cref="string"/>, a possible empty password or key used to derive a store key; default null.</param>
         /// <param name="profile">The store profile <see cref="string"/>; default null.</param>
-        /// <param name="recreate">The recreate <see cref="bool"/> flag; default false.</param>
+        /// <param name="recreate">The recreate <see cref="bool"/> flag. If true the database is overwritten and newly initialized, if false trys to open the database with given settings if it already exists, when it fails to open, a new database is provisioned; default false.</param>
         /// <returns>A new instance of <see cref="Store"/> containing the spec uri and store handle from the backend.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -654,7 +654,7 @@ namespace aries_askar_dotnet.AriesAskar
         /// <param name="keyMethod">The key method from enum <see cref="KeyMethod"/>, which represents supported methods for generating or referencing a new store key; default none.</param>
         /// <param name="passKey">The pass key <see cref="string"/>, a possible empty password or key used to derive a store key; default null.</param>
         /// <param name="profile">The store profile <see cref="string"/>; default null.</param>
-        /// <param name="recreate">The recreate <see cref="bool"/> flag; default false.</param>
+        /// <param name="recreate">The recreate <see cref="bool"/> flag. If true the database is overwritten and newly initialized, if false trys to open the database with given settings if it already exists, when it fails to open, a new database is provisioned; default false.</param>
         /// <returns>A new instance of <see cref="Store"/> containing the spec uri and store handle from rust sdk call.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
