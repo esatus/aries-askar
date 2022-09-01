@@ -251,6 +251,8 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             yield return new TestCaseData(KeyAlg.BLS12_381_G1)
                 .SetName("CreateKeyFromPublicBytesAsync returns the handle of the created key.");
+            yield return new TestCaseData(KeyAlg.ED25519)
+                .SetName("CreateKeyFromPublicBytesAsync returns the handle of the created key with ED25519.");
         }
 
         [Test, TestCaseSource(nameof(CreateKeyFromPublicBytesAsyncErrorCases)), Category("Create")]

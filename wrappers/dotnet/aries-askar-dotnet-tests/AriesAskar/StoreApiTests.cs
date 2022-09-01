@@ -404,6 +404,18 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = actual.Should().NotBe("");
         }
 
+        [Test, TestCase(TestName = "GenerateRawKey call returns result string if seed is null.")]
+        public async Task StoreGenerateRawKeyWorksSeedNull()
+        {
+            //Arrange
+
+            //Act
+            string actual = await StoreApi.GenerateRawKeyAsync();
+
+            //Assert
+            _ = actual.Should().NotBe("");
+        }
+
         [Test, TestCase(TestName = "GenerateRawKey throws with wrong seed format provided.")]
         public async Task StoreGenerateRawKeyThrows()
         {
