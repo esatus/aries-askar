@@ -92,7 +92,6 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             //Clean-up
             await StoreApi.CloseAsync(actual, remove: true);
-
         }
 
         private static IEnumerable<TestCaseData> CreateCasesStoreProvisioningThrows()
@@ -164,7 +163,28 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             //Clean-up
             await StoreApi.CloseAsync(actual, remove: true);
+        }
 
+        
+        [Test]
+        [TestCase(TestName = "OpenAsync works on several store processes.")]
+        public async Task OpenAsyncThrowInvalidKey()
+        {
+            //Arrange
+
+            //Act
+            Store store1 = await StoreApi.ProvisionAsync(_testPathDb, testKeyMethod, testPassKey);
+            store1.storeHandle.Should().Be((IntPtr)1);
+            Store store2 = await StoreApi.OpenAsync(_testPathDb, testKeyMethod, testPassKey);
+            store2.storeHandle.Should().Be((IntPtr)2);
+            Store store3 = await StoreApi.OpenAsync(_testPathDb, testKeyMethod, testPassKey);
+            store3.storeHandle.Should().Be((IntPtr)3);
+            await store1.CloseAsync();
+            await store2.CloseAsync();
+            await store3.CloseAsync();
+
+            //Clean-up
+            await StoreApi.RemoveAsync(store1, _testPathDb);
         }
 
         [Test, TestCase(TestName = "OpenAsync works and previously set entry still saved in database.")]
