@@ -233,11 +233,9 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
         #region CreateKeyFromPublicBytesAsync
         [Test, TestCaseSource(nameof(CreateKeyFromPublicBytesAsyncCases)), Category("Create")]
-        public async Task CreateKeyFromPublicBytesAsyncTests(KeyAlg testKeyAlg)
+        public async Task CreateKeyFromPublicBytesAsyncTests(KeyAlg testKeyAlg, byte[] testPublicBytes)
         {
             //Arrange
-            byte[] testPublicBytes = new byte[48] { 135, 158, 158, 96, 143, 16, 146, 174, 97, 138, 210, 2, 111, 232, 164, 243, 4, 83, 205, 201, 250, 21, 222, 34, 99, 198, 131, 53, 87, 61, 171, 92, 104, 61, 45, 229, 135, 128, 193, 252, 30, 48, 54, 214, 171, 212, 122, 213 };
-
             //Act
             IntPtr actual = await KeyApi.CreateKeyFromPublicBytesAsync(
                 testKeyAlg,
@@ -249,9 +247,13 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
         private static IEnumerable<TestCaseData> CreateKeyFromPublicBytesAsyncCases()
         {
-            yield return new TestCaseData(KeyAlg.BLS12_381_G1)
-                .SetName("CreateKeyFromPublicBytesAsync returns the handle of the created key.");
-            yield return new TestCaseData(KeyAlg.ED25519)
+            byte[] testPublicBytes48 = new byte[48] { 135, 158, 158, 96, 143, 16, 146, 174, 97, 138, 210, 2, 111, 232, 164, 243, 4, 83, 205, 201, 250, 21, 222, 34, 99, 198, 131, 53, 87, 61, 171, 92, 104, 61, 45, 229, 135, 128, 193, 252, 30, 48, 54, 214, 171, 212, 122, 213 };
+
+            byte[] testPublicBytes32 = new byte[32] { 135, 158, 158, 96, 143, 16, 146, 174, 97, 138, 210, 2, 111, 232, 164, 243, 4, 83, 205, 201, 250, 21, 222, 34, 99, 198, 131, 53, 87, 61, 171, 92};
+
+            yield return new TestCaseData(KeyAlg.BLS12_381_G1, testPublicBytes48)
+                .SetName("CreateKeyFromPublicBytesAsync returns the handle of the created key with BLS12_381_G1.");
+            yield return new TestCaseData(KeyAlg.ED25519, testPublicBytes32)
                 .SetName("CreateKeyFromPublicBytesAsync returns the handle of the created key with ED25519.");
         }
 
