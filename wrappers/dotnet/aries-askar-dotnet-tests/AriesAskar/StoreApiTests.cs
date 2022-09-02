@@ -174,11 +174,14 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             //Act
             Store store1 = await StoreApi.ProvisionAsync(_testPathDb, testKeyMethod, testPassKey);
-            store1.storeHandle.Should().Be((IntPtr)1);
+            store1.storeHandle.Should().NotBe((IntPtr)0);
             Store store2 = await StoreApi.OpenAsync(_testPathDb, testKeyMethod, testPassKey);
-            store2.storeHandle.Should().Be((IntPtr)2);
+            store2.storeHandle.Should().NotBe((IntPtr)0);
             Store store3 = await StoreApi.OpenAsync(_testPathDb, testKeyMethod, testPassKey);
-            store3.storeHandle.Should().Be((IntPtr)3);
+            store3.storeHandle.Should().NotBe((IntPtr)0);
+            store1.storeHandle.Should().NotBe(store2.storeHandle);
+            store1.storeHandle.Should().NotBe(store3.storeHandle);
+            store2.storeHandle.Should().NotBe(store3.storeHandle);
             await store1.CloseAsync();
             await store2.CloseAsync();
             await store3.CloseAsync();
