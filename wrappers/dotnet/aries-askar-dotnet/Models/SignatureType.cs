@@ -15,6 +15,21 @@
                 default: return null;
             }
         }
+
+        /// <summary>
+        /// Converts the string representation to the value of KeyMethod.
+        /// </summary>
+        public static SignatureType ToSigType(string sigTypeString)
+        {
+            sigTypeString = sigTypeString.ToUpper();
+            switch (sigTypeString)
+            {
+                case "EDDSA": return SignatureType.EdDSA;
+                case "ES256": return SignatureType.ES256;
+                case "ES256K": return SignatureType.ES256K;
+                default: throw new System.ArgumentException($"Invalid argument provided for signatureType string: {sigTypeString}");
+            };
+        }
     }
     /// <summary>
     /// Supported signature types.

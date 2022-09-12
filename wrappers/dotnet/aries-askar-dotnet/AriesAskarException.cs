@@ -6,8 +6,11 @@ namespace aries_askar_dotnet
 {
     public class AriesAskarException : Exception
     {
-        public AriesAskarException(string message) : base(message)
+        public ErrorCode errorCode;
+
+        public AriesAskarException(string message, ErrorCode code) : base(message)
         {
+            errorCode = code;
         }
 
         public AriesAskarException(string message, Exception inner) : base(message, inner)
@@ -16,7 +19,7 @@ namespace aries_askar_dotnet
 
         public static AriesAskarException FromWrapperError(ErrorCode errorCode, string message)
         {
-            return new AriesAskarException($"'{errorCode.ToErrorCodeString()}' error occured with ErrorCode '{(int)errorCode}' : {message}.");
+            return new AriesAskarException($"'{errorCode.ToErrorCodeString()}' error occured with ErrorCode '{(int)errorCode}' : {message}.", errorCode);
         }
 
         public static AriesAskarException FromSdkError(string message)

@@ -28,6 +28,33 @@
             };
         }
 
+        /// <summary>
+        /// Converts the string representation to the value of KeyAlg.
+        /// </summary>
+        public static KeyAlg ToKeyAlg(string keyAlgString)
+        {
+            keyAlgString = keyAlgString.ToLower();
+            switch (keyAlgString)
+            {
+                case "a128gcm": return KeyAlg.A128GCM;
+                case "a256gcm": return KeyAlg.A256GCM;
+                case "a128cbchs256": return KeyAlg.A128CBC_HS256;
+                case "a256cbchs512": return KeyAlg.A256CBC_HS512;
+                case "a128kw": return KeyAlg.A128KW;
+                case "a256kw": return KeyAlg.A256KW;
+                case "bls12381g1": return KeyAlg.BLS12_381_G1;
+                case "bls12381g2": return KeyAlg.BLS12_381_G2;
+                case "bls12381g1g2": return KeyAlg.BLS12_381_G1G2;
+                case "c20p": return KeyAlg.C20P;
+                case "xc20p": return KeyAlg.XC20P;
+                case "ed25519": return KeyAlg.ED25519;
+                case "x25519": return KeyAlg.X25519;
+                case "k256": return KeyAlg.K256;
+                case "p256": return KeyAlg.P256;
+                default: throw new System.ArgumentException($"Invalid argument provided for keyAlg string: {keyAlgString}");
+            };
+        }
+
         public static string ToJwkCrvString(this KeyAlg keyAlg)
         {
             switch (keyAlg)
@@ -48,6 +75,33 @@
                 case KeyAlg.K256: return "K256";
                 case KeyAlg.P256: return "P256";
                 default: return null;
+            };
+        }
+
+        /// <summary>
+        /// Converts the string representation to the value of KeyAlg.
+        /// </summary>
+        public static KeyAlg ToKeyAlgJwkCrv(string keyAlgString)
+        {
+            keyAlgString = keyAlgString.ToUpper();
+            switch (keyAlgString)
+            {
+                case "A128GCM": return KeyAlg.A128GCM;
+                case "A256GCM": return KeyAlg.A256GCM;
+                case "A128CBC_HS256": return KeyAlg.A128CBC_HS256;
+                case "A256CBC_HS512": return KeyAlg.A256CBC_HS512;
+                case "A128KW": return KeyAlg.A128KW;
+                case "A256KW": return KeyAlg.A256KW;
+                case "BLS12381_G1": return KeyAlg.BLS12_381_G1;
+                case "BLS12381_G2": return KeyAlg.BLS12_381_G2;
+                case "BLS12381_G1G2": return KeyAlg.BLS12_381_G1G2;
+                case "C20P": return KeyAlg.C20P;
+                case "XC20P": return KeyAlg.XC20P;
+                case "ED25519": return KeyAlg.ED25519;
+                case "X25519": return KeyAlg.X25519;
+                case "K256": return KeyAlg.K256;
+                case "P256": return KeyAlg.P256;
+                default: throw new System.ArgumentException($"Invalid argument provided for keyAlg string: {keyAlgString}");
             };
         }
     }

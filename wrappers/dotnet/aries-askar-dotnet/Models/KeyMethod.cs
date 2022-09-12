@@ -15,6 +15,21 @@
                 default: return null;
             };
         }
+
+        /// <summary>
+        /// Converts the string representation to the value of SignatureType.
+        /// </summary>
+        public static KeyMethod ToKeyMethod(string keyMethodString)
+        {
+            keyMethodString = keyMethodString.ToLower();
+            switch (keyMethodString)
+            {
+                case "kdf:argon2i": return KeyMethod.KDF_ARGON2I;
+                case "raw": return KeyMethod.RAW;
+                case "none": return KeyMethod.NONE;
+                default: throw new System.ArgumentException($"Invalid argument provided for keyMethod string: {keyMethodString}");
+            };
+        }
     }
     /// <summary>
     /// Supported methods for generating or referencing a new store key

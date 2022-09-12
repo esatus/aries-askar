@@ -18,7 +18,7 @@ namespace aries_askar_dotnet.AriesAskar
         /// <returns>A random raw store key (non-derived) in <see cref="string"/> format, created from a given seed.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
-        public static async Task<string> GenerateRawKeyAsync(string seed)
+        public static async Task<string> GenerateRawKeyAsync(string seed = null)
         {
             return await StoreGenerateRawKeyAsync(seed);
         }
@@ -632,7 +632,7 @@ namespace aries_askar_dotnet.AriesAskar
         /// <returns>A random raw key in <see cref="string"/> format, created from a given seed.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter. 
         /// </exception>
-        private static async Task<string> StoreGenerateRawKeyAsync(string seed)
+        private static async Task<string> StoreGenerateRawKeyAsync(string seed = null)
         {
             string result = "";
             int errorCode = NativeMethods.askar_store_generate_raw_key(ByteBuffer.Create(seed), ref result);
