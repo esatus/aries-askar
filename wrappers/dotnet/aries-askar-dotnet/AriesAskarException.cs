@@ -25,17 +25,11 @@ namespace aries_askar_dotnet
         public static AriesAskarException FromSdkError(string message)
         {
             string msg = JsonConvert.DeserializeObject<Dictionary<string, string>>(message)["message"];
-            string errorCode = JsonConvert.DeserializeObject<Dictionary<string, string>>(message)["code"];
-            string extra = JsonConvert.DeserializeObject<Dictionary<string, string>>(message).ContainsKey("extra") ? JsonConvert.DeserializeObject<Dictionary<string, string>>(message)["extra"] : null;
-            if (int.TryParse(errorCode, out int errCodeInt))
-            {
-                return new AriesAskarException(
-                    $"'{((ErrorCode)errCodeInt).ToErrorCodeString()}' error occured with ErrorCode '{errorCode}' and extra: '{extra}': {msg}.");
-            }
-            else
-            {
-                return new AriesAskarException("An unknown error code was received.");
-            }
+            string errCode = JsonConvert.DeserializeObject<Dictionary<string, string>>(message)["code"];
+            return int.TryParse(errCode, out int errCodeInt)
+                ? new AriesAskarException(
+                    $"'{((ErrorCode)errCodeInt).ToErrorCodeString()}' error occured with ErrorCode '{errCode}' : {msg}.", (ErrorCode)errCodeInt)
+                : new AriesAskarException("An unknown error code was received.", (ErrorCode)errCodeInt);
         }
     }
 }
