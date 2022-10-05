@@ -215,6 +215,38 @@ namespace aries_askar_dotnet_tests.AriesAskar
             await StoreApi.CloseAsync(storeNew, remove: true);
         }
 
+        [Test, TestCase(TestName = "OpenAsync works and previously set key still saved in database.")]
+        public async Task OpenAsyncSessionKeyNotEmpty()
+        {
+            //Arrange
+            Store init = await StoreApi.ProvisionAsync(_testPathDb);
+            Session session = await init.StartSessionAsync();
+            IntPtr testKeyHandle = await KeyApi.CreateKeyFromSeedAsync(KeyAlg.ED25519, testSeed, SeedMethod.BlsKeyGen);
+            byte[] pBytesInit = await KeyApi.GetPublicBytesFromKeyAsync(testKeyHandle);
+            byte[] sBytesInit = await KeyApi.GetSecretBytesFromKeyAsync(testKeyHandle);
+            await session.InsertKeyAsync(testKeyHandle, "testKey");
+            await session.CloseAndCommitAsync();
+            await init.CloseAsync();
+            init.storeHandle.Should().Be((IntPtr)0);
+            init.session.Should().Be(null);
+
+            //Act
+            Store storeNew = await StoreApi.OpenAsync(_testPathDb);
+            Session sessionNew = await storeNew.StartSessionAsync();
+            IntPtr resultHandle = await sessionNew.FetchKeyAsync("testKey");
+            IntPtr actual = await ResultListApi.LoadLocalKeyHandleFromKeyEntryListAsync(resultHandle, 0);
+            byte[] pBytesActual = await KeyApi.GetPublicBytesFromKeyAsync(actual);
+            byte[] sBytesActual = await KeyApi.GetSecretBytesFromKeyAsync(actual);
+
+            //Assert
+            _ = actual.Should().NotBe(testKeyHandle);
+            _ = pBytesInit.Should().BeEquivalentTo(pBytesActual);
+            _ = sBytesInit.Should().BeEquivalentTo(sBytesActual);
+
+            //Clean-up
+            await StoreApi.CloseAsync(storeNew, remove: true);
+        }
+
         private static IEnumerable<TestCaseData> CreateCasesOpenAsyncThrows()
         {
             yield return new TestCaseData(null)
