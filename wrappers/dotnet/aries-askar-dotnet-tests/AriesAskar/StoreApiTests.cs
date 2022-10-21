@@ -168,7 +168,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         
         [Test]
         [TestCase(TestName = "OpenAsync works on several store processes.")]
-        public async Task OpenAsyncThrowInvalidKey()
+        public async Task OpenAsyncWorksSeveralStoreThreads()
         {
             //Arrange
 
@@ -392,6 +392,44 @@ namespace aries_askar_dotnet_tests.AriesAskar
         #endregion
 
         #region rekey
+        private static IEnumerable<TestCaseData> CreateCasesStoreRekeyWorks()
+        {
+            string seed = "testseed000000000000000000000001";
+            string passKey = StoreApi.GenerateRawKeyAsync(seed).GetAwaiter().GetResult();
+
+            string newTestSeed = "testseed500000200006400003008001";
+            string newTestPassKey = StoreApi.GenerateRawKeyAsync(newTestSeed).GetAwaiter().GetResult();
+            KeyMethod newTestKeyMethod = KeyMethod.RAW;
+
+            yield return new TestCaseData(KeyMethod.RAW, passKey, newTestKeyMethod, newTestPassKey)
+                .SetName("RekeyAsync call works and Store can be opend with new key with keyMethod 'raw'.");
+        }
+
+        [Test, TestCaseSource(nameof(CreateCasesStoreRekeyWorks))]
+        public async Task RekeyAsyncCasesWorks(KeyMethod testKeyMethod, string testPassKey, KeyMethod newTestKeyMethod, string newTestPassKey)
+        {
+            //Arrange
+            Store store = await StoreApi.ProvisionAsync(_testPathDb, testKeyMethod, testPassKey);
+            await store.CloseAsync();
+            store.storeHandle.Should().Be((IntPtr)0);
+
+            store = await StoreApi.OpenAsync(_testPathDb, testKeyMethod, testPassKey);
+            store.storeHandle.Should().NotBe((IntPtr)0);
+
+            //Act
+            bool actual = await store.RekeyAsync(newTestKeyMethod, newTestPassKey);
+            await store.CloseAsync();
+            store.storeHandle.Should().Be((IntPtr)0);
+            Store newStore = await StoreApi.OpenAsync(_testPathDb, newTestKeyMethod, newTestPassKey);
+
+            //Assert
+            _ = actual.Should().Be(true);
+            newStore.storeHandle.Should().NotBe((IntPtr)0);
+
+            //Clean-up
+            await StoreApi.CloseAsync(newStore, remove: true);
+        }
+
         [Test, TestCase(TestName = "RekeyAsync call works.")]
         public async Task RekeyAsyncWorks()
         {
