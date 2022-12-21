@@ -539,6 +539,30 @@ namespace aries_askar_dotnet.AriesAskar
             return output.Decode();
         }
 
+        public static async Task<byte[]> CryptoBoxAsync(
+            IntPtr recipKey,
+            IntPtr senderKey,
+            byte[] message,
+            byte[] nonce)
+        {
+            ByteBuffer output = new ByteBuffer() { len = 0, value = new IntPtr() };
+
+            int errorCode = NativeMethods.askar_key_crypto_box(
+                recipKey,
+                senderKey,
+                ByteBuffer.Create(message),
+                ByteBuffer.Create(nonce),
+                ref output);
+
+            if (errorCode != (int)ErrorCode.Success)
+            {
+                string error = await ErrorApi.GetCurrentErrorAsync();
+                Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
+            }
+            return output.Decode();
+        }
+
         /// <summary>
         /// Decrypt a message with crypto_box and a detached nonce.
         /// </summary>
@@ -571,6 +595,30 @@ namespace aries_askar_dotnet.AriesAskar
             return output.DecodeToString();
         }
 
+        public static async Task<byte[]> OpenCryptoBoxBytesAsync(
+            IntPtr recipKey,
+            IntPtr senderKey,
+            byte[] encrypted,
+            byte[] nonce)
+        {
+            ByteBuffer output = new ByteBuffer() { len = 0, value = new IntPtr() };
+
+            int errorCode = NativeMethods.askar_key_crypto_box_open(
+                recipKey,
+                senderKey,
+                ByteBuffer.Create(encrypted),
+                ByteBuffer.Create(nonce),
+                ref output);
+
+            if (errorCode != (int)ErrorCode.Success)
+            {
+                string error = await ErrorApi.GetCurrentErrorAsync();
+                Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
+            }
+            return output.Decode();
+        }
+
         /// <summary>
         /// Perform message encryption equivalent to libsodium's `crypto_box_seal`.
         /// </summary>
@@ -580,6 +628,26 @@ namespace aries_askar_dotnet.AriesAskar
         public static async Task<byte[]> SealCryptoBoxAsync(
             IntPtr localKeyHandle,
             string message)
+        {
+            ByteBuffer output = new ByteBuffer() { len = 0, value = new IntPtr() };
+
+            int errorCode = NativeMethods.askar_key_crypto_box_seal(
+                localKeyHandle,
+                ByteBuffer.Create(message),
+                ref output);
+
+            if (errorCode != (int)ErrorCode.Success)
+            {
+                string error = await ErrorApi.GetCurrentErrorAsync();
+                Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
+            }
+            return output.Decode();
+        }
+
+        public static async Task<byte[]> SealCryptoBoxAsync(
+            IntPtr localKeyHandle,
+            byte[] message)
         {
             ByteBuffer output = new ByteBuffer() { len = 0, value = new IntPtr() };
 
@@ -621,6 +689,26 @@ namespace aries_askar_dotnet.AriesAskar
                 throw AriesAskarException.FromSdkError(error);
             }
             return output.DecodeToString();
+        }
+
+        public static async Task<byte[]> OpenSealCryptoBoxBytesAsync(
+            IntPtr localKeyHandle,
+            byte[] ciphertext)
+        {
+            ByteBuffer output = new ByteBuffer() { len = 0, value = new IntPtr() };
+
+            int errorCode = NativeMethods.askar_key_crypto_box_seal_open(
+                localKeyHandle,
+                ByteBuffer.Create(ciphertext),
+                ref output);
+
+            if (errorCode != (int)ErrorCode.Success)
+            {
+                string error = await ErrorApi.GetCurrentErrorAsync();
+                Console.WriteLine(error);
+                throw AriesAskarException.FromSdkError(error);
+            }
+            return output.Decode();
         }
         #endregion
 
