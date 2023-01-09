@@ -37,7 +37,6 @@ namespace aries_askar_dotnet_tests.AriesAskar
             };
             _dbType = "sqlite";
             _testUriInMemory = "sqlite://:memory:";
-            //testSpecUriDb = "sqlite://C:\\Users\\pstenger\\source\\repos\\aries-askar\\wrappers\\dotnet\\aries-askar-dotnet-tests\\AriesAskar\\db\\aries-test";
             testSeed = "testseed000000000000000000000001";
             testPassKey = await StoreApi.GenerateRawKeyAsync(testSeed);
             testKeyMethod = KeyMethod.RAW;  //kdf:argon2i   //none
