@@ -1,10 +1,15 @@
-﻿namespace aries_askar_dotnet.Models
+﻿using System;
+
+namespace aries_askar_dotnet.Models
 {
     /// <summary>
-    /// Converts the value of SignatureType to the corresponding string representation for the backend.
+    /// Converter for <see cref ="SignatureType"/> and its corresponding string representation for the backend.
     /// </summary>
     public static class SignatureTypeConverter
     {
+        /// <summary>
+        /// Converts the value of <see cref ="SignatureType"/> to the corresponding string representation for the backend.
+        /// </summary>
         public static string ToSigTypeString(this SignatureType sigType)
         {
             switch (sigType)
@@ -17,8 +22,11 @@
         }
 
         /// <summary>
-        /// Converts the string representation to the value of KeyMethod.
+        /// Converts the string representation to the value of <see cref ="SignatureType"/>.
         /// </summary>
+        /// <param name="sigTypeString">string representation of the signature type.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">Throws when <paramref name="sigTypeString"/> is invalid signature type.</exception>
         public static SignatureType ToSigType(string sigTypeString)
         {
             sigTypeString = sigTypeString.ToUpper();
@@ -27,8 +35,8 @@
                 case "EDDSA": return SignatureType.EdDSA;
                 case "ES256": return SignatureType.ES256;
                 case "ES256K": return SignatureType.ES256K;
-                default: throw new System.ArgumentException($"Invalid argument provided for signatureType string: {sigTypeString}");
-            };
+                default: throw new ArgumentException($"Invalid argument provided for signatureType string: {sigTypeString}");
+            }
         }
     }
     /// <summary>

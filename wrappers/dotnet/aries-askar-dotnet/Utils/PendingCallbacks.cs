@@ -5,9 +5,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace aries_askar_dotnet.utils
-{/// <summary>
- /// Holder for pending callbacks.
- /// </summary>
+{
+    /// <summary>
+    /// Holder for pending callbacks.
+    /// </summary>
     internal static class PendingCallbacks
     {
         /// <summary>

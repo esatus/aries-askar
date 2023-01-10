@@ -61,7 +61,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             testProfile = "testProfile";
         }
 
-        [Test, TestCase(TestName = "EntryListCountAsync returns the count.")]
+        [Test, TestCase(TestName = "EntryListCountAsync() returns the count.")]
         public async Task EntryListCountAsyncWorks()
         {
             // Arrange
@@ -82,7 +82,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = count.Should().Be(1);
         }
 
-        [Test, TestCase(TestName = "EntryListCountAsync returns the count with multiple entries.")]
+        [Test, TestCase(TestName = "EntryListCountAsync() returns the count with multiple entries.")]
         public async Task EntryListCountAsyncWorks2()
         {
             // Arrange
@@ -108,7 +108,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = count.Should().Be(2);
         }
 
-        [Test, TestCase(TestName = "EntryListCountAsync with invalid entryListHandle throws.")]
+        [Test, TestCase(TestName = "EntryListCountAsync() with invalid entryListHandle throws.")]
         public async Task EntryListCountAsyncThrows()
         {
             // Arrange
@@ -122,7 +122,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = await func.Should().ThrowAsync<AriesAskarException>();
         }
 
-        [Test, TestCase(TestName = "EntryListGetCategoryAsync returns the category.")]
+        [Test, TestCase(TestName = "EntryListGetCategoryAsync() returns the category.")]
         public async Task EntryListGetCategoryAsyncWorks()
         {
             // Arrange
@@ -143,7 +143,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             _ = category.Should().Be("testCategory");
         }
-        [Test, TestCase(TestName = "EntryListGetCategoryAsync with invalid entryListHandle throws")]
+        [Test, TestCase(TestName = "EntryListGetCategoryAsync() with invalid entryListHandle throws")]
         public async Task EntryListGetCategoryAsyncThrows()
         {
             // Arrange
@@ -157,7 +157,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = await func.Should().ThrowAsync<AriesAskarException>();
         }
 
-        [Test, TestCase(TestName = "EntryListGetNameAsync returns the name.")]
+        [Test, TestCase(TestName = "EntryListGetNameAsync() returns the name.")]
         public async Task EntryListGetNameAsyncWorks()
         {
             // Arrange
@@ -179,7 +179,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = category.Should().Be("testName");
         }
 
-        [Test, TestCase(TestName = "EntryListGetNameAsync with invalid keyListHandle throws.")]
+        [Test, TestCase(TestName = "EntryListGetNameAsync() with invalid keyListHandle throws.")]
         public async Task EntryListGetNameAsyncThrows()
         {
             // Arrange
@@ -193,7 +193,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = await func.Should().ThrowAsync<AriesAskarException>();
         }
 
-        [Test, TestCase(TestName = "EntryListGetValueAsync returns the value.")]
+        [Test, TestCase(TestName = "EntryListGetValueAsync() returns the value.")]
         public async Task EntryListGetValueAsyncWorks()
         {
             // Arrange
@@ -214,7 +214,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = bufferString.Should().Be("testValue");
         }
 
-        [Test, TestCase(TestName = "EntryListGetValueAsync with invalid keyListHandle throws.")]
+        [Test, TestCase(TestName = "EntryListGetValueAsync() with invalid keyListHandle throws.")]
         public async Task EntryListGetValueAsyncThrows()
         {
             // Arrange
@@ -228,7 +228,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = await func.Should().ThrowAsync<AriesAskarException>();
         }
 
-        [Test, TestCase(TestName = "EntryListGetTagsAsync returns the tag.")]
+        [Test, TestCase(TestName = "EntryListGetTagsAsync() returns the tag.")]
         public async Task EntryListGetTagsAsyncWorks()
         {
             // Arrange
@@ -249,7 +249,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = tag.Should().Be("{\"enctag\":\"b\",\"~plaintag\":\"a\"}");
         }
 
-        [Test, TestCase(TestName = "EntryListGetTagsAsync with invalid keyListHandle throws.")]
+        [Test, TestCase(TestName = "EntryListGetTagsAsync() with invalid keyListHandle throws.")]
         public async Task EntryListGetTagsAsyncThrows()
         {
             // Arrange
@@ -263,7 +263,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = await func.Should().ThrowAsync<AriesAskarException>();
         }
 
-        [Test, TestCase(TestName = "KeyEntryListCountAsync returns the count.")]
+        [Test, TestCase(TestName = "KeyEntryListCountAsync() returns the count.")]
         public async Task KeyEntryListCountAsyncWorks()
         {
             // Arrange
@@ -282,7 +282,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = count.Should().Be(1);
         }
 
-        [Test, TestCase(TestName = "KeyEntryListCountAsync returns the count with multiple key entries.")]
+        [Test, TestCase(TestName = "KeyEntryListCountAsync() returns the count with multiple key entries.")]
         public async Task KeyEntryListCountAsyncWorks2()
         {
             // Arrange
@@ -306,7 +306,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = count.Should().Be(2);
         }
 
-        [Test, TestCase(TestName = "KeyEntryListCountAsync with invalid keyEntryListHandle throws.")]
+        [Test, TestCase(TestName = "KeyEntryListCountAsync() with invalid keyEntryListHandle throws.")]
         public async Task KeyEntryListCountAsyncThrows()
         {
             // Arrange
@@ -319,7 +319,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = await func.Should().ThrowAsync<AriesAskarException>();
         }
 
-        [Test, TestCase(TestName = "KeyEntryListGetAlgorithmAsyncWorks returns the algorithm.")]
+        [Test, TestCase(TestName = "KeyEntryListGetAlgorithmAsync() works and returns the algorithm.")]
         public async Task KeyEntryListGetAlgorithmAsyncWorks()
         {
             // Arrange
@@ -339,7 +339,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = algo.Should().Be("ed25519");
         }
 
-        [Test, TestCase(TestName = "KeyEntryListGetAlgorithmAsyncWorks with invalid keyEntryListHandle throws.")]
+        [Test, TestCase(TestName = "KeyEntryListGetAlgorithmAsync() works with invalid keyEntryListHandle throws.")]
         public async Task KeyEntryListGetAlgorithmAsyncThrows()
         {
             // Arrange
@@ -352,7 +352,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = await func.Should().ThrowAsync<AriesAskarException>();
         }
 
-        [Test, TestCase(TestName = "KeyEntryListGetNameAsync returns the name.")]
+        [Test, TestCase(TestName = "KeyEntryListGetNameAsync() returns the name.")]
         public async Task KeyEntryListGetNameAsyncWorks()
         {
             // Arrange
@@ -372,7 +372,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = algo.Should().Be("testKey");
         }
 
-        [Test, TestCase(TestName = "KeyEntryListGetNameAsync with invalid keyEntryListHandle throws.")]
+        [Test, TestCase(TestName = "KeyEntryListGetNameAsync() with invalid keyEntryListHandle throws.")]
         public async Task KeyEntryListGetNameAsyncThrows()
         {
             // Arrange
@@ -385,7 +385,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = await func.Should().ThrowAsync<AriesAskarException>();
         }
 
-        [Test, TestCase(TestName = "KeyEntryListGetMetadataAsync returns the metadata.")]
+        [Test, TestCase(TestName = "KeyEntryListGetMetadataAsync() returns the metadata.")]
         public async Task KeyEntryListGetMetadataAsyncWorks()
         {
             // Arrange
@@ -405,7 +405,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = algo.Should().Be("testMetadata");
         }
 
-        [Test, TestCase(TestName = "KeyEntryListGetMetadataAsync with invalid keyEntryListHandle throws.")]
+        [Test, TestCase(TestName = "KeyEntryListGetMetadataAsync() with invalid keyEntryListHandle throws.")]
         public async Task KeyEntryListGetMetadataAsyncThrows()
         {
             // Arrange
@@ -418,7 +418,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = await func.Should().ThrowAsync<AriesAskarException>();
         }
 
-        [Test, TestCase(TestName = "KeyEntryListGetTagsAsync returns the metadata.")]
+        [Test, TestCase(TestName = "KeyEntryListGetTagsAsync() returns the metadata.")]
         public async Task KeyEntryListGetTagsAsyncWorks()
         {
             // Arrange
@@ -438,7 +438,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = algo.Should().Be($"{{\"a\":\"b\"}}");
         }
 
-        [Test, TestCase(TestName = "KeyEntryListGetTagsAsync with invalid keyEntryListHandle throws.")]
+        [Test, TestCase(TestName = "KeyEntryListGetTagsAsync() with invalid keyEntryListHandle throws.")]
         public async Task KeyEntryListGetTagsAsyncThrows()
         {
             // Arrange
@@ -451,7 +451,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = await func.Should().ThrowAsync<AriesAskarException>();
         }
 
-        [Test, TestCase(TestName = "LoadLocalKeyHandleFromKeyEntryListAsync returns a localKeyHandle.")]
+        [Test, TestCase(TestName = "LoadLocalKeyHandleFromKeyEntryListAsync() returns a localKeyHandle.")]
         public async Task LoadLocalKeyHandleFromKeyEntryListAsyncWorks()
         {
             // Arrange
@@ -472,7 +472,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = localKeyHandle.Should().NotBe((IntPtr)0);
         }
 
-        [Test, TestCase(TestName = "LoadLocalKeyHandleFromKeyEntryListAsync with invalid keyEntryListHandle throws.")]
+        [Test, TestCase(TestName = "LoadLocalKeyHandleFromKeyEntryListAsync() with invalid keyEntryListHandle throws.")]
         public async Task LoadLocalKeyHandleFromKeyEntryListAsyncThrows()
         {
             // Arrange

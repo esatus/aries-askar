@@ -31,11 +31,11 @@ namespace aries_askar_dotnet.Models
         /// <summary>
         /// Derive an ECDH-ES shared key for anonymous encryption.
         /// </summary>
-        /// <param name="ecdhEs">The <see cref="EcdhEs"/> instance.</param>
-        /// <param name="keyAlg">The key algorithm of the key as <see cref="KeyAlg"/>.</param>
-        /// <param name="ephemeralKey">The ephemeral key handle as <see cref="IntPtr"/>.</param>
-        /// <param name="receiverKey">The receiver key handle as <see cref="IntPtr"/>.</param>
-        /// <param name="receive">The receive flag as <see cref="bool"/>, indicating receive or send. True for receive, false for send.</param>
+        /// <param name="ecdhEs">The ecdhEs instance.</param>
+        /// <param name="keyAlg">The key algorithm of the key.</param>
+        /// <param name="ephemeralKey">The ephemeral key handle.</param>
+        /// <param name="receiverKey">The receiver key handle.</param>
+        /// <param name="receive">The receive flag as boolean, indicating receive or send. True for receive, false for send.</param>
         /// <returns>A new key handle as <see cref="IntPtr"/>.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter. 
         /// </exception>
@@ -59,13 +59,13 @@ namespace aries_askar_dotnet.Models
         /// <summary>
         /// Perform a AEAD message encryption with a ECDH-ES key derivation of the receiver and ephemeral key.
         /// </summary>
-        /// <param name="ecdhEs">The <see cref="EcdhEs"/> instance.</param>
-        /// <param name="encKeyAlg">The encoding key algorithm as <see cref="KeyAlg"/>.</param>
-        /// <param name="ephemeralKey">A ephemeral key as <see cref="IntPtr"/>.</param>
-        /// <param name="receiverKey">The receiver key as <see cref="IntPtr"/>.</param>
-        /// <param name="message">The message to encrypt as <see cref="string"/>.</param>
-        /// <param name="nonce">A nonce as <see cref="byte"/> array.</param>
-        /// <param name="aad">The associated data as <see cref="string"/>.</param>
+        /// <param name="ecdhEs">The ecdhEs instance.</param>
+        /// <param name="encKeyAlg">The encoding key algorithm.</param>
+        /// <param name="ephemeralKey">A ephemeral key.</param>
+        /// <param name="receiverKey">The receiver key.</param>
+        /// <param name="message">The message to encrypt.</param>
+        /// <param name="nonce">A nonce; default null.</param>
+        /// <param name="aad">The associated data; default null.</param>
         /// <returns>The triple of ciphertext (first), tag(second) and nonce(third) as <see cref="byte"/>[].</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter. 
         /// </exception>
@@ -86,14 +86,14 @@ namespace aries_askar_dotnet.Models
         /// <summary>
         /// Perform a AEAD message decryption with a ECDH-ES key derivation of the receiver and ephemeral key.
         /// </summary>
-        /// <param name="ecdhEs">The <see cref="EcdhEs"/> instance.</param>
-        /// <param name="encKeyAlg">The encoding key algorithm as <see cref="KeyAlg"/>.</param>
-        /// <param name="ephemeralKey">A ephemeral key as <see cref="IntPtr"/>.</param>
-        /// <param name="receiverKey">The receiver key as <see cref="IntPtr"/>.</param>
-        /// <param name="ciphertext">The encryption ciphertext as <see cref="byte"/>[].</param>
-        /// <param name="nonce">The encryption nonce as <see cref="byte"/>[].</param>
-        /// <param name="tag">The encryption tag as <see cref="byte"/>[].</param>
-        /// <param name="aad">The associated data as <see cref="string"/>.</param>
+        /// <param name="ecdhEs">The ecdhEs instance.</param>
+        /// <param name="encKeyAlg">The encoding key algorithm.</param>
+        /// <param name="ephemeralKey">A ephemeral key.</param>
+        /// <param name="receiverKey">The receiver key.</param>
+        /// <param name="ciphertext">The encryption ciphertext.</param>
+        /// <param name="nonce">The encryption nonce.</param>
+        /// <param name="tag">The tag.</param>
+        /// <param name="aad">The associated data; default null.</param>
         /// <returns>The decrypted message as <see cref="string"/>.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter. 
         /// </exception>
@@ -115,11 +115,11 @@ namespace aries_askar_dotnet.Models
         /// <summary>
         /// Wrap another key using a ECDH-ES key derivation of the receiver and ephemeral key.
         /// </summary>
-        /// <param name="ecdhEs">The <see cref="EcdhEs"/> instance.</param>
-        /// <param name="wrapKeyAlg">The wrapping key algorithm as <see cref="KeyAlg"/>.</param>
-        /// <param name="ephemeralKey">A ephemeral key as <see cref="IntPtr"/>.</param>
-        /// <param name="receiverKey">The receiver key as <see cref="IntPtr"/>.</param>
-        /// <param name="cek">A content-encryption key as <see cref="IntPtr"/>.</param>
+        /// <param name="ecdhEs">The ecdhEs instance.</param>
+        /// <param name="wrapKeyAlg">The wrapping key algorithm.</param>
+        /// <param name="ephemeralKey">A ephemeral key.</param>
+        /// <param name="receiverKey">The receiver key.</param>
+        /// <param name="cek">A content-encryption key.</param>
         /// <returns>The triple of ciphertext (first), tag(second) and nonce(third) as <see cref="byte"/>[].</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter. 
         /// </exception>
@@ -138,14 +138,14 @@ namespace aries_askar_dotnet.Models
         /// <summary>
         /// Unwrap a key using a ECDH-ES key derivation of the receiver and ephemeral key.
         /// </summary>
-        /// <param name="ecdhEs">The <see cref="EcdhEs"/> instance.</param>
-        /// <param name="wrapKeyAlg">The wrapping key algorithm as <see cref="KeyAlg"/>.</param>
-        /// <param name="encKeyAlg">The encoding key algorithm as <see cref="KeyAlg"/>.</param>
-        /// <param name="ephemeralKey">A ephemeral key as <see cref="IntPtr"/>.</param>
-        /// <param name="receiverKey">The receiver key as <see cref="IntPtr"/>.</param>
-        /// <param name="ciphertext">The encryption ciphertext as <see cref="byte"/>[].</param>
-        /// <param name="nonce">The encryption nonce as <see cref="byte"/>[].</param>
-        /// <param name="tag">The tag ciphertext as <see cref="byte"/>[].</param>
+        /// <param name="ecdhEs">The ecdhEs instance.</param>
+        /// <param name="wrapKeyAlg">The wrapping key algorithm.</param>
+        /// <param name="encKeyAlg">The encoding key algorithm.</param>
+        /// <param name="ephemeralKey">A ephemeral key.</param>
+        /// <param name="receiverKey">The receiver key.</param>
+        /// <param name="ciphertext">The encryption ciphertext.</param>
+        /// <param name="nonce">The encryption nonce; default null.</param>
+        /// <param name="tag">The tag; default null.</param>
         /// <returns>The key handle as <see cref="IntPtr"/>.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter. 
         /// </exception>

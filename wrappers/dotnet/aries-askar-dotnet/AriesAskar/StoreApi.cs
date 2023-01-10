@@ -26,11 +26,11 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Provision a new <see cref="Store"/> in the backend.
         /// </summary>
-        /// <param name="specUri">The provison spec uri <see cref="string"/>.</param>
-        /// <param name="keyMethod">The key method from enum <see cref="KeyMethod"/>, which represents supported methods for generating or referencing a new store key; default none.</param>
-        /// <param name="passKey">The pass key <see cref="string"/>, a possible empty password or key used to derive a store key; default null.</param>
-        /// <param name="profile">The store profile <see cref="string"/>; default null.</param>
-        /// <param name="recreate">The recreate <see cref="bool"/> flag. If true the database is overwritten and newly initialized, if false trys to open the database with given settings if it already exists, when it fails to open, a new database is provisioned; default false.</param>
+        /// <param name="specUri">The provison spec uri.</param>
+        /// <param name="keyMethod">The key method, which represents supported methods for generating or referencing a new store key; default none.</param>
+        /// <param name="passKey">The pass key, a possible empty password or key used to derive a store key; default null.</param>
+        /// <param name="profile">The store profile; default null.</param>
+        /// <param name="recreate">The recreate flag. If true the database is overwritten and newly initialized, if false trys to open the database with given settings if it already exists, when it fails to open, a new database is provisioned; default false.</param>
         /// <returns>A new instance of <see cref="Store"/> containing the spec uri and store handle from the backend.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -47,10 +47,10 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Open an existing <see cref="Store"/> from the backend.
         /// </summary>
-        /// <param name="specUri">The spec uri <see cref="string"/> of the store.</param>
-        /// <param name="keyMethod">The key method from enum <see cref="KeyMethod"/>, which represents supported methods for generating or referencing a new store key; default none.</param>
-        /// <param name="passKey">The pass key as <see cref="string"/>, a possible empty password or key used to derive a store key; default null.</param>
-        /// <param name="profile">The store profile name as <see cref="string"/>; default null.</param>
+        /// <param name="specUri">The spec uri of the store.</param>
+        /// <param name="keyMethod">The key method, which represents supported methods for generating or referencing a new store key; default none.</param>
+        /// <param name="passKey">The pass key, a possible empty password or key used to derive a store key; default null.</param>
+        /// <param name="profile">The store profile name; default null.</param>
         /// <returns>The store instance of the existing <see cref="Store"/> containing the spec uri and store handle from the backend.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -66,8 +66,8 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Remove an existing <see cref="Store"/> from the backend and reset the store object.
         /// </summary>
-        /// <param name="specUri">The spec uri <see cref="string"/> of the store to be removed.</param>
-        /// <param name="store">The <see cref="Store"/> instance, holding the store handle from the backend.</param>
+        /// <param name="specUri">The spec uri of the store to be removed.</param>
+        /// <param name="store">The store instance, holding the store handle from the backend.</param>
         /// <returns>The result of the remove call as <see cref="bool"/>; true if succeded, otherwise false.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -90,8 +90,8 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Create a new profile with the given profile name in the backend. A random name is used if profile is null.
         /// </summary>
-        /// <param name="profile">The profile name as <see cref="string"/>; default null.</param>
-        /// <param name="store">The <see cref="Store"/> instance where profile is created, holding the store handle from the backend.</param>
+        /// <param name="profile">The store profile name; default null.</param>
+        /// <param name="store">The store instance where profile is created, holding the store handle from the backend.</param>
         /// <returns>The profile name of the created profile as <see cref="string"/>; if profile name is null, a random name is used by the backend.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -103,7 +103,7 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Get the default profile name used when starting a scan or a session from the backend.
         /// </summary>
-        /// <param name="store">The <see cref="Store"/> instance, holding the store handle from the backend.</param>
+        /// <param name="store">The store instance, holding the store handle from the backend.</param>
         /// <returns>The default profile name as <see cref="string"/></returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -115,8 +115,8 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Remove an existing profile from the backend with the given profile name.
         /// </summary>
-        /// <param name="profile">The profile name of the profile to remove as <see cref="string"/>.</param>
-        /// <param name="store">The <see cref="Store"/> instance where a profile is to be removed, holding the store handle from the backend.</param>
+        /// <param name="profile">The store profile name of the profile to remove.</param>
+        /// <param name="store">The store instance where a profile is to be removed, holding the store handle from the backend.</param>
         /// <returns>The result of the remove call as <see cref="bool"/>; true if succeeded, otherwise false.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -128,9 +128,9 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Replace the wrapping key on a <see cref="Store"/> in the backend.
         /// </summary>
-        /// <param name="store">The <see cref="Store"/> instance where to rekey, holding the store handle from the backend.</param>
-        /// <param name="keyMethod">The key method from enum <see cref="KeyMethod"/>, which represents supported methods for generating or referencing a new store key; default none.</param>
-        /// <param name="passKey">The pass key as <see cref="string"/>, a possible empty password or key used to derive a store key; default null.</param>
+        /// <param name="store">The store instance where to rekey, holding the store handle from the backend.</param>
+        /// <param name="keyMethod">The key method, which represents supported methods for generating or referencing a new store key; default none.</param>
+        /// <param name="passKey">The pass key, a possible empty password or key used to derive a store key; default null.</param>
         /// <returns>The result of the rekey call as <see cref="bool"/>; true if succeeded, otherwise false.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -145,7 +145,7 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Close the open <see cref="Store"/> in the backend with the possibility to also remove it and reset the store object.
         /// </summary>
-        /// <param name="store">The <see cref="Store"/> instance to close, holding the store handle from the backend.</param>
+        /// <param name="store">The store instance to close, holding the store handle from the backend.</param>
         /// <param name="remove">A <see cref="bool"/> flag wether to just close (false) or also remove (true) the store; default false.</param>
         /// <returns>The decision of the close call as <see cref="bool"/>; false if just close, true if also removed.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
@@ -169,12 +169,12 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Create a new <see cref="Scan"/> instance against the store in the backend with the given scan parameters. The result will keep an open connection to the backend until it is consumed.
         /// </summary>
-        /// <param name="store">The <see cref="Store"/> instance to scan, holding the store handle from the backend.</param>
-        /// <param name="category">The category filter parameter as <see cref="string"/>.</param>
-        /// <param name="tagFilter">The tag filter parameter as <see cref="string"/>; default null.</param>
-        /// <param name="offset">A offset parameter as <see cref="long"/> to offset a number of the total results; default 0.</param>
-        /// <param name="limit">A limit parameter as <see cref="long"/> to limit the number of the total received results; default -1 which indicates no limit.</param>
-        /// <param name="profile">The profile name filter parameter as <see cref="string"/>; default null.</param>
+        /// <param name="store">The store instance to scan, holding the store handle from the backend.</param>
+        /// <param name="category">The category filter parameter.</param>
+        /// <param name="tagFilter">The tag filter parameter; default null.</param>
+        /// <param name="offset">A offset parameter to offset a number of the total results; default 0.</param>
+        /// <param name="limit">A limit parameter to limit the number of the total received results; default -1 which indicates no limit.</param>
+        /// <param name="profile">The profile name filter parameter; default null.</param>
         /// <returns>A new <see cref="Scan"/> instance containing the scan handle, store handle of the backend and the given parameters.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -192,9 +192,9 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Create a new <see cref="Session"/> instance against the store in the backend with a given profile name as session or transaction. Also adds the session to the store object.
         /// </summary>
-        /// <param name="store">The <see cref="Store"/> instance, holding the store handle from the backend.</param>
-        /// <param name="profile">The profile name of the session / transaction as <see cref="string"/>. A random name is used by the backend when null; default null.</param>
-        /// <param name="asTransactions">The <see cref="bool"/> flag, which indicates a session (false) or transaction (true) ; default false.</param>
+        /// <param name="store">The store instance, holding the store handle from the backend.</param>
+        /// <param name="profile">The profile name of the session / transaction. A random name is used by the backend when null; default null.</param>
+        /// <param name="asTransactions">The asTransaction flag, which indicates a session (false) or transaction (true) ; default false.</param>
         /// <returns>A new <see cref="Session"/> instance containing the store handle, session handle of the backend and the asTransaction and profile parameters.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -219,8 +219,8 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Create a new <see cref="Session"/> instance as session with a given profile name and adds the <see cref="Session"/> to the store object. The <see cref="Session"/> is not yet started in the backend.
         /// </summary>
-        /// <param name="store">The <see cref="Store"/> instance, holding the store handle from the backend.</param>
-        /// <param name="profile">The profile name of the session as <see cref="string"/>; default null.</param>
+        /// <param name="store">The store instance, holding the store handle from the backend.</param>
+        /// <param name="profile">The profile name of the session; default null.</param>
         /// <returns>A new <see cref="Session"/> instance containing the store handle of the backend and the asTransaction and profile parameters.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -236,8 +236,8 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Create a new <see cref="Session"/> instance as transaction with a given profile name and adds the <see cref="Session"/> to the store object. The <see cref="Session"/> is not yet started in the backend.
         /// </summary>
-        /// <param name="store">The <see cref="Store"/> instance, holding the store handle from the backend</param>
-        /// <param name="profile">The profile name of the transaction as <see cref="string"/>; default null.</param>
+        /// <param name="store">The store instance, holding the store handle from the backend</param>
+        /// <param name="profile">The profile name of the transaction; default null.</param>
         /// <returns>A new <see cref="Session"/> instance containing the store handle of the backend and the asTransaction and profile parameters.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -257,7 +257,7 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Fetch the results for the given <see cref="Scan"/> object as an entryListHandle from the backend.
         /// </summary>
-        /// <param name="scan">The <see cref="Scan"/> instance, holding the scan handle from the backend.</param>
+        /// <param name="scan">The scan instance, holding the scan handle from the backend.</param>
         /// <returns>An entryListHandle as <see cref="IntPtr"/> which can be used as input for the methods in <see cref="ResultListApi"/> to obtain parameters from the records in the store.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -269,7 +269,7 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Free the scan object in the backend and reset the <see cref="Scan"/> object.
         /// </summary>
-        /// <param name="scan">The <see cref="Scan"/> instance, holding the scan handle from the backend.</param>
+        /// <param name="scan">The scan instance, holding the scan handle from the backend.</param>
         /// <returns>The result of the free call as <see cref="bool"/>; true if succeeded, otherwise false.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -291,7 +291,7 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Start an already created session/transaction from a given <see cref="Session"/> instance in the backend. Also adds the session to the store object.
         /// </summary>
-        /// <param name="session">The <see cref="Session"/> instance, holding the store and session handle from the backend.</param>
+        /// <param name="session">The session instance, holding the store and session handle from the backend.</param>
         /// <returns>A new <see cref="Session"/> instance containing the store handle, session handle of the backend and the asTransaction and profile parameters.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -318,9 +318,9 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Count the number of entries for a given record category.
         /// </summary>
-        /// <param name="session">The <see cref="Session"/> instance, holding the store and session handle from the backend.</param>
-        /// <param name="category">The category parameter as <see cref="string"/>.</param>
-        /// <param name="tagFilter">The tag filter parameter as <see cref="string"/>; default null.</param>
+        /// <param name="session">The session instance, holding the store and session handle from the backend.</param>
+        /// <param name="category">The category parameter.</param>
+        /// <param name="tagFilter">The tag filter parameter; default null.</param>
         /// <returns>The number of entries as <see cref="long"/> matching the given category and tag filter.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -334,10 +334,10 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Fetch the current record matching a given category and name parameter from the <see cref="Session"/> object from the backend as an entryListHandle.
         /// </summary>
-        /// <param name="session">The <see cref="Session"/> instance, holding the store and session handle from the backend.</param>
-        /// <param name="category">The category parameter as <see cref="string"/>.</param>
-        /// <param name="name">The name parameter as <see cref="string"/>.</param>
-        /// <param name="forUpdate">The <see cref="bool"/> flag. Specify `for_update` when in a transaction to create an update lock on the
+        /// <param name="session">The session instance, holding the store and session handle from the backend.</param>
+        /// <param name="category">The category parameter.</param>
+        /// <param name="name">The name parameter.</param>
+        /// <param name="forUpdate">The forUpdate flag. Specify `for_update` when in a transaction to create an update lock on the
         /// associated record, if supported by the store backend; default false.</param>
         /// <returns>A entryList handle as <see cref="IntPtr"/> from the backend.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
@@ -353,11 +353,11 @@ namespace aries_askar_dotnet.AriesAskar
         /// Fetch all records matching the given category and tag filter parameters from the <see cref="Session"/> object from the backend as an entryListHandle. This method may be used within a transaction. It should
         /// not be used for very large result sets due to correspondingly large memory requirements.
         /// </summary>
-        /// <param name="session">The <see cref="Session"/> instance, holding the store and session handle from the backend.</param>
-        /// <param name="category">The category parameter as <see cref="string"/>.</param>
-        /// <param name="tagFilter">The tag filter parameter as <see cref="string"/>.</param>
-        /// <param name="limit">A limit parameter as <see cref="long"/> to limit the number of the total received results; default -1 which indicates no limit.</param>
-        /// <param name="forUpdate">The <see cref="bool"/> flag. Specify `for_update` when in a transaction to create an update lock on the
+        /// <param name="session">The session instance, holding the store and session handle from the backend.</param>
+        /// <param name="category">The category parameter.</param>
+        /// <param name="tagFilter">The tag filter parameter.</param>
+        /// <param name="limit">A limit parameter to limit the number of the total received results; default -1 which indicates no limit.</param>
+        /// <param name="forUpdate">The forUpdate flag. Specify `for_update` when in a transaction to create an update lock on the
         /// associated record, if supported by the store backend; default false.</param>
         /// <returns>A entryList handle as <see cref="IntPtr"/> from the backend.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
@@ -377,12 +377,12 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Insert a new record into the <see cref="Store"/> in the backend.
         /// </summary>
-        /// <param name="session">The <see cref="Session"/> instance, holding the store and session handle from the backend.</param>
-        /// <param name="category">The category parameter as <see cref="string"/>.</param>
-        /// <param name="name">The name parameter as <see cref="string"/>.</param>
-        /// <param name="value">The value parameter as <see cref="string"/>; default null.</param>
-        /// <param name="tags">The tag parameter as <see cref="string"/>; default null.</param>
-        /// <param name="expiryMs">The expiry in ms as <see cref="long"/>; default -1 which indicates no expiry.</param>
+        /// <param name="session">The session instance, holding the store and session handle from the backend.</param>
+        /// <param name="category">The category parameter.</param>
+        /// <param name="name">The name parameter.</param>
+        /// <param name="value">The value parameter; default null.</param>
+        /// <param name="tags">The tag parameter; default null.</param>
+        /// <param name="expiryMs">The expiry in ms; default -1 which indicates no expiry.</param>
         /// <returns>The result of the insert call as <see cref="bool"/>; true if succeeded, otherwise false.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -403,12 +403,12 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Replace the value and tags of a record in the <see cref="Store"/> in the backend.
         /// </summary>
-        /// <param name="session">The <see cref="Session"/> instance, holding the store and session handle from the backend.</param>
-        /// <param name="category">The category parameter as <see cref="string"/>.</param>
-        /// <param name="name">The name parameter as <see cref="string"/>.</param>
-        /// <param name="value">The value parameter as <see cref="string"/>; default null.</param>
-        /// <param name="tags">The tag parameter as <see cref="string"/>; default null.</param>
-        /// <param name="expiryMs">The expiry in ms as <see cref="long"/>; default -1 which indicates no expiry.</param>
+        /// <param name="session">The session instance, holding the store and session handle from the backend.</param>
+        /// <param name="category">The category parameter.</param>
+        /// <param name="name">The name parameter.</param>
+        /// <param name="value">The value parameter; default null.</param>
+        /// <param name="tags">The tag parameter; default null.</param>
+        /// <param name="expiryMs">The expiry in ms; default -1 which indicates no expiry.</param>
         /// <returns>The result of the replace call as <see cref="bool"/>; true if succeeded, otherwise false.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -429,9 +429,9 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Remove a record from the <see cref="Store"/> in the backend matching the given category and name.
         /// </summary>
-        /// <param name="session">The <see cref="Session"/> instance, holding the store and session handle from the backend.</param>
-        /// <param name="category">The category parameter as <see cref="string"/>.</param>
-        /// <param name="name">The name parameter as <see cref="string"/>.</param>
+        /// <param name="session">The session instance, holding the store and session handle from the backend.</param>
+        /// <param name="category">The category parameter.</param>
+        /// <param name="name">The name parameter.</param>
         /// <returns>The result of the remove call as <see cref="bool"/>; true if succeeded, otherwise false.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -448,9 +448,9 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Remove all records from the <see cref="Store"/> in the backend matching the given category and tag filter.
         /// </summary>
-        /// <param name="session">The <see cref="Session"/> instance, holding the store and session handle from the backend.</param>
-        /// <param name="category">The category parameter as <see cref="string"/>.</param>
-        /// <param name="tagFilter">The tag filter parameter as <see cref="string"/>; default null.</param>
+        /// <param name="session">The session instance, holding the store and session handle from the backend.</param>
+        /// <param name="category">The category parameter.</param>
+        /// <param name="tagFilter">The tag filter parameter; default null.</param>
         /// <returns>The number of removed records as <see cref="long"/>.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -464,12 +464,12 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Insert a local key instance into the <see cref="Store"/> in the backend.
         /// </summary>
-        /// <param name="session">The <see cref="Session"/> instance, holding the store and session handle from the backend.</param>
-        /// <param name="localKeyHandle">The key handle as <see cref="IntPtr"/> from the backend to be inserted.</param>
-        /// <param name="name">The name parameter as <see cref="string"/>.</param>
-        /// <param name="metaData">The meta data parameter as <see cref="string"/>; default null.</param>
-        /// <param name="tags">The tag parameter as <see cref="string"/>; default null.</param>
-        /// <param name="expiryMs">The expiry in ms as <see cref="long"/>; default -1 which indicates no expiry.</param>
+        /// <param name="session">The session instance, holding the store and session handle from the backend.</param>
+        /// <param name="localKeyHandle">The key handle from the backend to be inserted.</param>
+        /// <param name="name">The name parameter.</param>
+        /// <param name="metaData">The meta data parameter; default null.</param>
+        /// <param name="tags">The tag parameter; default null.</param>
+        /// <param name="expiryMs">The expiry in ms; default -1 which indicates no expiry.</param>
         /// <returns>The result of the insert key call as <see cref="bool"/>; true if succeeded, otherwise false.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -490,9 +490,9 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Fetch an existing key from the <see cref="Store"/> in the backend as a keyEntryList handle.
         /// </summary>
-        /// <param name="session">The <see cref="Session"/> instance, holding the store and session handle from the backend.</param>
-        /// <param name="name">The name parameter as <see cref="string"/>.</param>
-        /// <param name="forUpdate">The <see cref="bool"/> flag. Specify `for_update` when in a transaction to create an update lock on the
+        /// <param name="session">The session instance, holding the store and session handle from the backend.</param>
+        /// <param name="name">The name parameter.</param>
+        /// <param name="forUpdate">The forUpdate flag. Specify `for_update` when in a transaction to create an update lock on the
         /// associated record, if supported by the store backend; default false.</param>
         /// <returns>A keyEntryList handle as <see cref="IntPtr"/> from the backend.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
@@ -507,12 +507,12 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Fetch all existing keys matching the given filters from the <see cref="Store"/> in the backend as a keyEntryList handle.
         /// </summary>
-        /// <param name="session">The <see cref="Session"/> instance, holding the store and session handle from the backend.</param>
-        /// <param name="keyAlg">The key algorithm as <see cref="KeyAlg"/>; default none.</param>
-        /// <param name="thumbprint">The thumbprint parameter as <see cref="string"/>; default null.</param>
-        /// <param name="tagFilter">The tag filter parameter as <see cref="string"/>; default null.</param>
-        /// <param name="limit">A limit parameter as <see cref="long"/> to limit the number of the total received results; default -1 which indicates no limit.</param>
-        /// <param name="forUpdate">The <see cref="bool"/> flag. Specify `for_update` when in a transaction to create an update lock on the
+        /// <param name="session">The session instance, holding the store and session handle from the backend.</param>
+        /// <param name="keyAlg">The key algorithm; default none.</param>
+        /// <param name="thumbprint">The thumbprint parameter; default null.</param>
+        /// <param name="tagFilter">The tag filter parameter; default null.</param>
+        /// <param name="limit">A limit parameter to limit the number of the total received results; default -1 which indicates no limit.</param>
+        /// <param name="forUpdate">The forUpdate flag. Specify `for_update` when in a transaction to create an update lock on the
         /// associated record, if supported by the store backend; default false.</param>
         /// <returns>A keyEntryList handle as <see cref="IntPtr"/> from the backend.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
@@ -533,11 +533,11 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Replace the metadata and tags on an existing key in the <see cref="Store"/> in the backend.
         /// </summary>
-        /// <param name="session">The <see cref="Session"/> instance, holding the store and session handle from the backend.</param>
-        /// <param name="name">The name parameter as <see cref="string"/>.</param>
-        /// <param name="metaData">The meta data parameter as <see cref="string"/>; default null.</param>
-        /// <param name="tags">The tag parameter as <see cref="string"/>; default null.</param>
-        /// <param name="expiryMs">The expiry in ms as <see cref="long"/>; default -1 which indicates no expiry.</param>
+        /// <param name="session">The session instance, holding the store and session handle from the backend.</param>
+        /// <param name="name">The name parameter.</param>
+        /// <param name="metaData">The meta data parameter; default null.</param>
+        /// <param name="tags">The tag parameter; default null.</param>
+        /// <param name="expiryMs">The expiry in ms; default -1 which indicates no expiry.</param>
         /// <returns>The result of the update key call as <see cref="bool"/>; true if succeeded, otherwise false.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -557,8 +557,8 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Remove an existing key from the <see cref="Store"/> in the backend.
         /// </summary>
-        /// <param name="session">The <see cref="Session"/> instance, holding the store and session handle from the backend.</param>
-        /// <param name="name">The name parameter as <see cref="string"/>.</param>
+        /// <param name="session">The session instance, holding the store and session handle from the backend.</param>
+        /// <param name="name">The name parameter.</param>
         /// <returns>The result of the remove key call as <see cref="bool"/>; true if succeeded, otherwise false.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -574,7 +574,7 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Close and commit on a <see cref="Session"/> in the backend and reset the session handle.
         /// </summary>
-        /// <param name="session">The <see cref="Session"/> instance, holding the store and session handle from the backend.</param>
+        /// <param name="session">The session instance, holding the store and session handle from the backend.</param>
         /// <returns>The result of the close and commit call as <see cref="bool"/>; true if succeeded, otherwise false.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -600,7 +600,7 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Close and rollback on a <see cref="Session"/> in the backend and reset the session handle.
         /// </summary>
-        /// <param name="session">The <see cref="Session"/> instance, holding the store and session handle from the backend.</param>
+        /// <param name="session">The session instance, holding the store and session handle from the backend.</param>
         /// <returns>The result of the close and rollback call as <see cref="bool"/>; true if succeeded, otherwise false.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -640,7 +640,7 @@ namespace aries_askar_dotnet.AriesAskar
             if (errorCode != (int)ErrorCode.Success)
             {
                 string error = await ErrorApi.GetCurrentErrorAsync();
-                Console.WriteLine(error);
+
                 throw AriesAskarException.FromSdkError(error);
             }
 
@@ -650,11 +650,11 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Provision a new <see cref="Store"/>.
         /// </summary>
-        /// <param name="specUri">The provison spec uri <see cref="string"/>.</param>
-        /// <param name="keyMethod">The key method from enum <see cref="KeyMethod"/>, which represents supported methods for generating or referencing a new store key; default none.</param>
-        /// <param name="passKey">The pass key <see cref="string"/>, a possible empty password or key used to derive a store key; default null.</param>
-        /// <param name="profile">The store profile <see cref="string"/>; default null.</param>
-        /// <param name="recreate">The recreate <see cref="bool"/> flag. If true the database is overwritten and newly initialized, if false trys to open the database with given settings if it already exists, when it fails to open, a new database is provisioned; default false.</param>
+        /// <param name="specUri">The provison spec uri.</param>
+        /// <param name="keyMethod">The key method, which represents supported methods for generating or referencing a new store key; default none.</param>
+        /// <param name="passKey">The pass key, a possible empty password or key used to derive a store key; default null.</param>
+        /// <param name="profile">The store profile; default null.</param>
+        /// <param name="recreate">The recreate flag. If true the database is overwritten and newly initialized, if false trys to open the database with given settings if it already exists, when it fails to open, a new database is provisioned; default false.</param>
         /// <returns>A new instance of <see cref="Store"/> containing the spec uri and store handle from rust sdk call.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -680,7 +680,7 @@ namespace aries_askar_dotnet.AriesAskar
             if (errorCode != (int)ErrorCode.Success)
             {
                 string error = await ErrorApi.GetCurrentErrorAsync();
-                Console.WriteLine(error);
+
                 throw AriesAskarException.FromSdkError(error);
             }
 
@@ -690,10 +690,10 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Open an existing <see cref="Store"/>.
         /// </summary>
-        /// <param name="specUri">The spec uri <see cref="string"/> of the store.</param>
-        /// <param name="keyMethod">The key method from enum <see cref="KeyMethod"/>, which represents supported methods for generating or referencing a new store key; default none.</param>
-        /// <param name="passKey">The pass key <see cref="string"/>, a possible empty password or key used to derive a store key; default null.</param>
-        /// <param name="profile">The store profile <see cref="string"/>; default null.</param>
+        /// <param name="specUri">The spec uri of the store.</param>
+        /// <param name="keyMethod">The key method, which represents supported methods for generating or referencing a new store key; default none.</param>
+        /// <param name="passKey">The pass key, a possible empty password or key used to derive a store key; default null.</param>
+        /// <param name="profile">The store profile; default null.</param>
         /// <returns>The store instance of the existing <see cref="Store"/> containing the spec uri and store handle from rust sdk call.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -717,7 +717,7 @@ namespace aries_askar_dotnet.AriesAskar
             if (errorCode != (int)ErrorCode.Success)
             {
                 string error = await ErrorApi.GetCurrentErrorAsync();
-                Console.WriteLine(error);
+
                 throw AriesAskarException.FromSdkError(error);
             }
 
@@ -727,7 +727,7 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Remove an existing store from the backend.
         /// </summary>
-        /// <param name="specUri">The spec uri <see cref="string"/> of the store to be removed.</param>
+        /// <param name="specUri">The spec uri of the store to be removed.</param>
         /// <returns>The result of the remove call as <see cref="bool"/>; true if succeded, otherwise false.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -744,7 +744,7 @@ namespace aries_askar_dotnet.AriesAskar
             if (errorCode != (int)ErrorCode.Success)
             {
                 string error = await ErrorApi.GetCurrentErrorAsync();
-                Console.WriteLine(error);
+
                 throw AriesAskarException.FromSdkError(error);
             }
 
@@ -754,8 +754,8 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Create a new profile with the given profile name in the backend. A random name is used if profile is null.
         /// </summary>
-        /// <param name="profile">The profile name as <see cref="string"/>; default null.</param>
-        /// <param name="storeHandle">The store handle as <see cref="IntPtr"/> from the backend.</param>
+        /// <param name="profile">The profile name; default null.</param>
+        /// <param name="storeHandle">The store handle from the backend.</param>
         /// <returns>The profile name of the created profile as <see cref="string"/>; if profile name is null, a random name is used by the backend.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -773,7 +773,7 @@ namespace aries_askar_dotnet.AriesAskar
             if (errorCode != (int)ErrorCode.Success)
             {
                 string error = await ErrorApi.GetCurrentErrorAsync();
-                Console.WriteLine(error);
+
                 throw AriesAskarException.FromSdkError(error);
             }
 
@@ -783,7 +783,7 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Get the default profile name used when starting a scan or a session.
         /// </summary>
-        /// <param name="storeHandle">The store handle as <see cref="IntPtr"/> from the backend.</param>
+        /// <param name="storeHandle">The store handle from the backend.</param>
         /// <returns>The default profile name as <see cref="string"/></returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -800,7 +800,7 @@ namespace aries_askar_dotnet.AriesAskar
             if (errorCode != (int)ErrorCode.Success)
             {
                 string error = await ErrorApi.GetCurrentErrorAsync();
-                Console.WriteLine(error);
+
                 throw AriesAskarException.FromSdkError(error);
             }
 
@@ -810,8 +810,8 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Remove an existing profile from the backend with the given profile name.
         /// </summary>
-        /// <param name="profile">The profile name of the profile to remove as <see cref="string"/>.</param>
-        /// <param name="storeHandle">The store handle as <see cref="IntPtr"/> from the backend.</param>
+        /// <param name="profile">The profile name of the profile to remove.</param>
+        /// <param name="storeHandle">The store handle from the backend.</param>
         /// <returns>The result of the remove call as <see cref="bool"/>; true if succeeded, otherwise false.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -824,12 +824,12 @@ namespace aries_askar_dotnet.AriesAskar
                 storeHandle,
                 FfiStr.Create(profile),
                 GetStoreByteCallback,
-                callbackId); ;
+                callbackId);
 
             if (errorCode != (int)ErrorCode.Success)
             {
                 string error = await ErrorApi.GetCurrentErrorAsync();
-                Console.WriteLine(error);
+
                 throw AriesAskarException.FromSdkError(error);
             }
 
@@ -839,9 +839,9 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Replace the wrapping key on a store in the backend.
         /// </summary>
-        /// <param name="storeHandle">The store handle as <see cref="IntPtr"/> from the backend.</param>
-        /// <param name="keyMethod">The key method from enum <see cref="KeyMethod"/>, which represents supported methods for generating or referencing a new store key; default none.</param>
-        /// <param name="passKey">The pass key as <see cref="string"/>, a possible empty password or key used to derive a store key; default null.</param>
+        /// <param name="storeHandle">The store handle from the backend.</param>
+        /// <param name="keyMethod">The key method, which represents supported methods for generating or referencing a new store key; default none.</param>
+        /// <param name="passKey">The pass key, a possible empty password or key used to derive a store key; default null.</param>
         /// <returns>The result of the rekey call as <see cref="bool"/>; true if succeeded, otherwise false.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -858,12 +858,12 @@ namespace aries_askar_dotnet.AriesAskar
                 FfiStr.Create(keyMethod.ToKeyMethodString()),
                 FfiStr.Create(passKey),
                 NoReturnValueStoreCallback,
-                callbackId); ;
+                callbackId);
 
             if (errorCode != (int)ErrorCode.Success)
             {
                 string error = await ErrorApi.GetCurrentErrorAsync();
-                Console.WriteLine(error);
+
                 throw AriesAskarException.FromSdkError(error);
             }
 
@@ -873,7 +873,7 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Close an existing open store from the backend.
         /// </summary>
-        /// <param name="storeHandle">The store handle as <see cref="IntPtr"/> of the store to be closed in the backend.</param>
+        /// <param name="storeHandle">The store handle of the store to be closed in the backend.</param>
         /// <returns>The result of the close call as <see cref="bool"/>; true if succeded, otherwise false.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -885,12 +885,12 @@ namespace aries_askar_dotnet.AriesAskar
             int errorCode = NativeMethods.askar_store_close(
                 storeHandle,
                 NoReturnValueStoreCallback,
-                callbackId); ;
+                callbackId);
 
             if (errorCode != (int)ErrorCode.Success)
             {
                 string error = await ErrorApi.GetCurrentErrorAsync();
-                Console.WriteLine(error);
+
                 throw AriesAskarException.FromSdkError(error);
             }
 
@@ -902,12 +902,12 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Create a new <see cref="Scan"/> instance against the store in the backend. The result will keep an open connection to the backend until it is consumed.
         /// </summary>
-        /// <param name="storeHandle">The store handle as <see cref="IntPtr"/> to scan against from the backend.</param>
-        /// <param name="category">The category filter parameter as <see cref="string"/>.</param>
-        /// <param name="tagFilter">The tag filter parameter as <see cref="string"/>; default null.</param>
-        /// <param name="offset">A offset parameter as <see cref="long"/> to offset a number of the total results; default 0.</param>
-        /// <param name="limit">>A limit parameter as <see cref="long"/> to limit the number of the total received results; default -1 which indicates no limit.</param>
-        /// <param name="profile">The profile name filter parameter as <see cref="string"/>; default null.</param>
+        /// <param name="storeHandle">The store handle to scan against from the backend.</param>
+        /// <param name="category">The category filter parameter.</param>
+        /// <param name="tagFilter">The tag filter parameter; default null.</param>
+        /// <param name="offset">A offset parameter to offset a number of the total results; default 0.</param>
+        /// <param name="limit">>A limit parameter to limit the number of the total received results; default -1 which indicates no limit.</param>
+        /// <param name="profile">The profile name filter parameter; default null.</param>
         /// <returns>A new <see cref="Scan"/> instance containing the scan handle, store handle of the backend and the given parameters.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -935,7 +935,7 @@ namespace aries_askar_dotnet.AriesAskar
             if (errorCode != (int)ErrorCode.Success)
             {
                 string error = await ErrorApi.GetCurrentErrorAsync();
-                Console.WriteLine(error);
+
                 throw AriesAskarException.FromSdkError(error);
             }
             List<object> parameters = new List<object>() { profile, category, tagFilter, offset, limit };
@@ -945,7 +945,7 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Fetch the results for the given <see cref="Scan"/> object as an entryListHandle from the backend.
         /// </summary>
-        /// <param name="scanHandle">The scan handle as <see cref="IntPtr"/> from the backend.</param>
+        /// <param name="scanHandle">The scan handle from the backend.</param>
         /// <returns>An entryListHandle as <see cref="IntPtr"/> which can be used as input for the methods in <see cref="ResultListApi"/> to obtain parameters from the records in the store.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -962,7 +962,7 @@ namespace aries_askar_dotnet.AriesAskar
             if (errorCode != (int)ErrorCode.Success)
             {
                 string error = await ErrorApi.GetCurrentErrorAsync();
-                Console.WriteLine(error);
+
                 throw AriesAskarException.FromSdkError(error);
             }
 
@@ -972,7 +972,7 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Free the scan object in the backend.
         /// </summary>
-        /// <param name="scanHandle">The scan handle as <see cref="IntPtr"/> from the backend.</param>
+        /// <param name="scanHandle">The scan handle from the backend.</param>
         /// <returns>The result of the free call as <see cref="bool"/>; true if succeeded, otherwise false.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -983,7 +983,7 @@ namespace aries_askar_dotnet.AriesAskar
             if (errorCode != (int)ErrorCode.Success)
             {
                 string error = await ErrorApi.GetCurrentErrorAsync();
-                Console.WriteLine(error);
+
                 throw AriesAskarException.FromSdkError(error);
             }
             else
@@ -997,9 +997,9 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Create a new <see cref="Session"/> instance against the store in the backend with a given profile name as session or transaction.
         /// </summary>
-        /// <param name="storeHandle">The store handle as <see cref="IntPtr"/> from the backend.</param>
-        /// <param name="profile">The profile name of the session / transaction as <see cref="string"/>. A random name is used by the backend when null; default null.</param>
-        /// <param name="asTransactions">The <see cref="bool"/> flag, which indicates a session (false) or transaction (true) ; default false.</param>
+        /// <param name="storeHandle">The store handle from the backend.</param>
+        /// <param name="profile">The profile name of the session / transaction. A random name is used by the backend when null; default null.</param>
+        /// <param name="asTransactions">The asTransaction flag, which indicates a session (false) or transaction (true) ; default false.</param>
         /// <returns>A new <see cref="Session"/> instance containing the store handle, session handle of the backend and the asTransaction and profile parameters.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -1018,7 +1018,7 @@ namespace aries_askar_dotnet.AriesAskar
             if (errorCode != (int)ErrorCode.Success)
             {
                 string error = await ErrorApi.GetCurrentErrorAsync();
-                Console.WriteLine(error);
+
                 throw AriesAskarException.FromSdkError(error);
             }
 
@@ -1028,9 +1028,9 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Count the number of entries for a given record category.
         /// </summary>
-        /// <param name="sessionHandle">The session handle as <see cref="IntPtr"/> from the backend.</param>
-        /// <param name="category">The category parameter as <see cref="string"/>.</param>
-        /// <param name="tagFilter">The tag filter parameter as <see cref="string"/>; default null.</param>
+        /// <param name="sessionHandle">The session handle from the backend.</param>
+        /// <param name="category">The category parameter.</param>
+        /// <param name="tagFilter">The tag filter parameter; default null.</param>
         /// <returns>The number of entries as <see cref="long"/> matching the given category and tag filter.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -1049,7 +1049,7 @@ namespace aries_askar_dotnet.AriesAskar
             if (errorCode != (int)ErrorCode.Success)
             {
                 string error = await ErrorApi.GetCurrentErrorAsync();
-                Console.WriteLine(error);
+
                 throw AriesAskarException.FromSdkError(error);
             }
 
@@ -1059,10 +1059,10 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Fetch the current record for a given category and name from the backend as an entryListHandle.
         /// </summary>
-        /// <param name="sessionHandle">The session handle as <see cref="IntPtr"/> from the backend.</param>
-        /// <param name="category">The category parameter as <see cref="string"/>.</param>
-        /// <param name="name">The name parameter as <see cref="string"/>.</param>
-        /// <param name="forUpdate">The <see cref="bool"/> flag. Specify `for_update` when in a transaction to create an update lock on the
+        /// <param name="sessionHandle">The session handle from the backend.</param>
+        /// <param name="category">The category parameter.</param>
+        /// <param name="name">The name parameter.</param>
+        /// <param name="forUpdate">The forUpdate flag. Specify `for_update` when in a transaction to create an update lock on the
         /// associated record, if supported by the store backend; default false.</param>
         /// <returns>A entryList handle as <see cref="IntPtr"/> from the backend.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
@@ -1083,7 +1083,7 @@ namespace aries_askar_dotnet.AriesAskar
             if (errorCode != (int)ErrorCode.Success)
             {
                 string error = await ErrorApi.GetCurrentErrorAsync();
-                Console.WriteLine(error);
+
                 throw AriesAskarException.FromSdkError(error);
             }
             return await taskCompletionSource.Task;
@@ -1094,11 +1094,11 @@ namespace aries_askar_dotnet.AriesAskar
         /// Fetch all records matching the given category and tag filter parameters from the backend as an entryListHandle. This method may be used within a transaction. It should
         /// not be used for very large result sets due to correspondingly large memory requirements.
         /// </summary>
-        /// <param name="sessionHandle">The session handle as <see cref="IntPtr"/> from the backend.</param>
-        /// <param name="category">The category parameter as <see cref="string"/>.</param>
-        /// <param name="tagFilter">The tag filter parameter as <see cref="string"/>.</param>
-        /// <param name="limit">A limit parameter as <see cref="long"/> to limit the number of the total received results; default -1 which indicates no limit.</param>
-        /// <param name="forUpdate">The <see cref="bool"/> flag. Specify `for_update` when in a transaction to create an update lock on the
+        /// <param name="sessionHandle">The session handle from the backend.</param>
+        /// <param name="category">The category parameter.</param>
+        /// <param name="tagFilter">The tag filter parameter.</param>
+        /// <param name="limit">A limit parameter to limit the number of the total received results; default -1 which indicates no limit.</param>
+        /// <param name="forUpdate">The forUpdate flag. Specify `for_update` when in a transaction to create an update lock on the
         /// associated record, if supported by the store backend; default false.</param>
         /// <returns>A entryList handle as <see cref="IntPtr"/> from the backend.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
@@ -1125,7 +1125,7 @@ namespace aries_askar_dotnet.AriesAskar
             if (errorCode != (int)ErrorCode.Success)
             {
                 string error = await ErrorApi.GetCurrentErrorAsync();
-                Console.WriteLine(error);
+
                 throw AriesAskarException.FromSdkError(error);
             }
 
@@ -1135,9 +1135,9 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Remove all records from the store in the backend matching the given category and tag filter.
         /// </summary>
-        /// <param name="sessionHandle">The session handle as <see cref="IntPtr"/> from the backend.</param>
-        /// <param name="category">The category parameter as <see cref="string"/>.</param>
-        /// <param name="tagFilter">The tag filter parameter as <see cref="string"/>; default null.</param>
+        /// <param name="sessionHandle">The session handle from the backend.</param>
+        /// <param name="category">The category parameter.</param>
+        /// <param name="tagFilter">The tag filter parameter; default null.</param>
         /// <returns>The number of removed records as <see cref="long"/>.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -1156,7 +1156,7 @@ namespace aries_askar_dotnet.AriesAskar
             if (errorCode != (int)ErrorCode.Success)
             {
                 string error = await ErrorApi.GetCurrentErrorAsync();
-                Console.WriteLine(error);
+
                 throw AriesAskarException.FromSdkError(error);
             }
 
@@ -1166,12 +1166,12 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Insert a new record into the store in the backend.
         /// </summary>
-        /// <param name="sessionHandle">The session handle as <see cref="IntPtr"/> from the backend.</param>
-        /// <param name="category">The category parameter as <see cref="string"/>.</param>
-        /// <param name="name">The name parameter as <see cref="string"/>.</param>
-        /// <param name="value">The value parameter as <see cref="string"/>; default null.</param>
-        /// <param name="tags">The tag parameter as <see cref="string"/>; default null.</param>
-        /// <param name="expiryMs">The expiry in ms as <see cref="long"/>; default -1 which indicates no expiry.</param>
+        /// <param name="sessionHandle">The session handle from the backend.</param>
+        /// <param name="category">The category parameter.</param>
+        /// <param name="name">The name parameter.</param>
+        /// <param name="value">The value parameter; default null.</param>
+        /// <param name="tags">The tag parameter; default null.</param>
+        /// <param name="expiryMs">The expiry in ms; default -1 which indicates no expiry.</param>
         /// <returns>The result of the insert call as <see cref="bool"/>; true if succeeded, otherwise false.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -1199,12 +1199,12 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Replace the value and tags of a record in the <see cref="Store"/> in the backend.
         /// </summary>
-        /// <param name="sessionHandle">The session handle as <see cref="IntPtr"/> from the backend.</param>
-        /// <param name="category">The category parameter as <see cref="string"/>.</param>
-        /// <param name="name">The name parameter as <see cref="string"/>.</param>
-        /// <param name="value">The value parameter as <see cref="string"/>; default null.</param>
-        /// <param name="tags">The tag parameter as <see cref="string"/>; default null.</param>
-        /// <param name="expiryMs">The expiry in ms as <see cref="long"/>; default -1 which indicates no expiry.</param>
+        /// <param name="sessionHandle">The session handle from the backend.</param>
+        /// <param name="category">The category parameter.</param>
+        /// <param name="name">The name parameter.</param>
+        /// <param name="value">The value parameter; default null.</param>
+        /// <param name="tags">The tag parameter; default null.</param>
+        /// <param name="expiryMs">The expiry in ms; default -1 which indicates no expiry.</param>
         /// <returns>The result of the replace call as <see cref="bool"/>; true if succeeded, otherwise false.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -1232,9 +1232,9 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Remove a record from the store in the backend matching the given category and name.
         /// </summary>
-        /// <param name="sessionHandle">The session handle as <see cref="IntPtr"/> from the backend.</param>
-        /// <param name="category">The category parameter as <see cref="string"/>.</param>
-        /// <param name="name">The name parameter as <see cref="string"/>.</param>
+        /// <param name="sessionHandle">The session handle from the backend.</param>
+        /// <param name="category">The category parameter.</param>
+        /// <param name="name">The name parameter.</param>
         /// <returns>The result of the remove call as <see cref="bool"/>; true if succeeded, otherwise false.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -1255,13 +1255,13 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Insert, replace or remove the value and tags of a record in the <see cref="Store"/> in the backend.
         /// </summary>
-        /// <param name="sessionHandle">The session handle as <see cref="IntPtr"/> from the backend.</param>
-        /// <param name="operation">The update operation as <see cref="UpdateOperation"/> to perfom on the store in the backend. Valid operations are insert, replace or remove.</param>
-        /// <param name="category">The category parameter as <see cref="string"/>.</param>
-        /// <param name="name">The name parameter as <see cref="string"/>.</param>
-        /// <param name="value">The value parameter as <see cref="string"/>; default null.</param>
-        /// <param name="tags">The tag parameter as <see cref="string"/>; default null.</param>
-        /// <param name="expiryMs">The expiry in ms as <see cref="long"/>; default -1 which indicates no expiry.</param>
+        /// <param name="sessionHandle">The session handle from the backend.</param>
+        /// <param name="operation">The update operation to perfom on the store in the backend. Valid operations are insert, replace or remove.</param>
+        /// <param name="category">The category parameter.</param>
+        /// <param name="name">The name parameter.</param>
+        /// <param name="value">The value parameter; default null.</param>
+        /// <param name="tags">The tag parameter; default null.</param>
+        /// <param name="expiryMs">The expiry in ms; default -1 which indicates no expiry.</param>
         /// <returns>The result of the update call as <see cref="bool"/>; true if succeeded, otherwise false.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -1292,7 +1292,7 @@ namespace aries_askar_dotnet.AriesAskar
             if (errorCode != (int)ErrorCode.Success)
             {
                 string error = await ErrorApi.GetCurrentErrorAsync();
-                Console.WriteLine(error);
+
                 throw AriesAskarException.FromSdkError(error);
             }
 
@@ -1302,12 +1302,12 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Insert a local key instance into the <see cref="Store"/> in the backend.
         /// </summary>
-        /// <param name="sessionHandle">The session handle as <see cref="IntPtr"/> from the backend.</param>
-        /// <param name="localKeyHandle">The key handle as <see cref="IntPtr"/> from the backend to be inserted.</param>
-        /// <param name="name">The name parameter as <see cref="string"/>.</param>
-        /// <param name="metaData">The meta data parameter as <see cref="string"/>; default null.</param>
-        /// <param name="tags">The tag parameter as <see cref="string"/>; default null.</param>
-        /// <param name="expiryMs">The expiry in ms as <see cref="long"/>; default -1 which indicates no expiry.</param>
+        /// <param name="sessionHandle">The session handle from the backend.</param>
+        /// <param name="localKeyHandle">The key handle from the backend to be inserted.</param>
+        /// <param name="name">The name parameter.</param>
+        /// <param name="metaData">The meta data parameter; default null.</param>
+        /// <param name="tags">The tag parameter; default null.</param>
+        /// <param name="expiryMs">The expiry in ms; default -1 which indicates no expiry.</param>
         /// <returns>The result of the insert key call as <see cref="bool"/>; true if succeeded, otherwise false.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -1336,7 +1336,7 @@ namespace aries_askar_dotnet.AriesAskar
             if (errorCode != (int)ErrorCode.Success)
             {
                 string error = await ErrorApi.GetCurrentErrorAsync();
-                Console.WriteLine(error);
+
                 throw AriesAskarException.FromSdkError(error);
             }
 
@@ -1346,9 +1346,9 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Fetch an existing key from the <see cref="Store"/> in the backend as a keyEntryList handle.
         /// </summary>
-        /// <param name="sessionHandle">The session handle as <see cref="IntPtr"/> from the backend.</param>
-        /// <param name="name">The name parameter as <see cref="string"/>.</param>
-        /// <param name="forUpdate">The <see cref="bool"/> flag. Specify `for_update` when in a transaction to create an update lock on the
+        /// <param name="sessionHandle">The session handle from the backend.</param>
+        /// <param name="name">The name parameter.</param>
+        /// <param name="forUpdate">The forUpdate flag. Specify `for_update` when in a transaction to create an update lock on the
         /// associated record, if supported by the store backend; default false.</param>
         /// <returns>A keyEntryList handle as <see cref="IntPtr"/> from the backend.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
@@ -1368,7 +1368,7 @@ namespace aries_askar_dotnet.AriesAskar
             if (errorCode != (int)ErrorCode.Success)
             {
                 string error = await ErrorApi.GetCurrentErrorAsync();
-                Console.WriteLine(error);
+
                 throw AriesAskarException.FromSdkError(error);
             }
 
@@ -1378,12 +1378,12 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Fetch all existing keys matching the given filters from the <see cref="Store"/> in the backend as a keyEntryList handle.
         /// </summary>
-        /// <param name="sessionHandle">The session handle as <see cref="IntPtr"/> from the backend.</param>
-        /// <param name="keyAlg">The key algorithm as <see cref="KeyAlg"/>; default none.</param>
-        /// <param name="thumbprint">The thumbprint parameter as <see cref="string"/>; default null.</param>
-        /// <param name="tagFilter">The tag filter parameter as <see cref="string"/>; default null.</param>
-        /// <param name="limit">A limit parameter as <see cref="long"/> to limit the number of the total received results; default -1 which indicates no limit.</param>
-        /// <param name="forUpdate">The <see cref="bool"/> flag. Specify `for_update` when in a transaction to create an update lock on the
+        /// <param name="sessionHandle">The session handle from the backend.</param>
+        /// <param name="keyAlg">The key algorithm; default none.</param>
+        /// <param name="thumbprint">The thumbprint parameter; default null.</param>
+        /// <param name="tagFilter">The tag filter parameter; default null.</param>
+        /// <param name="limit">A limit parameter to limit the number of the total received results; default -1 which indicates no limit.</param>
+        /// <param name="forUpdate">The forUpdate flag. Specify `for_update` when in a transaction to create an update lock on the
         /// associated record, if supported by the store backend; default false.</param>
         /// <returns>A keyEntryList handle as <see cref="IntPtr"/> from the backend.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
@@ -1412,7 +1412,7 @@ namespace aries_askar_dotnet.AriesAskar
             if (errorCode != (int)ErrorCode.Success)
             {
                 string error = await ErrorApi.GetCurrentErrorAsync();
-                Console.WriteLine(error);
+
                 throw AriesAskarException.FromSdkError(error);
             }
 
@@ -1422,11 +1422,11 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Replace the metadata and tags on an existing key in the store in the backend.
         /// </summary>
-        /// <param name="sessionHandle">The session handle as <see cref="IntPtr"/> from the backend.</param>
-        /// <param name="name">The name parameter as <see cref="string"/>.</param>
-        /// <param name="metaData">The meta data parameter as <see cref="string"/>; default null.</param>
-        /// <param name="tags">The tag parameter as <see cref="string"/>; default null.</param>
-        /// <param name="expiryMs">The expiry in ms as <see cref="long"/>; default -1 which indicates no expiry.</param>
+        /// <param name="sessionHandle">The session handle from the backend.</param>
+        /// <param name="name">The name parameter.</param>
+        /// <param name="metaData">The meta data parameter; default null.</param>
+        /// <param name="tags">The tag parameter; default null.</param>
+        /// <param name="expiryMs">The expiry in ms; default -1 which indicates no expiry.</param>
         /// <returns>The result of the update key call as <see cref="bool"/>; true if succeeded, otherwise false.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -1453,7 +1453,7 @@ namespace aries_askar_dotnet.AriesAskar
             if (errorCode != (int)ErrorCode.Success)
             {
                 string error = await ErrorApi.GetCurrentErrorAsync();
-                Console.WriteLine(error);
+
                 throw AriesAskarException.FromSdkError(error);
             }
 
@@ -1463,8 +1463,8 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Remove an existing key from the store in the backend.
         /// </summary>
-        /// <param name="sessionHandle">The <see cref="Session"/> instance, holding the store and session handle from the backend.</param>
-        /// <param name="name">The name parameter as <see cref="string"/>.</param>
+        /// <param name = "sessionHandle" > The session handle from the backend.</param>
+        /// <param name="name">The name parameter.</param>
         /// <returns>The result of the remove key call as <see cref="bool"/>; true if succeeded, otherwise false.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -1482,7 +1482,7 @@ namespace aries_askar_dotnet.AriesAskar
             if (errorCode != (int)ErrorCode.Success)
             {
                 string error = await ErrorApi.GetCurrentErrorAsync();
-                Console.WriteLine(error);
+
                 throw AriesAskarException.FromSdkError(error);
             }
 
@@ -1492,7 +1492,7 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Close and commit on a <see cref="Session"/> in the backend and reset the session handle.
         /// </summary>
-        /// <param name="sessionHandle">The <see cref="Session"/> instance, holding the store and session handle from the backend.</param>
+        /// <param name = "sessionHandle" > The session handle from the backend.</param>
         /// <returns>The result of the close and commit call as <see cref="bool"/>; true if succeeded, otherwise false.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -1508,7 +1508,7 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Close and rollback on a <see cref="Session"/> in the backend and reset the session handle.
         /// </summary>
-        /// <param name="sessionHandle">The <see cref="Session"/> instance, holding the store and session handle from the backend.</param>
+        /// <param name = "sessionHandle" > The session handle from the backend.</param>
         /// <returns>The result of the close and rollback call as <see cref="bool"/>; true if succeeded, otherwise false.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -1524,8 +1524,8 @@ namespace aries_askar_dotnet.AriesAskar
         /// <summary>
         /// Close a <see cref="Session"/> in the backend and perform a commit or rollback.
         /// </summary>
-        /// <param name="sessionHandle">The <see cref="Session"/> instance, holding the store and session handle from the backend.</param>
-        /// <param name="commit">The <see cref="bool"/> flag, which indicates that there is a commit or rollback on the session; true commit, false rollback.</param>
+        /// <param name = "sessionHandle" > The session handle from the backend.</param>
+        /// <param name="commit">The commit flag, which indicates that there is a commit or rollback on the session; true commit, false rollback.</param>
         /// <returns>The result of the close call as <see cref="bool"/>; true if succeeded, otherwise false.</returns>
         /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
         /// </exception>
@@ -1543,7 +1543,7 @@ namespace aries_askar_dotnet.AriesAskar
             if (errorCode != (int)ErrorCode.Success)
             {
                 string error = await ErrorApi.GetCurrentErrorAsync();
-                Console.WriteLine(error);
+
                 throw AriesAskarException.FromSdkError(error);
             }
 
@@ -1556,10 +1556,8 @@ namespace aries_askar_dotnet.AriesAskar
         /// 'No value back' callback method that is handed to the backend call.
         /// </summary>
         /// <param name="callback_id">The callback id.</param>
-        /// <param name="err">The received <see cref="ErrorCode"/> of the backend call.</param>
+        /// <param name="err">The received error code of the backend call.</param>
         /// <returns>An <see cref="AriesAskarException"/> if the <see cref="ErrorCode"/> is not <see cref="ErrorCode.Success"/>, otherwise true.</returns>
-        /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
-        /// </exception>
         private static void NoReturnValueStoreCallbackMethod(long callback_id, int err)
         {
             TaskCompletionSource<bool> taskCompletionSource = PendingCallbacks.Remove<bool>(callback_id);
@@ -1578,11 +1576,9 @@ namespace aries_askar_dotnet.AriesAskar
         /// 'Get handle back' callback method that is handed to the backend call.
         /// </summary>
         /// <param name="callback_id">The callback id.</param>
-        /// <param name="err">The received <see cref="ErrorCode"/> of the backend call.</param>
-        /// <param name="handle">The received handle as <see cref="IntPtr"/> of the backend call.</param>
+        /// <param name="err">The received error code of the backend call.</param>
+        /// <param name="handle">The received handle of the backend call.</param>
         /// <returns>An <see cref="AriesAskarException"/> if the <see cref="ErrorCode"/> is not <see cref="ErrorCode.Success"/>, otherwise a object handle as <see cref="IntPtr"/>.</returns>
-        /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
-        /// </exception>
         private static void GetStoreHandleCallbackMethod(long callback_id, int err, IntPtr handle)
         {
             TaskCompletionSource<IntPtr> taskCompletionSource = PendingCallbacks.Remove<IntPtr>(callback_id);
@@ -1601,11 +1597,9 @@ namespace aries_askar_dotnet.AriesAskar
         /// 'Get <see cref="byte"/> back' callback method that is handed to the backend call.
         /// </summary>
         /// <param name="callback_id">The callback id.</param>
-        /// <param name="err">The received <see cref="ErrorCode"/> of the backend call.</param>
-        /// <param name="result">The received <see cref="byte"/> result of the backend call.</param>
+        /// <param name="err">The received error code of the backend call.</param>
+        /// <param name="result">The received result of the backend call.</param>
         /// <returns>An <see cref="AriesAskarException"/> if the <see cref="ErrorCode"/> is not <see cref="ErrorCode.Success"/>, otherwise a result <see cref="byte"/>.</returns>
-        /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
-        /// </exception>
         private static void GetStoreByteCallbackMethod(long callback_id, int err, byte result)
         {
             TaskCompletionSource<byte> taskCompletionSource = PendingCallbacks.Remove<byte>(callback_id);
@@ -1624,11 +1618,9 @@ namespace aries_askar_dotnet.AriesAskar
         /// 'Get <see cref="long"/> back' callback method that is handed to the backend call.
         /// </summary>
         /// <param name="callback_id">The callback id.</param>
-        /// <param name="err">The received <see cref="ErrorCode"/> of the backend call.</param>
-        /// <param name="result">The received <see cref="long"/> result of the backend call.</param>
+        /// <param name="err">The received error code of the backend call.</param>
+        /// <param name="result">The received result of the backend call.</param>
         /// <returns>An <see cref="AriesAskarException"/> if the <see cref="ErrorCode"/> is not <see cref="ErrorCode.Success"/>, otherwise a result <see cref="long"/>.</returns>
-        /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
-        /// </exception>
         private static void GetStoreLongCallbackMethod(long callback_id, int err, long result)
         {
             TaskCompletionSource<long> taskCompletionSource = PendingCallbacks.Remove<long>(callback_id);
@@ -1647,11 +1639,9 @@ namespace aries_askar_dotnet.AriesAskar
         /// 'Get <see cref="string"/> back' callback method that is handed to the backend call.
         /// </summary>
         /// <param name="callback_id">The callback id.</param>
-        /// <param name="err">The received <see cref="ErrorCode"/> of the backend call.</param>
-        /// <param name="result">The received <see cref="string"/> result of the backend call.</param>
+        /// <param name="err">The received error code of the backend call.</param>
+        /// <param name="result">The received result of the backend call.</param>
         /// <returns>An <see cref="AriesAskarException"/> if the <see cref="ErrorCode"/> is not <see cref="ErrorCode.Success"/>, otherwise a result <see cref="string"/>.</returns>
-        /// <exception cref="AriesAskarException">Throws a AriesAskarException with corresponding error code from the sdk, when providing invalid input parameter or backend throwing error. 
-        /// </exception>
         private static void GetStoreStringCallbackMethod(long callback_id, int err, string result)
         {
             TaskCompletionSource<string> taskCompletionSource = PendingCallbacks.Remove<string>(callback_id);

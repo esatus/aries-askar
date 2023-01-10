@@ -1,10 +1,7 @@
 ﻿using aries_askar_dotnet;
 using FluentAssertions;
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace aries_askar_dotnet_tests
@@ -47,15 +44,10 @@ namespace aries_askar_dotnet_tests
 
             //Act
             AriesAskarException testException = AriesAskarException.FromSdkError(testErrorMessage);
-            string actual;
-            if (errorCode != "xyz")
-                actual = testException.Message.Substring(1, expected.Length);
-            else
-                actual = testException.Message;
+            string actual = errorCode != "xyz" ? testException.Message.Substring(1, expected.Length) : testException.Message;
 
             //Assert
-            actual.Should().Be(expected);
-            Console.WriteLine(testException.Message);
+            _ = actual.Should().Be(expected);
             return Task.CompletedTask;
         }
     }

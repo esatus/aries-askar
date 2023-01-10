@@ -6,7 +6,6 @@ using NUnit.Framework;
 using NUnit.Framework.Internal;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -46,7 +45,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
             string testPathDb = Path.Combine(currentDirectory, @"..\..\..\test-db");
-            _testPathDb = _dbType+"://"+Path.GetFullPath(testPathDb);
+            _testPathDb = _dbType + "://" + Path.GetFullPath(testPathDb);
         }
 
         #region STORE
@@ -57,25 +56,25 @@ namespace aries_askar_dotnet_tests.AriesAskar
             string passKey = StoreApi.GenerateRawKeyAsync(seed).GetAwaiter().GetResult();
 
             yield return new TestCaseData(KeyMethod.RAW, passKey, "testProfile", true)
-                .SetName("StoreProvision call returns store with keyMethod 'raw' and recreate true.");
+                .SetName("ProvisionAsync() call returns store with keyMethod 'raw' and recreate true.");
             yield return new TestCaseData(KeyMethod.NONE, passKey, "testProfile", true)
-                .SetName("StoreProvision call returns store with keyMethod 'none' and recreate true.");
+                .SetName("ProvisionAsync() call returns store with keyMethod 'none' and recreate true.");
             yield return new TestCaseData(KeyMethod.KDF_ARGON2I, passKey, "testProfile", true)
-                .SetName("StoreProvision call returns store with keyMethod 'kdf_argon2i' and recreate true.");
+                .SetName("ProvisionAsync() call returns store with keyMethod 'kdf_argon2i' and recreate true.");
             yield return new TestCaseData(KeyMethod.RAW, passKey, "testProfile", false)
-                .SetName("StoreProvision call returns store with keyMethod 'raw' and recreate false.");
+                .SetName("ProvisionAsync() call returns store with keyMethod 'raw' and recreate false.");
             yield return new TestCaseData(KeyMethod.NONE, passKey, "testProfile", false)
-                .SetName("StoreProvision call returns store with keyMethod 'none' and recreate false.");
+                .SetName("ProvisionAsync() call returns store with keyMethod 'none' and recreate false.");
             yield return new TestCaseData(KeyMethod.KDF_ARGON2I, passKey, "testProfile", false)
-                .SetName("StoreProvision call returns store with keyMethod 'kdf_argon2i' and recreate false.");
+                .SetName("ProvisionAsync() call returns store with keyMethod 'kdf_argon2i' and recreate false.");
             yield return new TestCaseData(KeyMethod.NONE, null, null, true)
-                .SetName("StoreProvision call returns store with keyMethod 'none' and no passkey and recreate true.");
+                .SetName("ProvisionAsync() call returns store with keyMethod 'none' and no passkey and recreate true.");
             yield return new TestCaseData(KeyMethod.NONE, null, null, false)
-                .SetName("StoreProvision call returns store with keyMethod 'none' and no passkey and recreate false.");
+                .SetName("ProvisionAsync() call returns store with keyMethod 'none' and no passkey and recreate false.");
             yield return new TestCaseData(KeyMethod.RAW, passKey, null, true)
-                .SetName("StoreProvision call returns store with keyMethod 'raw' and no profile.");
+                .SetName("ProvisionAsync() call returns store with keyMethod 'raw' and no profile.");
             yield return new TestCaseData(KeyMethod.NONE, passKey, null, true)
-                .SetName("StoreProvision call returns store with keyMethod 'none' and no profile.");
+                .SetName("ProvisionAsync() call returns store with keyMethod 'none' and no profile.");
         }
 
         [Test, TestCaseSource(nameof(CreateCasesStoreProvisioningWorks))]
@@ -85,12 +84,12 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             //Act
             Store actual = await StoreApi.ProvisionAsync(_testPathDb, keyMethod, passKey, profile, recreate);
-            
+
             //Assert
             _ = actual.storeHandle.Should().NotBe((IntPtr)0);
 
             //Clean-up
-            await StoreApi.CloseAsync(actual, remove: true);
+            _ = await StoreApi.CloseAsync(actual, remove: true);
         }
 
         private static IEnumerable<TestCaseData> CreateCasesStoreProvisioningThrows()
@@ -98,13 +97,13 @@ namespace aries_askar_dotnet_tests.AriesAskar
             string specUri = "sqlite://:memory:";
 
             yield return new TestCaseData(specUri, KeyMethod.RAW, null, "testProfile", true)
-                .SetName("StoreProvision callback throws with keyMethod 'raw' and no passkey and recreate true.");
+                .SetName("ProvisionAsync() callback throws with keyMethod 'raw' and no passkey and recreate true.");
             yield return new TestCaseData(specUri, KeyMethod.RAW, null, "testProfile", false)
-                            .SetName("StoreProvision callback throws with keyMethod 'raw' and no passkey and recreate false.");
+                            .SetName("ProvisionAsync() callback throws with keyMethod 'raw' and no passkey and recreate false.");
             yield return new TestCaseData(specUri, KeyMethod.KDF_ARGON2I, null, "testProfile", true)
-                .SetName("StoreProvision callback throws with keyMethod 'kdf_argon2i' and given passkey and recreate true.");
+                .SetName("ProvisionAsync() callback throws with keyMethod 'kdf_argon2i' and given passkey and recreate true.");
             yield return new TestCaseData(null, KeyMethod.KDF_ARGON2I, null, "testProfile", true)
-                .SetName("StoreProvision throws with specUri equals null.");
+                .SetName("ProvisionAsync() throws with specUri equals null.");
         }
 
         [Test, TestCaseSource(nameof(CreateCasesStoreProvisioningThrows))]
@@ -125,25 +124,25 @@ namespace aries_askar_dotnet_tests.AriesAskar
             string passKey = StoreApi.GenerateRawKeyAsync(seed).GetAwaiter().GetResult();
 
             yield return new TestCaseData(KeyMethod.RAW, passKey, "testProfile", true)
-                .SetName("OpenAsync call returns store with keyMethod 'raw' and recreate true.");
+                .SetName("OpenAsync() call returns store with keyMethod 'raw' and recreate true.");
             yield return new TestCaseData(KeyMethod.NONE, passKey, "testProfile", true)
-                .SetName("OpenAsync call returns store with keyMethod 'none' and recreate true.");
+                .SetName("OpenAsync() call returns store with keyMethod 'none' and recreate true.");
             yield return new TestCaseData(KeyMethod.KDF_ARGON2I, passKey, "testProfile", true)
-                .SetName("OpenAsync call returns store with keyMethod 'kdf_argon2i' and recreate true.");
+                .SetName("OpenAsync() call returns store with keyMethod 'kdf_argon2i' and recreate true.");
             yield return new TestCaseData(KeyMethod.RAW, passKey, "testProfile", false)
-                .SetName("OpenAsync call returns store with keyMethod 'raw' and recreate false.");
+                .SetName("OpenAsync() call returns store with keyMethod 'raw' and recreate false.");
             yield return new TestCaseData(KeyMethod.NONE, passKey, "testProfile", false)
-                .SetName("OpenAsync call returns store with keyMethod 'none' and recreate false.");
+                .SetName("OpenAsync() call returns store with keyMethod 'none' and recreate false.");
             yield return new TestCaseData(KeyMethod.KDF_ARGON2I, passKey, "testProfile", false)
-                .SetName("OpenAsync call returns store with keyMethod 'kdf_argon2i' and recreate false.");
+                .SetName("OpenAsync() call returns store with keyMethod 'kdf_argon2i' and recreate false.");
             yield return new TestCaseData(KeyMethod.NONE, null, null, true)
-                .SetName("OpenAsync call returns store with keyMethod 'none' and no passkey and recreate true.");
+                .SetName("OpenAsync() call returns store with keyMethod 'none' and no passkey and recreate true.");
             yield return new TestCaseData(KeyMethod.NONE, null, null, false)
-                .SetName("OpenAsync call returns store with keyMethod 'none' and no passkey and recreate false.");
+                .SetName("OpenAsync() call returns store with keyMethod 'none' and no passkey and recreate false.");
             yield return new TestCaseData(KeyMethod.RAW, passKey, null, true)
-                .SetName("OpenAsync call returns store with keyMethod 'raw' and no profile.");
+                .SetName("OpenAsync() call returns store with keyMethod 'raw' and no profile.");
             yield return new TestCaseData(KeyMethod.NONE, passKey, null, true)
-                .SetName("OpenAsync call returns store with keyMethod 'none' and no profile.");
+                .SetName("OpenAsync() call returns store with keyMethod 'none' and no profile.");
         }
 
         [Test, TestCaseSource(nameof(CreateCasesOpenAsyncWorks))]
@@ -151,9 +150,9 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             //Arrange
             Store init = await StoreApi.ProvisionAsync(_testPathDb, keyMethod, passKey, profile, recreate);
-            await init.CloseAsync();
-            init.storeHandle.Should().Be((IntPtr)0);
-           
+            _ = await init.CloseAsync();
+            _ = init.storeHandle.Should().Be((IntPtr)0);
+
             //Act
             Store actual = await StoreApi.OpenAsync(_testPathDb, keyMethod, passKey, profile);
 
@@ -161,60 +160,60 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = actual.storeHandle.Should().NotBe((IntPtr)0);
 
             //Clean-up
-            await StoreApi.CloseAsync(actual, remove: true);
+            _ = await StoreApi.CloseAsync(actual, remove: true);
         }
 
-        
+
         [Test]
-        [TestCase(TestName = "OpenAsync works on several store processes.")]
+        [TestCase(TestName = "OpenAsync() works on several store processes.")]
         public async Task OpenAsyncWorksSeveralStoreThreads()
         {
             //Arrange
 
             //Act
             Store store1 = await StoreApi.ProvisionAsync(_testPathDb, testKeyMethod, testPassKey);
-            store1.storeHandle.Should().NotBe((IntPtr)0);
+            _ = store1.storeHandle.Should().NotBe((IntPtr)0);
             Store store2 = await StoreApi.OpenAsync(_testPathDb, testKeyMethod, testPassKey);
-            store2.storeHandle.Should().NotBe((IntPtr)0);
+            _ = store2.storeHandle.Should().NotBe((IntPtr)0);
             Store store3 = await StoreApi.OpenAsync(_testPathDb, testKeyMethod, testPassKey);
-            store3.storeHandle.Should().NotBe((IntPtr)0);
-            store1.storeHandle.Should().NotBe(store2.storeHandle);
-            store1.storeHandle.Should().NotBe(store3.storeHandle);
-            store2.storeHandle.Should().NotBe(store3.storeHandle);
-            await store1.CloseAsync();
-            await store2.CloseAsync();
-            await store3.CloseAsync();
+            _ = store3.storeHandle.Should().NotBe((IntPtr)0);
+            _ = store1.storeHandle.Should().NotBe(store2.storeHandle);
+            _ = store1.storeHandle.Should().NotBe(store3.storeHandle);
+            _ = store2.storeHandle.Should().NotBe(store3.storeHandle);
+            _ = await store1.CloseAsync();
+            _ = await store2.CloseAsync();
+            _ = await store3.CloseAsync();
 
             //Clean-up
-            await StoreApi.RemoveAsync(store1, _testPathDb);
+            _ = await StoreApi.RemoveAsync(store1, _testPathDb);
         }
 
-        [Test, TestCase(TestName = "OpenAsync works and previously set entry still saved in database.")]
+        [Test, TestCase(TestName = "OpenAsync() works and previously set entry still saved in database.")]
         public async Task OpenAsyncSessionEntrysNotEmpty()
         {
             //Arrange
             Store init = await StoreApi.ProvisionAsync(_testPathDb);
             Session session = await init.StartSessionAsync();
-            await session.InsertAsync(testEntry["category"].ToString(), testEntry["name"].ToString(), testEntry["value"].ToString());
-            await session.CloseAndCommitAsync();
-            await init.CloseAsync();
-            init.storeHandle.Should().Be((IntPtr)0);
-            init.session.Should().Be(null);
+            _ = await session.InsertAsync(testEntry["category"].ToString(), testEntry["name"].ToString(), testEntry["value"].ToString());
+            _ = await session.CloseAndCommitAsync();
+            _ = await init.CloseAsync();
+            _ = init.storeHandle.Should().Be((IntPtr)0);
+            _ = init.session.Should().Be(null);
 
             //Act
             Store storeNew = await StoreApi.OpenAsync(_testPathDb);
             Session sessionNew = await storeNew.StartSessionAsync();
             IntPtr resultHandle = await sessionNew.FetchAsync(testEntry["category"].ToString(), testEntry["name"].ToString());
-            string actual = await ResultListApi.EntryListGetValueAsync(resultHandle,0);
-            
+            string actual = await ResultListApi.EntryListGetValueAsync(resultHandle, 0);
+
             //Assert
             _ = actual.Should().Be(testEntry["value"].ToString());
 
             //Clean-up
-            await StoreApi.CloseAsync(storeNew, remove: true);
+            _ = await StoreApi.CloseAsync(storeNew, remove: true);
         }
 
-        [Test, TestCase(TestName = "OpenAsync works and previously set key still saved in database.")]
+        [Test, TestCase(TestName = "OpenAsync() works and previously set key still saved in database.")]
         public async Task OpenAsyncSessionKeyNotEmpty()
         {
             //Arrange
@@ -223,11 +222,11 @@ namespace aries_askar_dotnet_tests.AriesAskar
             IntPtr testKeyHandle = await KeyApi.CreateKeyFromSeedAsync(KeyAlg.ED25519, testSeed, SeedMethod.BlsKeyGen);
             byte[] pBytesInit = await KeyApi.GetPublicBytesFromKeyAsync(testKeyHandle);
             byte[] sBytesInit = await KeyApi.GetSecretBytesFromKeyAsync(testKeyHandle);
-            await session.InsertKeyAsync(testKeyHandle, "testKey");
-            await session.CloseAndCommitAsync();
-            await init.CloseAsync();
-            init.storeHandle.Should().Be((IntPtr)0);
-            init.session.Should().Be(null);
+            _ = await session.InsertKeyAsync(testKeyHandle, "testKey");
+            _ = await session.CloseAndCommitAsync();
+            _ = await init.CloseAsync();
+            _ = init.storeHandle.Should().Be((IntPtr)0);
+            _ = init.session.Should().Be(null);
 
             //Act
             Store storeNew = await StoreApi.OpenAsync(_testPathDb);
@@ -243,15 +242,15 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = sBytesInit.Should().BeEquivalentTo(sBytesActual);
 
             //Clean-up
-            await StoreApi.CloseAsync(storeNew, remove: true);
+            _ = await StoreApi.CloseAsync(storeNew, remove: true);
         }
 
         private static IEnumerable<TestCaseData> CreateCasesOpenAsyncThrows()
         {
             yield return new TestCaseData(null)
-                .SetName("OpenAsync throws with specUri equals null.");
+                .SetName("OpenAsync() throws with specUri equals null.");
             yield return new TestCaseData("unknown:uri")
-                .SetName("OpenAsync throws with wrong specUri.");
+                .SetName("OpenAsync() throws with wrong specUri.");
         }
 
         [Test, TestCaseSource(nameof(CreateCasesOpenAsyncThrows))]
@@ -267,7 +266,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         #endregion
 
         #region remove
-        [Test, TestCase(TestName = "RemoveAsync call works and returns true.")]
+        [Test, TestCase(TestName = "RemoveAsync() call works and returns true.")]
         public async Task RemoveAsyncWorks()
         {
             //Arrange
@@ -285,9 +284,9 @@ namespace aries_askar_dotnet_tests.AriesAskar
             string uri = "sqlite://:data:";
 
             yield return new TestCaseData(null)
-                .SetName("RemoveAsync throws with no specUri provided.");
+                .SetName("RemoveAsync() throws with no specUri provided.");
             yield return new TestCaseData(uri)
-                .SetName("RemoveAsync callback throws with wrong specUri provided.");
+                .SetName("RemoveAsync() callback throws with wrong specUri provided.");
         }
 
         [Test, TestCaseSource(nameof(CreateCasesRemoveAsyncThrows))]
@@ -305,7 +304,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         #endregion
 
         #region create, get, remove profile
-        [Test, TestCase(TestName = "CreateProfileAsync call returns works and return profile.")]
+        [Test, TestCase(TestName = "CreateProfileAsync() call returns works and return profile.")]
         public async Task CreateProfileAsyncWorks()
         {
             //Arrange
@@ -319,7 +318,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = actual.Should().Be(newProfile);
         }
 
-        [Test, TestCase(TestName = "CreateProfileAsync callback call throws when creating profile with already existing name.")]
+        [Test, TestCase(TestName = "CreateProfileAsync() callback call throws when creating profile with already existing name.")]
         public async Task CreateProfileAsyncThrows()
         {
             //Arrange
@@ -333,7 +332,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = await actual.Should().ThrowAsync<Exception>();
         }
 
-        [Test, TestCase(TestName = "GetProfileNameAsync call works and returns active profile.")]
+        [Test, TestCase(TestName = "GetProfileNameAsync() call works and returns active profile.")]
         public async Task GetProfileNameAsyncWorks()
         {
             //Arrange
@@ -346,7 +345,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = actual.Should().Be(testProfile);
         }
 
-        [Test, TestCase(TestName = "GetProfileNameAsync callback throws with invalid storeHandle.")]
+        [Test, TestCase(TestName = "GetProfileNameAsync() callback throws with invalid storeHandle.")]
         public async Task GetProfileNameAsyncThrows()
         {
             //Arrange
@@ -359,7 +358,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = await actual.Should().ThrowAsync<Exception>();
         }
 
-        [Test, TestCase(TestName = "RemoveProfileAsync call works and returns true for existing profiles and false for non existing profiles.")]
+        [Test, TestCase(TestName = "RemoveProfileAsync() call works and returns true for existing profiles and false for non existing profiles.")]
         public async Task RemoveProfileAsyncWorks()
         {
             //Arrange
@@ -376,7 +375,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = actual3.Should().Be(false);
         }
 
-        [Test, TestCase(TestName = "RemoveProfileAsync call throws with no profile provided.")]
+        [Test, TestCase(TestName = "RemoveProfileAsync() call throws with no profile provided.")]
         public async Task RemoveProfileAsyncThrows()
         {
             //Arrange
@@ -401,7 +400,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             KeyMethod newTestKeyMethod = KeyMethod.RAW;
 
             yield return new TestCaseData(KeyMethod.RAW, passKey, newTestKeyMethod, newTestPassKey)
-                .SetName("RekeyAsync call works and Store can be opend with new key with keyMethod 'raw'.");
+                .SetName("RekeyAsync() call works and Store can be opend with new key with keyMethod 'raw'.");
         }
 
         [Test, TestCaseSource(nameof(CreateCasesStoreRekeyWorks))]
@@ -409,27 +408,27 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             //Arrange
             Store store = await StoreApi.ProvisionAsync(_testPathDb, testKeyMethod, testPassKey);
-            await store.CloseAsync();
-            store.storeHandle.Should().Be((IntPtr)0);
+            _ = await store.CloseAsync();
+            _ = store.storeHandle.Should().Be((IntPtr)0);
 
             store = await StoreApi.OpenAsync(_testPathDb, testKeyMethod, testPassKey);
-            store.storeHandle.Should().NotBe((IntPtr)0);
+            _ = store.storeHandle.Should().NotBe((IntPtr)0);
 
             //Act
             bool actual = await store.RekeyAsync(newTestKeyMethod, newTestPassKey);
-            await store.CloseAsync();
-            store.storeHandle.Should().Be((IntPtr)0);
+            _ = await store.CloseAsync();
+            _ = store.storeHandle.Should().Be((IntPtr)0);
             Store newStore = await StoreApi.OpenAsync(_testPathDb, newTestKeyMethod, newTestPassKey);
 
             //Assert
             _ = actual.Should().Be(true);
-            newStore.storeHandle.Should().NotBe((IntPtr)0);
+            _ = newStore.storeHandle.Should().NotBe((IntPtr)0);
 
             //Clean-up
-            await StoreApi.CloseAsync(newStore, remove: true);
+            _ = await StoreApi.CloseAsync(newStore, remove: true);
         }
 
-        [Test, TestCase(TestName = "RekeyAsync call works.")]
+        [Test, TestCase(TestName = "RekeyAsync() call works.")]
         public async Task RekeyAsyncWorks()
         {
             //Arrange
@@ -443,7 +442,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = actual.Should().Be(true);
         }
 
-        [Test, TestCase(TestName = "RekeyAsync callback throws with invalid storeHandle.")]
+        [Test, TestCase(TestName = "RekeyAsync() callback throws with invalid storeHandle.")]
         public async Task RekeyAsyncThrows()
         {
             //Arrange
@@ -461,9 +460,9 @@ namespace aries_askar_dotnet_tests.AriesAskar
         private static IEnumerable<TestCaseData> CreateCasesCloseAsyncWorks()
         {
             yield return new TestCaseData(false, false)
-                .SetName("CloseAsync works without removing store with removeStore equals false.");
+                .SetName("CloseAsync() works without removing store with removeStore equals false.");
             yield return new TestCaseData(true, true)
-                .SetName("CloseAsync works and removes store with removeStore equals true.");
+                .SetName("CloseAsync() works and removes store with removeStore equals true.");
         }
 
         [Test, TestCaseSource(nameof(CreateCasesCloseAsyncWorks))]
@@ -484,7 +483,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         #endregion
 
         #region generate raw key
-        [Test, TestCase(TestName = "GenerateRawKey call returns result string.")]
+        [Test, TestCase(TestName = "GenerateRawKeyAsync() call returns result string.")]
         public async Task StoreGenerateRawKeyWorks()
         {
             //Arrange
@@ -496,7 +495,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = actual.Should().NotBe("");
         }
 
-        [Test, TestCase(TestName = "GenerateRawKey call returns result string if seed is null.")]
+        [Test, TestCase(TestName = "GenerateRawKeyAsync() call returns result string if seed is null.")]
         public async Task StoreGenerateRawKeyWorksSeedNull()
         {
             //Arrange
@@ -508,7 +507,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = actual.Should().NotBe("");
         }
 
-        [Test, TestCase(TestName = "GenerateRawKey throws with wrong seed format provided.")]
+        [Test, TestCase(TestName = "GenerateRawKeyAsync() throws with wrong seed format provided.")]
         public async Task StoreGenerateRawKeyThrows()
         {
             //Arrange
@@ -522,7 +521,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         #endregion
 
         #region start session
-        [Test, TestCase(TestName = "StartSessionAsync works.")]
+        [Test, TestCase(TestName = "StartSessionAsync() works.")]
         public async Task StartSessionAsyncWorks()
         {
             //Arrange
@@ -537,7 +536,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = actual.Should().BeEquivalentTo(store.session);
         }
 
-        [Test, TestCase(TestName = "StartSessionAsync throws with invalid store handle.")]
+        [Test, TestCase(TestName = "StartSessionAsync() throws with invalid store handle.")]
         public async Task StartSessionAsyncThrowsInvalidStoreHandle()
         {
             //Arrange
@@ -551,7 +550,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = await actual.Should().ThrowAsync<AriesAskarException>().WithMessage("'Wrapper' error occured with ErrorCode '99' : Cannot start session from closed store.");
         }
 
-        [Test, TestCase(TestName = "StartSessionAsync throws with session already open.")]
+        [Test, TestCase(TestName = "StartSessionAsync() throws with session already open.")]
         public async Task StartSessionAsyncThrowsSessionOpen()
         {
             //Arrange
@@ -565,7 +564,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = await actual.Should().ThrowAsync<AriesAskarException>().WithMessage("'Wrapper' error occured with ErrorCode '99' : Session already opened.");
         }
 
-        [Test, TestCase(TestName = "CreateSessionWorks and returns session as session.")]
+        [Test, TestCase(TestName = "CreateSession() works and returns session as session.")]
         public async Task CreateSessionWorksAsSession()
         {
             //Arrange
@@ -581,7 +580,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = actual.storeHandle.Should().Be(store.storeHandle);
         }
 
-        [Test, TestCase(TestName = "CreateSessionWorks and returns session as transaction.")]
+        [Test, TestCase(TestName = "CreateSession() works and returns session as transaction.")]
         public async Task CreateSessionWorksAsTxn()
         {
             //Arrange
@@ -599,7 +598,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         #endregion
 
         #region start scan
-        [Test, TestCase(TestName = "StartScanAsync works.")]
+        [Test, TestCase(TestName = "StartScanAsync() works.")]
         public async Task StartScanAsyncWorks()
         {
             //Arrange
@@ -615,7 +614,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = actual.scanHandle.Should().NotBe(new IntPtr());
         }
 
-        [Test, TestCase(TestName = "StartScanAsync throws with category equals null.")]
+        [Test, TestCase(TestName = "StartScanAsync() throws with category equals null.")]
         public async Task StartScanAsyncThrows()
         {
             //Arrange
@@ -634,7 +633,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         #region SESSION
 
         #region start session
-        [Test, TestCase(TestName = "StartAsync of session works and returns active session with handle.")]
+        [Test, TestCase(TestName = "StartAsync() of session works and returns active session with handle.")]
         public async Task StartAsyncWorks()
         {
             //Arrange
@@ -648,7 +647,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = actual.sessionHandle.Should().NotBe((IntPtr)0);
         }
 
-        [Test, TestCase(TestName = "StartAsync of session throws with invalid store handle.")]
+        [Test, TestCase(TestName = "StartAsync() of session throws with invalid store handle.")]
         public async Task StartAsyncThrowsInvalidStoreHandle()
         {
             //Arrange
@@ -663,7 +662,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = await actual.Should().ThrowAsync<AriesAskarException>().WithMessage("'Wrapper' error occured with ErrorCode '99' : Cannot start session from closed store.");
         }
 
-        [Test, TestCase(TestName = "StartAsync of session throws with session already open.")]
+        [Test, TestCase(TestName = "StartAsync() of session throws with session already open.")]
         public async Task StartAsyncThrowsSessionOpen()
         {
             //Arrange
@@ -680,7 +679,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         #endregion
 
         #region count records
-        [Test, TestCase(TestName = "CountAsync works and returns counted number.")]
+        [Test, TestCase(TestName = "CountAsync() works and returns counted number.")]
         public async Task CountAsyncWorks()
         {
             //Arrange
@@ -694,10 +693,9 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             //Assert
             _ = actual.Should().Be(2);
-            Console.WriteLine(actual);
         }
 
-        [Test, TestCase(TestName = "CountAsync throws with category equals null.")]
+        [Test, TestCase(TestName = "CountAsync() throws with category equals null.")]
         public async Task CountAsyncThrows()
         {
             //Arrange
@@ -713,7 +711,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = await actual.Should().ThrowAsync<Exception>();
         }
 
-        [Test, TestCase(TestName = "CountAsync throws with session handle equals 0.")]
+        [Test, TestCase(TestName = "CountAsync() throws with session handle equals 0.")]
         public async Task CountAsyncThrowsNoHandle()
         {
             //Arrange
@@ -728,7 +726,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = await actual.Should().ThrowAsync<Exception>();
         }
 
-        [Test, TestCase(TestName = "CountAsync callback throws with invalid sessionHandle.")]
+        [Test, TestCase(TestName = "CountAsync() callback throws with invalid sessionHandle.")]
         public async Task CountAsyncThrowsInvalidHandle()
         {
             //Arrange
@@ -749,9 +747,9 @@ namespace aries_askar_dotnet_tests.AriesAskar
         private static IEnumerable<TestCaseData> CreateCasesInsertAsyncWorks()
         {
             yield return new TestCaseData(false)
-                .SetName("InsertAsync works for session.");
+                .SetName("InsertAsync() works for session.");
             yield return new TestCaseData(true)
-                .SetName("InsertAsync works for transaction.");
+                .SetName("InsertAsync() works for transaction.");
         }
         [Test, TestCaseSource(nameof(CreateCasesInsertAsyncWorks))]
         public async Task SessionInsertAsyncWorks(bool asTxn)
@@ -774,13 +772,13 @@ namespace aries_askar_dotnet_tests.AriesAskar
         private static IEnumerable<TestCaseData> CreateCasesSessionInsertAsyncThrows()
         {
             yield return new TestCaseData("testCategory", "testName", true, true)
-                .SetName("InsertAsync callback throws with inserting a duplicate record.");
+                .SetName("InsertAsync() callback throws with inserting a duplicate record.");
             yield return new TestCaseData(null, "testName", false, true)
-                .SetName("InsertAsync throws with no category provided.");
+                .SetName("InsertAsync() throws with no category provided.");
             yield return new TestCaseData("testCategory", null, false, true)
-                .SetName("InsertAsync throws with no name provided.");
+                .SetName("InsertAsync() throws with no name provided.");
             yield return new TestCaseData("testCategory", "testName", false, false)
-                .SetName("InsertAsync throws wrapper error with session handle equals 0.");
+                .SetName("InsertAsync() throws wrapper error with session handle equals 0.");
         }
 
         [Test, TestCaseSource(nameof(CreateCasesSessionInsertAsyncThrows))]
@@ -809,7 +807,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         #endregion
 
         #region remove / remove all records
-        [Test, TestCase(TestName = "RemoveAsync works for session.")]
+        [Test, TestCase(TestName = "RemoveAsync() works for session.")]
         public async Task SessionRemoveAsyncWorks()
         {
             //Arrange
@@ -833,13 +831,13 @@ namespace aries_askar_dotnet_tests.AriesAskar
             string testCategory = "testCategory";
             string testName = "testName";
             yield return new TestCaseData(null, testName, true)
-                .SetName("RemoveAsync throws for session when providing category equals null.");
+                .SetName("RemoveAsync() throws for session when providing category equals null.");
             yield return new TestCaseData(testCategory, null, true)
-                .SetName("RemoveAsync throws for session when providing name equals null.");
+                .SetName("RemoveAsync() throws for session when providing name equals null.");
             yield return new TestCaseData(testCategory, testName, true)
-                .SetName("RemoveAsync callback for session throws with trying to remove an non existing record.");
+                .SetName("RemoveAsync() callback for session throws with trying to remove an non existing record.");
             yield return new TestCaseData(testCategory, testName, false)
-                .SetName("RemoveAsync throws wrapper error for session with sessionHandle equals 0.");
+                .SetName("RemoveAsync() throws wrapper error for session with sessionHandle equals 0.");
         }
 
         [Test, TestCaseSource(nameof(CreateCasesSessionRemoveAsyncThrows))]
@@ -860,7 +858,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = await actual.Should().ThrowAsync<Exception>();
         }
 
-        [Test, TestCase(TestName = "RemoveAllAsync works for session.")]
+        [Test, TestCase(TestName = "RemoveAllAsync() works for session.")]
         public async Task SessionRemoveAllAsyncWorks()
         {
             //Arrange
@@ -880,7 +878,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = finalCount.Should().Be(0);
         }
 
-        [Test, TestCase(TestName = "RemoveAllAsync throws with no category provided.")]
+        [Test, TestCase(TestName = "RemoveAllAsync() throws with no category provided.")]
         public async Task SessionRemoveAllAsyncThrowsNoCategory()
         {
             //Arrange
@@ -894,7 +892,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = await actual.Should().ThrowAsync<Exception>();
         }
 
-        [Test, TestCase(TestName = "RemoveAllAsync throws wrapper error with session handle equals 0.")]
+        [Test, TestCase(TestName = "RemoveAllAsync() throws wrapper error with session handle equals 0.")]
         public async Task SessionRemoveAllAsyncThrowsNoHandle()
         {
             //Arrange
@@ -911,7 +909,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         #endregion
 
         #region replace records
-        [Test, TestCase(TestName = "ReplaceAsync works for session.")]
+        [Test, TestCase(TestName = "ReplaceAsync() works for session.")]
         public async Task SessionReplaceAsyncWorks()
         {
             //Arrange
@@ -947,13 +945,13 @@ namespace aries_askar_dotnet_tests.AriesAskar
         private static IEnumerable<TestCaseData> CreateCasesSessionReplaceAsyncThrows()
         {
             yield return new TestCaseData("testCategory", "newTestName", true)
-                .SetName("ReplaceAsync callback throws with trying to replace value in an non existing record.");
+                .SetName("ReplaceAsync() callback throws with trying to replace value in an non existing record.");
             yield return new TestCaseData(null, "testName", true)
-                .SetName("ReplaceAsync throws with no category provided.");
+                .SetName("ReplaceAsync() throws with no category provided.");
             yield return new TestCaseData("testCategory", null, true)
-                .SetName("ReplaceAsync throws with no name provided.");
+                .SetName("ReplaceAsync() throws with no name provided.");
             yield return new TestCaseData("testCategory", "testName", false)
-                .SetName("ReplaceAsync throws wrapper error with session handle equals 0.");
+                .SetName("ReplaceAsync() throws wrapper error with session handle equals 0.");
         }
 
         [Test, TestCaseSource(nameof(CreateCasesSessionReplaceAsyncThrows))]
@@ -977,7 +975,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = await actual.Should().ThrowAsync<Exception>();
         }
 
-        [Test, TestCase(TestName = "ReplaceAsync throws with no category name provided.")]
+        [Test, TestCase(TestName = "ReplaceAsync() throws with no category name provided.")]
         public async Task SessionReplaceAsyncThrowsNoCategory()
         {
             //Arrange
@@ -999,13 +997,13 @@ namespace aries_askar_dotnet_tests.AriesAskar
         private static IEnumerable<TestCaseData> CreateCasesFetchAsyncWorks()
         {
             yield return new TestCaseData(false, true)
-                .SetName("FetchAsync works for session with forUpdate equals true and returns an entryListHandle unequals null.");
+                .SetName("FetchAsync() works for session with forUpdate equals true and returns an entryListHandle unequals null.");
             yield return new TestCaseData(false, false)
-                .SetName("FetchAsync works for session with forUpdate equals false and returns an entryListHandle unequals null.");
+                .SetName("FetchAsync() works for session with forUpdate equals false and returns an entryListHandle unequals null.");
             yield return new TestCaseData(true, true)
-                .SetName("FetchAsync works for transaction with forUpdate equals true and returns an entryListHandle unequals null.");
+                .SetName("FetchAsync() works for transaction with forUpdate equals true and returns an entryListHandle unequals null.");
             yield return new TestCaseData(true, false)
-                .SetName("FetchAsync works for transaction with forUpdate equals false and returns an entryListHandle unequals null.");
+                .SetName("FetchAsync() works for transaction with forUpdate equals false and returns an entryListHandle unequals null.");
         }
         [Test, TestCaseSource(nameof(CreateCasesFetchAsyncWorks))]
         public async Task SessionFetchAsyncWorks(bool asTxn, bool forUpdate)
@@ -1030,11 +1028,11 @@ namespace aries_askar_dotnet_tests.AriesAskar
         private static IEnumerable<TestCaseData> CreateCasesFetchAsyncThrows()
         {
             yield return new TestCaseData("testCategory", null, true)
-                .SetName("FetchAsync throws for session with not providing record name.");
+                .SetName("FetchAsync() throws for session with not providing record name.");
             yield return new TestCaseData(null, "testName", true)
-                .SetName("FetchAsync throws for session with not providing record category.");
+                .SetName("FetchAsync() throws for session with not providing record category.");
             yield return new TestCaseData("testCategory", "testName", false)
-                .SetName("FetchAsync throws wrapper error for session with session handle equals 0.");
+                .SetName("FetchAsync() throws wrapper error for session with session handle equals 0.");
         }
         [Test, TestCaseSource(nameof(CreateCasesFetchAsyncThrows))]
         public async Task SessionFetchAsyncThrows(string category, string name, bool sessionHandleExisting)
@@ -1061,13 +1059,13 @@ namespace aries_askar_dotnet_tests.AriesAskar
         private static IEnumerable<TestCaseData> CreateCasesFetchAllAsyncWorks()
         {
             yield return new TestCaseData(false, true)
-                .SetName("FetchAllAsync works for session with forUpdate equals true and returns an entryListHandle unequals null.");
+                .SetName("FetchAllAsync() works for session with forUpdate equals true and returns an entryListHandle unequals null.");
             yield return new TestCaseData(false, false)
-                .SetName("FetchAllAsync works for session with forUpdate equals false and returns an entryListHandle unequals null.");
+                .SetName("FetchAllAsync() works for session with forUpdate equals false and returns an entryListHandle unequals null.");
             yield return new TestCaseData(true, true)
-                .SetName("FetchAllAsync works for transaction with forUpdate equals true and returns an entryListHandle unequals null.");
+                .SetName("FetchAllAsync() works for transaction with forUpdate equals true and returns an entryListHandle unequals null.");
             yield return new TestCaseData(true, false)
-                .SetName("FetchAllAsync works for transaction with forUpdate equals false and returns an entryListHandle unequals null.");
+                .SetName("FetchAllAsync() works for transaction with forUpdate equals false and returns an entryListHandle unequals null.");
         }
         [Test, TestCaseSource(nameof(CreateCasesFetchAllAsyncWorks))]
         public async Task SessionFetchAllAsyncWorks(bool asTxn, bool forUpdate)
@@ -1100,9 +1098,9 @@ namespace aries_askar_dotnet_tests.AriesAskar
         private static IEnumerable<TestCaseData> CreateCasesFetchAllAsyncThrows()
         {
             yield return new TestCaseData(null, true)
-                .SetName("FetchAllAsync throws with category equals null.");
+                .SetName("FetchAllAsync() throws with category equals null.");
             yield return new TestCaseData("testCategory", false)
-                .SetName("FetchAllAsync throws wrapper error for session with session handle equals 0.");
+                .SetName("FetchAllAsync() throws wrapper error for session with session handle equals 0.");
         }
         [Test, TestCaseSource(nameof(CreateCasesFetchAllAsyncThrows))]
         public async Task SessionFetchAllAsyncThrows(string category, bool sessionHandleExisting)
@@ -1126,9 +1124,9 @@ namespace aries_askar_dotnet_tests.AriesAskar
         private static IEnumerable<TestCaseData> CreateCasesInsertKeyAsyncWorks()
         {
             yield return new TestCaseData(false)
-                .SetName("InsertKeyAsync works for session.");
+                .SetName("InsertKeyAsync() works for session.");
             yield return new TestCaseData(true)
-                .SetName("InsertKeyAsync works for transaction.");
+                .SetName("InsertKeyAsync() works for transaction.");
         }
         [Test, TestCaseSource(nameof(CreateCasesInsertKeyAsyncWorks))]
         public async Task SessionInsertKeyAsyncWorks(bool asTxn)
@@ -1159,13 +1157,13 @@ namespace aries_askar_dotnet_tests.AriesAskar
             IntPtr validKeyHandle = KeyApi.CreateKeyAsync(KeyAlg.A128CBC_HS256, true).GetAwaiter().GetResult();
 
             yield return new TestCaseData(validKeyHandle, null, false, true)
-                .SetName("InsertKeyAsync throws with no name provided.");
+                .SetName("InsertKeyAsync() throws with no name provided.");
             yield return new TestCaseData(new IntPtr(), testName, false, true)
-                .SetName("InsertKeyAsync throws with invalid keyHandle.");
+                .SetName("InsertKeyAsync() throws with invalid keyHandle.");
             yield return new TestCaseData(validKeyHandle, testName, true, true)
-                .SetName("InsertKeyAsync callback throws with inserting duplicate key.");
+                .SetName("InsertKeyAsync() callback throws with inserting duplicate key.");
             yield return new TestCaseData(validKeyHandle, testName, false, false)
-                .SetName("InsertKeyAsync throws wrapper erro with session handle equals 0.");
+                .SetName("InsertKeyAsync() throws wrapper erro with session handle equals 0.");
         }
         [Test, TestCaseSource(nameof(CreateCasesInsertKeyAsyncThrows))]
         public async Task SessionInsertKeyAsyncThrows(IntPtr keyHandle, string testName, bool doubleInsert, bool sessionHandleExisting)
@@ -1195,9 +1193,9 @@ namespace aries_askar_dotnet_tests.AriesAskar
         private static IEnumerable<TestCaseData> CreateCasesUpdateKeyAsyncWorks()
         {
             yield return new TestCaseData(false)
-                .SetName("UpdateKeyAsync works for session resulting in changed metadata and tags.");
+                .SetName("UpdateKeyAsync() works for session resulting in changed metadata and tags.");
             yield return new TestCaseData(true)
-                .SetName("UpdateKeyAsync works for transaction resulting in changed metadata and tags.");
+                .SetName("UpdateKeyAsync() works for transaction resulting in changed metadata and tags.");
         }
         [Test, TestCaseSource(nameof(CreateCasesUpdateKeyAsyncWorks))]
         public async Task SessionUpdateKeyAsyncWorks(bool asTxn)
@@ -1235,11 +1233,11 @@ namespace aries_askar_dotnet_tests.AriesAskar
         private static IEnumerable<TestCaseData> CreateCasesUpdateKeyAsyncThrows()
         {
             yield return new TestCaseData(null, true)
-                .SetName("UpdateKeyAsync throws with no key name provided.");
+                .SetName("UpdateKeyAsync() throws with no key name provided.");
             yield return new TestCaseData("", true)
-                .SetName("UpdateKeyAsync callback throws with providing wrong keyName to non existing key.");
+                .SetName("UpdateKeyAsync() callback throws with providing wrong keyName to non existing key.");
             yield return new TestCaseData("testKeyName", false)
-                .SetName("UpdateKeyAsync throws wrapper error with session handle equals 0.");
+                .SetName("UpdateKeyAsync() throws wrapper error with session handle equals 0.");
         }
         [Test, TestCaseSource(nameof(CreateCasesUpdateKeyAsyncThrows))]
         public async Task SessionUpdateKeyAsyncThrows(string testCaseKeyName, bool sessionHandleExisting)
@@ -1270,9 +1268,9 @@ namespace aries_askar_dotnet_tests.AriesAskar
         private static IEnumerable<TestCaseData> CreateCasesRemoveKeyAsyncWorks()
         {
             yield return new TestCaseData(false)
-                .SetName("RemoveKeyAsync works for session.");
+                .SetName("RemoveKeyAsync() works for session.");
             yield return new TestCaseData(true)
-                .SetName("RemoveKeyAsync works for transaction.");
+                .SetName("RemoveKeyAsync() works for transaction.");
         }
         [Test, TestCaseSource(nameof(CreateCasesRemoveKeyAsyncWorks))]
         public async Task SessionRemoveKeyAsyncWorks(bool asTxn)
@@ -1300,15 +1298,15 @@ namespace aries_askar_dotnet_tests.AriesAskar
         {
             string testCaseKeyName = "testKeyName";
             yield return new TestCaseData(false, null, false, true)
-                .SetName("RemoveKeyAsync throws for session with invalid keyName.");
+                .SetName("RemoveKeyAsync() throws for session with invalid keyName.");
             yield return new TestCaseData(true, null, false, true)
-                .SetName("RemoveKeyAsync throws for transaction with invalid keyName.");
+                .SetName("RemoveKeyAsync() throws for transaction with invalid keyName.");
             yield return new TestCaseData(false, testCaseKeyName, true, true)
-                .SetName("RemoveKeyAsync callback throws for session with trying to remove a already removed key.");
+                .SetName("RemoveKeyAsync() callback throws for session with trying to remove a already removed key.");
             yield return new TestCaseData(true, testCaseKeyName, true, true)
-                .SetName("RemoveKeyAsync callback throws for transaction with trying to remove a already removed key.");
+                .SetName("RemoveKeyAsync() callback throws for transaction with trying to remove a already removed key.");
             yield return new TestCaseData(false, testCaseKeyName, false, false)
-                .SetName("RemoveKeyAsync throws wrapper error with session handle equals 0.");
+                .SetName("RemoveKeyAsync() throws wrapper error with session handle equals 0.");
         }
         [Test, TestCaseSource(nameof(CreateCasesRemoveKeyAsyncThrows))]
         public async Task SessionRemoveKeyAsyncThrows(bool asTxn, string testCaseInputKeyName, bool doubleRemove, bool sessionHandleExisting)
@@ -1342,13 +1340,13 @@ namespace aries_askar_dotnet_tests.AriesAskar
         private static IEnumerable<TestCaseData> CreateCasesFetchKeyAsyncWorks()
         {
             yield return new TestCaseData(false, true)
-                .SetName("FetchKeyAsync works for session with forUpdate equals true and returns the inserted key.");
+                .SetName("FetchKeyAsync() works for session with forUpdate equals true and returns the inserted key.");
             yield return new TestCaseData(false, false)
-                .SetName("FetchKeyAsync works for session with forUpdate equals false and returns the inserted key.");
+                .SetName("FetchKeyAsync() works for session with forUpdate equals false and returns the inserted key.");
             yield return new TestCaseData(true, true)
-                .SetName("FetchKeyAsync works for transaction with forUpdate equals true and returns the inserted key.");
+                .SetName("FetchKeyAsync() works for transaction with forUpdate equals true and returns the inserted key.");
             yield return new TestCaseData(true, false)
-                .SetName("FetchKeyAsync works for transaction with forUpdate equals false and returns the inserted key.");
+                .SetName("FetchKeyAsync() works for transaction with forUpdate equals false and returns the inserted key.");
         }
         [Test, TestCaseSource(nameof(CreateCasesFetchKeyAsyncWorks))]
         public async Task SessionFetchKeyAsyncWorks(bool asTxn, bool forUpdate)
@@ -1373,9 +1371,9 @@ namespace aries_askar_dotnet_tests.AriesAskar
         private static IEnumerable<TestCaseData> CreateCasesFetchKeyAsyncThrows()
         {
             yield return new TestCaseData(null, true)
-                .SetName("FetchKeyAsync throws for session with not providing key name.");
+                .SetName("FetchKeyAsync() throws for session with not providing key name.");
             yield return new TestCaseData("testKeyName", false)
-                .SetName("FetchKeyAsync throws wrapper error for session with session handle equals 0.");
+                .SetName("FetchKeyAsync() throws wrapper error for session with session handle equals 0.");
         }
         [Test, TestCaseSource(nameof(CreateCasesFetchKeyAsyncThrows))]
         public async Task SessionFetchKeyAsyncThrows(string testCaseKeyName, bool sessionHandleExisting)
@@ -1401,9 +1399,9 @@ namespace aries_askar_dotnet_tests.AriesAskar
         private static IEnumerable<TestCaseData> CreateCasesFetchAllKeyAsyncWorks()
         {
             yield return new TestCaseData(false)
-                .SetName("FetchAllKeyAsync works for session.");
+                .SetName("FetchAllKeyAsync() works for session.");
             yield return new TestCaseData(true)
-                .SetName("FetchAllKeyAsync works for transaction.");
+                .SetName("FetchAllKeyAsync() works for transaction.");
         }
         [Test, TestCaseSource(nameof(CreateCasesFetchAllKeyAsyncWorks))]
         public async Task SessionFetchAllKeyAsyncWorks(bool asTxn)
@@ -1438,7 +1436,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         private static IEnumerable<TestCaseData> CreateCasesFetchAllKeyAsyncThrows()
         {
             yield return new TestCaseData(false)
-                .SetName("FetchAllKeyAsync throws wrapper error for session with session handle equals 0.");
+                .SetName("FetchAllKeyAsync() throws wrapper error for session with session handle equals 0.");
         }
         [Test, TestCaseSource(nameof(CreateCasesFetchAllKeyAsyncThrows))]
         public async Task SessionFetchAllKeyAsyncThrows(bool sessionHandleExisting)
@@ -1467,9 +1465,9 @@ namespace aries_askar_dotnet_tests.AriesAskar
         private static IEnumerable<TestCaseData> CreateCasesCloseAndCommitAsyncWorks()
         {
             yield return new TestCaseData(false)
-                .SetName("CloseAndCommitAsyncWorks works for session.");
+                .SetName("CloseAndCommitAsync() works for session.");
             yield return new TestCaseData(true)
-                .SetName("CloseAndCommitAsyncWorks works for transaction.");
+                .SetName("CloseAndCommitAsync() works for transaction.");
         }
 
         [Test, TestCaseSource(nameof(CreateCasesCloseAndCommitAsyncWorks))]
@@ -1487,7 +1485,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = session.sessionHandle.Should().Be(new IntPtr());
         }
 
-        [Test, TestCase(TestName = "CloseAndCommitAsyncThrows for session handle equals 0.")]
+        [Test, TestCase(TestName = "CloseAndCommitAsync() throws for session handle equals 0.")]
         public async Task CloseAndCommitAsyncThrowsSessionHandle0()
         {
             //Arrange
@@ -1502,7 +1500,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = await actual.Should().ThrowAsync<Exception>();
         }
 
-        [Test, TestCase(TestName = "CloseAndCommitAsyncThrows for session equals null.")]
+        [Test, TestCase(TestName = "CloseAndCommitAsync() throws for session equals null.")]
         public async Task CloseAndCommitAsyncThrowsSessionNull()
         {
             //Arrange
@@ -1520,9 +1518,9 @@ namespace aries_askar_dotnet_tests.AriesAskar
         private static IEnumerable<TestCaseData> CreateCasesCloseAndRollbackAsyncWorks()
         {
             yield return new TestCaseData(false)
-                .SetName("CloseAndRollbackAsyncWorks works for session.");
+                .SetName("CloseAndRollbackAsync() works for session.");
             yield return new TestCaseData(true)
-                .SetName("CloseAndRollbackAsyncWorks works for transaction.");
+                .SetName("CloseAndRollbackAsync() works for transaction.");
         }
 
         [Test, TestCaseSource(nameof(CreateCasesCloseAndRollbackAsyncWorks))]
@@ -1540,7 +1538,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = session.sessionHandle.Should().Be(new IntPtr());
         }
 
-        [Test, TestCase(TestName = "CloseAndRollbackAsyncThrows for session handle equals 0.")]
+        [Test, TestCase(TestName = "CloseAndRollbackAsync() throws for session handle equals 0.")]
         public async Task CloseAndRollbackAsyncThrowsSessionHandle0()
         {
             //Arrange
@@ -1555,7 +1553,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = await actual.Should().ThrowAsync<Exception>();
         }
 
-        [Test, TestCase(TestName = "CloseAndRollbackAsyncThrows for session equals null.")]
+        [Test, TestCase(TestName = "CloseAndRollbackAsync() throws for session equals null.")]
         public async Task CloseAndRollbackAsyncThrowsSessionNull()
         {
             //Arrange
@@ -1580,11 +1578,11 @@ namespace aries_askar_dotnet_tests.AriesAskar
             string testTag = $"{{ \"~plaintag\": \"a\", \"enctag\": \"b\"}}";
 
             yield return new TestCaseData(testTag, 0, -1, testProfile, 3)
-                .SetName("NextScanAsync works with no offset and limit and returns entryListHandle to scanned records.");
+                .SetName("NextScanAsync() works with no offset and limit and returns entryListHandle to scanned records.");
             yield return new TestCaseData(testTag, 1, -1, testProfile, 2)
-                .SetName("NextScanAsync works with offset of 1 and returns entryListHandle to the scanned records (2 of 3 elements).");
+                .SetName("NextScanAsync() works with offset of 1 and returns entryListHandle to the scanned records (2 of 3 elements).");
             yield return new TestCaseData(testTag, 0, 1, testProfile, 1)
-                .SetName("NextScanAsync works with offset 0 and limit of 1 and returns entryListHandle to the scanned records (1 of 3 elements).");
+                .SetName("NextScanAsync() works with offset 0 and limit of 1 and returns entryListHandle to the scanned records (1 of 3 elements).");
         }
         [Test, TestCaseSource(nameof(CreateCasesNextScanAsyncWorks))]
         public async Task NextScanAsyncWorks(string tag, long offset, long limit, string profile, int expected)
@@ -1628,7 +1626,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         #endregion
 
         #region free scan
-        [Test, TestCase(TestName = "FreeScanAsync works.")]
+        [Test, TestCase(TestName = "FreeScanAsync() works.")]
         public async Task FreeScanAsyncWorks()
         {
             //Arrange

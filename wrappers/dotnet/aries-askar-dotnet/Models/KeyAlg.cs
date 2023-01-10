@@ -1,10 +1,15 @@
-﻿namespace aries_askar_dotnet.Models
+﻿using System;
+
+namespace aries_askar_dotnet.Models
 {
     /// <summary>
-    /// Converts the value of KeyAlg to the corresponding string representation for the backend.
+    /// Converter for <see cref ="KeyAlg"/> and its corresponding string representation for the backend.
     /// </summary>
     public static class KeyAlgConverter
     {
+        /// <summary>
+        /// Converts the value of <see cref ="KeyAlg"/> to the corresponding string representation for the backend.
+        /// </summary>
         public static string ToKeyAlgString(this KeyAlg keyAlg)
         {
             switch (keyAlg)
@@ -25,12 +30,15 @@
                 case KeyAlg.K256: return "k256";
                 case KeyAlg.P256: return "p256";
                 default: return null;
-            };
+            }
         }
 
         /// <summary>
-        /// Converts the string representation to the value of KeyAlg.
+        /// Converts the string representation to the value of <see cref ="KeyAlg"/>.
         /// </summary>
+        /// <param name="keyAlgString">string representation of the key algorithm.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">Throws when <paramref name="keyAlgString"/> is invalid key algorithm.</exception>
         public static KeyAlg ToKeyAlg(string keyAlgString)
         {
             keyAlgString = keyAlgString.ToLower();
@@ -51,10 +59,13 @@
                 case "x25519": return KeyAlg.X25519;
                 case "k256": return KeyAlg.K256;
                 case "p256": return KeyAlg.P256;
-                default: throw new System.ArgumentException($"Invalid argument provided for keyAlg string: {keyAlgString}");
-            };
+                default: throw new ArgumentException($"Invalid argument provided for keyAlg string: {keyAlgString}");
+            }
         }
 
+        /// <summary>
+        /// Converts the value of <see cref ="KeyAlg"/> to the corresponding string representation for the backend.
+        /// </summary>
         public static string ToJwkCrvString(this KeyAlg keyAlg)
         {
             switch (keyAlg)
@@ -75,12 +86,15 @@
                 case KeyAlg.K256: return "K256";
                 case KeyAlg.P256: return "P256";
                 default: return null;
-            };
+            }
         }
 
         /// <summary>
-        /// Converts the string representation to the value of KeyAlg.
+        /// Converts the string representation to the value of <see cref ="KeyAlg"/>.
         /// </summary>
+        /// <param name="keyAlgString">string representation of the key algorithm.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">Throws when <paramref name="keyAlgString"/> is invalid key algorithm.</exception>
         public static KeyAlg ToKeyAlgJwkCrv(string keyAlgString)
         {
             keyAlgString = keyAlgString.ToUpper();
@@ -102,7 +116,7 @@
                 case "K256": return KeyAlg.K256;
                 case "P256": return KeyAlg.P256;
                 default: throw new System.ArgumentException($"Invalid argument provided for keyAlg string: {keyAlgString}");
-            };
+            }
         }
     }
 

@@ -17,6 +17,9 @@
         }
     }
 
+    /// <summary>
+    /// Supported seed methods.
+    /// </summary>
     public enum SeedMethod
     {
         BlsKeyGen

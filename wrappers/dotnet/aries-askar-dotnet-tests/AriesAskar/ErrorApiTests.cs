@@ -1,5 +1,4 @@
 using aries_askar_dotnet.AriesAskar;
-using aries_askar_dotnet.Models;
 using FluentAssertions;
 using NUnit.Framework;
 using System.Threading.Tasks;
@@ -9,8 +8,8 @@ namespace aries_askar_dotnet_tests.AriesAskar
     public class ErrorApiTests
     {
         [Test]
-        [TestCase(TestName = "GetCurrentErrorAsync returns the json of an empty error.")]
-        public async Task GetCurrentError()
+        [TestCase(TestName = "GetCurrentErrorAsync() returns the JSON string of an empty error.")]
+        public async Task GetCurrentErrorAsync()
         {
             //Arrange
             //Act

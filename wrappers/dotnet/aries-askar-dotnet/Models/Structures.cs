@@ -4,7 +4,7 @@ using System.Text;
 
 namespace aries_askar_dotnet.Models
 {
-    public static class Structures
+    internal static class Structures
     {
         [StructLayout(LayoutKind.Sequential)]
         public struct FfiStr
