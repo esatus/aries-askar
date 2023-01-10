@@ -7,13 +7,11 @@
     {
         public static string ToSeedMethodString(this SeedMethod keyAlg)
         {
-            switch (keyAlg)
+            return keyAlg switch
             {
-                case SeedMethod.BlsKeyGen:
-                    return "bls_keygen";
-                default:
-                    return null;
-            }
+                SeedMethod.BlsKeyGen => "bls_keygen",
+                _ => null,
+            };
         }
     }
 

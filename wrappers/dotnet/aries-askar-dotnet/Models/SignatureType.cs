@@ -12,13 +12,13 @@ namespace aries_askar_dotnet.Models
         /// </summary>
         public static string ToSigTypeString(this SignatureType sigType)
         {
-            switch (sigType)
+            return sigType switch
             {
-                case SignatureType.EdDSA: return "EDDSA";
-                case SignatureType.ES256: return "ES256";
-                case SignatureType.ES256K: return "ES256K";
-                default: return null;
-            }
+                SignatureType.EdDSA => "EDDSA",
+                SignatureType.ES256 => "ES256",
+                SignatureType.ES256K => "ES256K",
+                _ => null,
+            };
         }
 
         /// <summary>
@@ -30,13 +30,13 @@ namespace aries_askar_dotnet.Models
         public static SignatureType ToSigType(string sigTypeString)
         {
             sigTypeString = sigTypeString.ToUpper();
-            switch (sigTypeString)
+            return sigTypeString switch
             {
-                case "EDDSA": return SignatureType.EdDSA;
-                case "ES256": return SignatureType.ES256;
-                case "ES256K": return SignatureType.ES256K;
-                default: throw new ArgumentException($"Invalid argument provided for signatureType string: {sigTypeString}");
-            }
+                "EDDSA" => SignatureType.EdDSA,
+                "ES256" => SignatureType.ES256,
+                "ES256K" => SignatureType.ES256K,
+                _ => throw new ArgumentException($"Invalid argument provided for signatureType string: {sigTypeString}"),
+            };
         }
     }
     /// <summary>
