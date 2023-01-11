@@ -1087,7 +1087,6 @@ namespace aries_askar_dotnet.AriesAskar
                 throw AriesAskarException.FromSdkError(error);
             }
             return await taskCompletionSource.Task;
-            //return new EntryList(await taskCompletionSource.Task);
         }
 
         /// <summary>

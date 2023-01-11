@@ -1157,7 +1157,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         private static IEnumerable<TestCaseData> CryptoBoxAsyncCases()
         {
             yield return new TestCaseData(KeyAlg.X25519)
-                .SetName("CryptoBoxAsync() works and encrypts the message with key algorithm X25519.");
+                .SetName("CryptoBoxAsync() works and encrypts the message as string with key algorithm X25519.");
         }
 
         [Test, TestCaseSource(nameof(CryptoBoxAsyncErrorCases)), Category("Crypto")]
@@ -1192,7 +1192,76 @@ namespace aries_askar_dotnet_tests.AriesAskar
         private static IEnumerable<TestCaseData> CryptoBoxAsyncErrorCases()
         {
             yield return new TestCaseData(KeyAlg.A256GCM, KeyAlg.A256GCM)
-                .SetName("CryptoBoxAsync() throws an AriesAskarException if the provided key algorithm is not X25519.");
+                .SetName("CryptoBoxAsync() throws an AriesAskarException if the provided key algorithm is not X25519 with message as string.");
+        }
+
+        [Test, TestCaseSource(nameof(CryptoBoxAsync2Cases)), Category("Crypto")]
+        public async Task CryptoBoxAsync2Tests(KeyAlg testKeyAlg)
+        {
+            KeyAlg keyRecipientAlg = testKeyAlg;
+            bool testEphemeral = true;
+            IntPtr testRecipientHandle = await KeyApi.CreateKeyAsync(
+                    keyRecipientAlg,
+                    testEphemeral);
+
+            KeyAlg keySenderAlg = testKeyAlg;
+            IntPtr testSenderHandle = await KeyApi.CreateKeyAsync(
+                    keySenderAlg,
+                    testEphemeral);
+
+            byte[] testMessage = UTF8Encoding.UTF8.GetBytes("testMessage");
+            byte[] testNonce = await KeyApi.CreateCryptoBoxRandomNonceAsync();
+
+            //Act
+            byte[] actual = await KeyApi.CryptoBoxAsync(
+                testRecipientHandle,
+                testSenderHandle,
+                testMessage,
+                testNonce);
+
+            //Assert
+            _ = actual.Length.Should().NotBe(0);
+        }
+
+        private static IEnumerable<TestCaseData> CryptoBoxAsync2Cases()
+        {
+            yield return new TestCaseData(KeyAlg.X25519)
+                .SetName("CryptoBoxAsync() works and encrypts the message as byte array with key algorithm X25519.");
+        }
+
+        [Test, TestCaseSource(nameof(CryptoBoxAsync2ErrorCases)), Category("Crypto")]
+        public async Task CryptoBoxAsync2ErrorTests(KeyAlg testKeyAlgRecip, KeyAlg testKeyAlgSend)
+        {
+            // Arrange
+            KeyAlg keyRecipientAlg = testKeyAlgRecip;
+            bool testEphemeral = true;
+            IntPtr testRecipientHandle = await KeyApi.CreateKeyAsync(
+                    keyRecipientAlg,
+                    testEphemeral);
+
+            KeyAlg keySenderAlg = testKeyAlgSend;
+            IntPtr testSenderHandle = await KeyApi.CreateKeyAsync(
+                    keySenderAlg,
+                    testEphemeral);
+
+            byte[] testMessage = UTF8Encoding.UTF8.GetBytes("testMessage");
+            byte[] testNonce = await KeyApi.CreateCryptoBoxRandomNonceAsync();
+
+            //Act
+            Func<Task<byte[]>> func = async () => await KeyApi.CryptoBoxAsync(
+                testRecipientHandle,
+                testSenderHandle,
+                testMessage,
+                testNonce);
+
+            //Assert
+            _ = await func.Should().ThrowAsync<AriesAskarException>();
+        }
+
+        private static IEnumerable<TestCaseData> CryptoBoxAsync2ErrorCases()
+        {
+            yield return new TestCaseData(KeyAlg.A256GCM, KeyAlg.A256GCM)
+                .SetName("CryptoBoxAsync() throws an AriesAskarException if the provided key algorithm is not X25519 with message as byte array.");
         }
         #endregion
 
@@ -1279,6 +1348,90 @@ namespace aries_askar_dotnet_tests.AriesAskar
             yield return new TestCaseData()
                 .SetName("OpenCryptoBoxAsync() throws an AriesAskarException if the provided handles are invalid.");
         }
+
+        /**  - - - - - - - - - - - - - - - - - -- **/
+        [Test, TestCaseSource(nameof(OpenCryptoBoxBytesAsyncCases)), Category("Crypto")]
+        public async Task OpenCryptoBoxBytesAsyncTests(KeyAlg testKeyAlg)
+        {
+            //Arrange
+            KeyAlg keyRecipientAlg = KeyAlg.X25519;
+            bool testEphemeral = true;
+            IntPtr testRecipientHandle = await KeyApi.CreateKeyAsync(
+                    keyRecipientAlg,
+                    testEphemeral);
+
+            KeyAlg keySenderAlg = KeyAlg.X25519;
+            IntPtr testSenderHandle = await KeyApi.CreateKeyAsync(
+                    keySenderAlg,
+                    testEphemeral);
+
+            byte[] testMessage = UTF8Encoding.UTF8.GetBytes("testMessage");
+            byte[] testNonce = await KeyApi.CreateCryptoBoxRandomNonceAsync();
+
+            byte[] testBox = await KeyApi.CryptoBoxAsync(
+                testRecipientHandle,
+                testSenderHandle,
+                testMessage,
+                testNonce);
+
+            //Act
+            byte[] actual = await KeyApi.OpenCryptoBoxBytesAsync(
+                testRecipientHandle,
+                testSenderHandle,
+                testBox,
+                testNonce);
+
+            //Assert
+            _ = actual.Should().BeEquivalentTo(testMessage);
+        }
+
+        private static IEnumerable<TestCaseData> OpenCryptoBoxBytesAsyncCases()
+        {
+            yield return new TestCaseData(KeyAlg.X25519)
+                .SetName("OpenCryptoBoxBytesAsync() works and decrypts the message.");
+        }
+
+        [Test, TestCaseSource(nameof(OpenCryptoBoxBytesAsyncErrorCases)), Category("Crypto")]
+        public async Task OpenCryptoBoxBytesAsyncErrorTests()
+        {
+            // Arrange
+            KeyAlg keyRecipientAlg = KeyAlg.X25519;
+            bool testEphemeral = true;
+            IntPtr testRecipientHandle = await KeyApi.CreateKeyAsync(
+                    keyRecipientAlg,
+                    testEphemeral);
+
+            KeyAlg keySenderAlg = KeyAlg.X25519;
+            IntPtr testSenderHandle = await KeyApi.CreateKeyAsync(
+                    keySenderAlg,
+                    testEphemeral);
+
+            byte[] testMessage = UTF8Encoding.UTF8.GetBytes("testMessage");
+            byte[] testNonce = await KeyApi.CreateCryptoBoxRandomNonceAsync();
+
+            byte[] testBox = await KeyApi.CryptoBoxAsync(
+                testRecipientHandle,
+                testSenderHandle,
+                testMessage,
+                testNonce);
+
+            //Act
+            Func<Task<byte[]>> func = async () => await KeyApi.OpenCryptoBoxBytesAsync(
+                new IntPtr(),
+                new IntPtr(),
+                testBox,
+                testNonce);
+
+            //Assert
+            _ = await func.Should().ThrowAsync<AriesAskarException>();
+        }
+
+        private static IEnumerable<TestCaseData> OpenCryptoBoxBytesAsyncErrorCases()
+        {
+            yield return new TestCaseData()
+                .SetName("OpenCryptoBoxBytesAsync() throws an AriesAskarException if the provided handles are invalid.");
+        }
+
         #endregion
 
         #region SealCryptoBoxAsync
@@ -1306,7 +1459,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         private static IEnumerable<TestCaseData> SealCryptoBoxAsyncCases()
         {
             yield return new TestCaseData(KeyAlg.X25519)
-                .SetName("SealCryptoBoxAsync() works and encrypts the message.");
+                .SetName("SealCryptoBoxAsync() works and encrypts the message string.");
         }
 
         [Test, TestCaseSource(nameof(SealCryptoBoxAsyncErrorCases)), Category("Crypto")]
@@ -1329,8 +1482,58 @@ namespace aries_askar_dotnet_tests.AriesAskar
         private static IEnumerable<TestCaseData> SealCryptoBoxAsyncErrorCases()
         {
             yield return new TestCaseData()
-                .SetName("SealCryptoBoxAsync() throws an AriesAskarException if the provided handles are invalid.");
+                .SetName("SealCryptoBoxAsync() throws an AriesAskarException if the provided handles are invalid with message as string.");
         }
+
+        [Test, TestCaseSource(nameof(SealCryptoBoxAsync2Cases)), Category("Crypto")]
+        public async Task SealCryptoBoxAsync2Tests(KeyAlg testKeyAlg)
+        {
+            // Arrange
+            bool testEphemeral = true;
+            IntPtr testKeyHandle = await KeyApi.CreateKeyAsync(
+                    testKeyAlg,
+                    testEphemeral);
+
+            byte[] testMessage = UTF8Encoding.UTF8.GetBytes("testMessage");
+
+            // Act
+            byte[] actual = await KeyApi.SealCryptoBoxAsync(
+                testKeyHandle,
+                testMessage);
+
+            // Assert
+            _ = actual.Length.Should().NotBe(0);
+        }
+
+        private static IEnumerable<TestCaseData> SealCryptoBoxAsync2Cases()
+        {
+            yield return new TestCaseData(KeyAlg.X25519)
+                .SetName("SealCryptoBoxAsync() works and encrypts the message byte array.");
+        }
+
+        [Test, TestCaseSource(nameof(SealCryptoBoxAsync2ErrorCases)), Category("Crypto")]
+        public async Task SealCryptoBoxAsync2ErrorTests()
+        {
+            //Arrange
+            IntPtr testKeyHandle = new();
+
+            byte[] testMessage = UTF8Encoding.UTF8.GetBytes("testMessage");
+
+            //Act
+            Func<Task<byte[]>> func = async () => await KeyApi.SealCryptoBoxAsync(
+                testKeyHandle,
+                testMessage);
+
+            //Assert
+            _ = await func.Should().ThrowAsync<AriesAskarException>();
+        }
+
+        private static IEnumerable<TestCaseData> SealCryptoBoxAsync2ErrorCases()
+        {
+            yield return new TestCaseData()
+                .SetName("SealCryptoBoxAsync() throws an AriesAskarException if the provided handles are invalid with message as byte array.");
+        }
+
         #endregion
 
         #region OpenSealCryptoBoxAsync
@@ -1395,6 +1598,68 @@ namespace aries_askar_dotnet_tests.AriesAskar
             yield return new TestCaseData()
                 .SetName("OpenSealCryptoBoxAsync() throws an AriesAskarException if the provided handles are invalid.");
         }
+
+        [Test, TestCaseSource(nameof(OpenSealCryptoBoxBytesAsyncCases)), Category("Crypto")]
+        public async Task OpenSealCryptoBoxBytesAsyncTests(KeyAlg testKeyAlg)
+        {
+            //Arrange
+            KeyAlg keyAlg = KeyAlg.X25519;
+            bool testEphemeral = true;
+            IntPtr testKeyHandle = await KeyApi.CreateKeyAsync(
+                    keyAlg,
+                    testEphemeral);
+
+            byte[] testMessage = UTF8Encoding.UTF8.GetBytes("testMessage");
+
+            byte[] sealedBox = await KeyApi.SealCryptoBoxAsync(
+                testKeyHandle,
+                testMessage);
+            //Act
+            byte[] actual = await KeyApi.OpenSealCryptoBoxBytesAsync(
+                testKeyHandle,
+                sealedBox);
+
+            //Assert
+            _ = actual.Should().BeEquivalentTo(testMessage);
+        }
+
+        private static IEnumerable<TestCaseData> OpenSealCryptoBoxBytesAsyncCases()
+        {
+            yield return new TestCaseData(KeyAlg.X25519)
+                .SetName("OpenSealCryptoBoxBytesAsync() works and decrypts the message.");
+        }
+
+        [Test, TestCaseSource(nameof(OpenSealCryptoBoxBytesAsyncErrorCases)), Category("Crypto")]
+        public async Task OpenSealCryptoBoxBytesAsyncErrorTests()
+        {
+            //Arrange
+            KeyAlg keyAlg = KeyAlg.X25519;
+            bool testEphemeral = true;
+            IntPtr testKeyHandle = await KeyApi.CreateKeyAsync(
+                    keyAlg,
+                    testEphemeral);
+
+            byte[] testMessage = UTF8Encoding.UTF8.GetBytes("testMessage");
+
+            byte[] sealedBox = await KeyApi.SealCryptoBoxAsync(
+                testKeyHandle,
+                testMessage);
+
+            //Act
+            Func<Task<byte[]>> func = async () => await KeyApi.OpenSealCryptoBoxBytesAsync(
+                new IntPtr(),
+                sealedBox);
+
+            //Assert
+            _ = await func.Should().ThrowAsync<AriesAskarException>();
+        }
+
+        private static IEnumerable<TestCaseData> OpenSealCryptoBoxBytesAsyncErrorCases()
+        {
+            yield return new TestCaseData()
+                .SetName("OpenSealCryptoBoxBytesAsync() throws an AriesAskarException if the provided handles are invalid.");
+        }
+
         #endregion
 
         #endregion
