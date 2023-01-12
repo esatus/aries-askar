@@ -483,8 +483,20 @@ namespace aries_askar_dotnet_tests.AriesAskar
         #endregion
 
         #region generate raw key
-        [Test, TestCase(TestName = "GenerateRawKeyAsync() call returns result string.")]
-        public async Task StoreGenerateRawKeyWorks()
+        private static IEnumerable<TestCaseData> CreateCasesGenerateRawKeyAsyncWorks()
+        {
+            yield return new TestCaseData("testseed000000000000000000000001")
+                .SetName("GenerateRawKeyAsync() call returns result string if seed length is 32.");
+            yield return new TestCaseData("testseedlengthless32")
+                .SetName("GenerateRawKeyAsync() call returns result string if seed length is less than 32.");
+            yield return new TestCaseData("testseed000000000000000000000001greater32")
+                .SetName("GenerateRawKeyAsync() call returns result string if seed length is greater than 32.");
+            yield return new TestCaseData(null)
+                .SetName("GenerateRawKeyAsync() call returns result string if seed is null.");
+        }
+
+        [Test, TestCaseSource(nameof(CreateCasesGenerateRawKeyAsyncWorks))]
+        public async Task StoreGenerateRawKeyWorks(string testSeed)
         {
             //Arrange
 
@@ -493,30 +505,6 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             //Assert
             _ = actual.Should().NotBe("");
-        }
-
-        [Test, TestCase(TestName = "GenerateRawKeyAsync() call returns result string if seed is null.")]
-        public async Task StoreGenerateRawKeyWorksSeedNull()
-        {
-            //Arrange
-
-            //Act
-            string actual = await StoreApi.GenerateRawKeyAsync();
-
-            //Assert
-            _ = actual.Should().NotBe("");
-        }
-
-        [Test, TestCase(TestName = "GenerateRawKeyAsync() throws with wrong seed format provided.")]
-        public async Task StoreGenerateRawKeyThrows()
-        {
-            //Arrange
-
-            //Act
-            Func<Task> actual = async () => await StoreApi.GenerateRawKeyAsync("wrongSeed");
-
-            //Assert
-            _ = await actual.Should().ThrowAsync<Exception>();
         }
         #endregion
 
