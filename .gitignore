@@ -7,4 +7,5 @@ Cargo.lock
 *.tgz
 *.so
 .npmrc
+out
 .vs
