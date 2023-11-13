@@ -32,9 +32,9 @@ pub const SECRET_KEY_LENGTH: usize = 32;
 pub const KEYPAIR_LENGTH: usize = SECRET_KEY_LENGTH + PUBLIC_KEY_LENGTH;
 
 /// The 'kty' value of an X25519 JWK
-pub static JWK_KEY_TYPE: &'static str = "OKP";
+pub static JWK_KEY_TYPE: &str = "OKP";
 /// The 'crv' value of an X25519 JWK
-pub static JWK_CURVE: &'static str = "X25519";
+pub static JWK_CURVE: &str = "X25519";
 
 /// An X25519 public key or keypair
 #[derive(Clone)]
@@ -100,9 +100,7 @@ impl KeyMeta for X25519KeyPair {
 impl KeyGen for X25519KeyPair {
     fn generate(rng: impl KeyMaterial) -> Result<Self, Error> {
         let sk = ArrayKey::<U32>::generate(rng);
-        let sk = SecretKey::from(
-            TryInto::<[u8; SECRET_KEY_LENGTH]>::try_into(&sk.as_ref()[..]).unwrap(),
-        );
+        let sk = SecretKey::from(*<&[u8; SECRET_KEY_LENGTH]>::try_from(&sk).unwrap());
         let pk = PublicKey::from(&sk);
         Ok(Self::new(Some(sk), pk))
     }
@@ -110,12 +108,8 @@ impl KeyGen for X25519KeyPair {
 
 impl KeySecretBytes for X25519KeyPair {
     fn from_secret_bytes(key: &[u8]) -> Result<Self, Error> {
-        if key.len() != SECRET_KEY_LENGTH {
-            return Err(err_msg!(InvalidKeyData));
-        }
-        Ok(Self::from_secret_key(SecretKey::from(
-            TryInto::<[u8; SECRET_KEY_LENGTH]>::try_into(key).unwrap(),
-        )))
+        let sk: &[u8; SECRET_KEY_LENGTH] = key.try_into().map_err(|_| err_msg!(InvalidKeyData))?;
+        Ok(Self::from_secret_key(SecretKey::from(*sk)))
     }
 
     fn with_secret_bytes<O>(&self, f: impl FnOnce(Option<&[u8]>) -> O) -> O {
@@ -146,8 +140,7 @@ impl KeypairBytes for X25519KeyPair {
     fn with_keypair_bytes<O>(&self, f: impl FnOnce(Option<&[u8]>) -> O) -> O {
         if let Some(secret) = self.secret.as_ref() {
             ArrayKey::<<Self as KeypairMeta>::KeypairSize>::temp(|arr| {
-                let b = Zeroizing::new(secret.to_bytes());
-                arr[..SECRET_KEY_LENGTH].copy_from_slice(&b[..]);
+                arr[..SECRET_KEY_LENGTH].copy_from_slice(secret.as_bytes());
                 arr[SECRET_KEY_LENGTH..].copy_from_slice(self.public.as_bytes());
                 f(Some(&*arr))
             })
@@ -159,13 +152,8 @@ impl KeypairBytes for X25519KeyPair {
 
 impl KeyPublicBytes for X25519KeyPair {
     fn from_public_bytes(key: &[u8]) -> Result<Self, Error> {
-        if key.len() != PUBLIC_KEY_LENGTH {
-            return Err(err_msg!(InvalidKeyData));
-        }
-        Ok(Self::new(
-            None,
-            PublicKey::from(TryInto::<[u8; PUBLIC_KEY_LENGTH]>::try_into(key).unwrap()),
-        ))
+        let pk: &[u8; PUBLIC_KEY_LENGTH] = key.try_into().map_err(|_| err_msg!(InvalidKeyData))?;
+        Ok(Self::new(None, PublicKey::from(*pk)))
     }
 
     fn with_public_bytes<O>(&self, f: impl FnOnce(&[u8]) -> O) -> O {
@@ -202,20 +190,18 @@ impl FromJwk for X25519KeyPair {
         ArrayKey::<U32>::temp(|pk_arr| {
             if jwk.x.decode_base64(pk_arr)? != pk_arr.len() {
                 Err(err_msg!(InvalidKeyData))
+            } else if jwk.d.is_some() {
+                ArrayKey::<U32>::temp(|sk_arr| {
+                    if jwk.d.decode_base64(sk_arr)? != sk_arr.len() {
+                        Err(err_msg!(InvalidKeyData))
+                    } else {
+                        let kp = X25519KeyPair::from_secret_bytes(sk_arr)?;
+                        kp.check_public_bytes(pk_arr)?;
+                        Ok(kp)
+                    }
+                })
             } else {
-                if jwk.d.is_some() {
-                    ArrayKey::<U32>::temp(|sk_arr| {
-                        if jwk.d.decode_base64(sk_arr)? != sk_arr.len() {
-                            Err(err_msg!(InvalidKeyData))
-                        } else {
-                            let kp = X25519KeyPair::from_secret_bytes(sk_arr)?;
-                            kp.check_public_bytes(pk_arr)?;
-                            Ok(kp)
-                        }
-                    })
-                } else {
-                    X25519KeyPair::from_public_bytes(pk_arr)
-                }
+                X25519KeyPair::from_public_bytes(pk_arr)
             }
         })
     }
@@ -244,6 +230,8 @@ impl TryFrom<&Ed25519KeyPair> for X25519KeyPair {
 
 #[cfg(test)]
 mod tests {
+    use base64::Engine;
+
     use super::*;
     use crate::repr::ToPublicBytes;
 
@@ -257,13 +245,15 @@ mod tests {
         //   "x": "tGskN_ae61DP4DLY31_fjkbvnKqf-ze7kA6Cj2vyQxU"
         // }
         let test_pvt_b64 = "qL25gw-HkNJC9m4EsRzCoUx1KntjwHPzxo6a2xUcyFQ";
-        let test_pvt = base64::decode_config(test_pvt_b64, base64::URL_SAFE).unwrap();
+        let test_pvt = base64::engine::general_purpose::URL_SAFE_NO_PAD
+            .decode(test_pvt_b64)
+            .unwrap();
         let kp =
             X25519KeyPair::from_secret_bytes(&test_pvt).expect("Error creating x25519 keypair");
         let jwk = kp
             .to_jwk_public(None)
             .expect("Error converting public key to JWK");
-        let jwk = JwkParts::from_str(&jwk).expect("Error parsing JWK output");
+        let jwk = JwkParts::try_from_str(&jwk).expect("Error parsing JWK output");
         assert_eq!(jwk.kty, JWK_KEY_TYPE);
         assert_eq!(jwk.crv, JWK_CURVE);
         assert_eq!(jwk.x, "tGskN_ae61DP4DLY31_fjkbvnKqf-ze7kA6Cj2vyQxU");

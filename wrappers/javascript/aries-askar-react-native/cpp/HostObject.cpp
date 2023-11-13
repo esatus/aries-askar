@@ -1,15 +1,21 @@
-#include <HostObject.h>
 #include <algorithm>
 #include <vector>
 
+#include "HostObject.h"
 
-AriesAskarTurboModuleHostObject::AriesAskarTurboModuleHostObject(jsi::Runtime &rt) { return; }
+AriesAskarTurboModuleHostObject::AriesAskarTurboModuleHostObject(
+    jsi::Runtime &rt) {
+  return;
+}
 FunctionMap AriesAskarTurboModuleHostObject::functionMapping(jsi::Runtime &rt) {
   FunctionMap fMap;
 
   fMap.insert(std::make_tuple("version", &ariesAskar::version));
   fMap.insert(std::make_tuple("getCurrentError", &ariesAskar::getCurrentError));
+  fMap.insert(
+      std::make_tuple("setDefaultLogger", &ariesAskar::setDefaultLogger));
 
+  fMap.insert(std::make_tuple("storeCopyTo", &ariesAskar::storeCopyTo));
   fMap.insert(std::make_tuple("storeOpen", &ariesAskar::storeOpen));
   fMap.insert(
       std::make_tuple("storeGenerateRawKey", &ariesAskar::storeGenerateRawKey));
@@ -22,11 +28,17 @@ FunctionMap AriesAskarTurboModuleHostObject::functionMapping(jsi::Runtime &rt) {
       std::make_tuple("storeGenerateRawKey", &ariesAskar::storeGenerateRawKey));
   fMap.insert(
       std::make_tuple("storeGetProfileName", &ariesAskar::storeGetProfileName));
+  fMap.insert(
+      std::make_tuple("storeGetDefaultProfile",
+                      &ariesAskar::storeGetDefaultProfile));
   fMap.insert(std::make_tuple("storeProvision", &ariesAskar::storeProvision));
   fMap.insert(std::make_tuple("storeRekey", &ariesAskar::storeRekey));
   fMap.insert(std::make_tuple("storeRemove", &ariesAskar::storeRemove));
   fMap.insert(
       std::make_tuple("storeRemoveProfile", &ariesAskar::storeRemoveProfile));
+  fMap.insert(
+      std::make_tuple("storeSetDefaultProfile",
+                      &ariesAskar::storeSetDefaultProfile));
 
   fMap.insert(std::make_tuple("sessionClose", &ariesAskar::sessionClose));
   fMap.insert(std::make_tuple("sessionCount", &ariesAskar::sessionCount));
@@ -127,11 +139,13 @@ FunctionMap AriesAskarTurboModuleHostObject::functionMapping(jsi::Runtime &rt) {
   fMap.insert(std::make_tuple("keyEntryListLoadLocal",
                               &ariesAskar::keyEntryListLoadLocal));
 
+  fMap.insert(std::make_tuple("migrateIndySdk", &ariesAskar::migrateIndySdk));
+
   return fMap;
 }
 
-jsi::Function AriesAskarTurboModuleHostObject::call(jsi::Runtime &rt, const char *name,
-                                          Cb cb) {
+jsi::Function AriesAskarTurboModuleHostObject::call(jsi::Runtime &rt,
+                                                    const char *name, Cb cb) {
   return jsi::Function::createFromHostFunction(
       rt, jsi::PropNameID::forAscii(rt, name), 1,
       [this, cb](jsi::Runtime &rt, const jsi::Value &thisValue,
@@ -153,8 +167,9 @@ AriesAskarTurboModuleHostObject::getPropertyNames(jsi::Runtime &rt) {
   return result;
 }
 
-jsi::Value AriesAskarTurboModuleHostObject::get(jsi::Runtime &rt,
-                                      const jsi::PropNameID &propNameId) {
+jsi::Value
+AriesAskarTurboModuleHostObject::get(jsi::Runtime &rt,
+                                     const jsi::PropNameID &propNameId) {
   auto propName = propNameId.utf8(rt);
   auto fMap = AriesAskarTurboModuleHostObject::functionMapping(rt);
   for (FunctionMap::iterator it = fMap.begin(); it != fMap.end(); ++it) {

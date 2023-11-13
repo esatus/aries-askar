@@ -96,7 +96,7 @@ export type KeyEntryListGetMetadataOptions = { keyEntryListHandle: KeyEntryListH
 export type KeyEntryListGetNameOptions = { keyEntryListHandle: KeyEntryListHandle; index: number }
 export type KeyEntryListGetTagsOptions = { keyEntryListHandle: KeyEntryListHandle; index: number }
 export type KeyEntryListLoadLocalOptions = { keyEntryListHandle: KeyEntryListHandle; index: number }
-export type KeyFreeOptions = { keyEntryListHandle: KeyEntryListHandle }
+export type KeyFreeOptions = { localKeyHandle: LocalKeyHandle }
 export type KeyFromJwkOptions = { jwk: Jwk }
 export type KeyFromKeyExchangeOptions = {
   algorithm: KeyAlgs
@@ -206,9 +206,18 @@ export type SessionUpdateKeyOptions = {
 }
 
 export type StoreCloseOptions = { storeHandle: StoreHandle }
+export type StoreCopyToOptions = {
+  storeHandle: StoreHandle
+  targetUri: string
+  keyMethod?: string
+  passKey?: string
+  recreate?: boolean
+}
 export type StoreCreateProfileOptions = { storeHandle: StoreHandle; profile?: string }
 export type StoreGenerateRawKeyOptions = { seed?: Uint8Array }
 export type StoreGetProfileNameOptions = { storeHandle: StoreHandle }
+export type StoreGetDefaultProfileOptions = { storeHandle: StoreHandle }
+export type StoreListProfilesOptions = { storeHandle: StoreHandle }
 export type StoreOpenOptions = { specUri: string; keyMethod?: string; passKey?: string; profile?: string }
 export type StoreProvisionOptions = {
   specUri: string
@@ -217,9 +226,12 @@ export type StoreProvisionOptions = {
   profile?: string
   recreate: boolean
 }
-export type StoreRekeyOptions = { storeHandle: StoreHandle; keyMethod: string; passKey: string }
+export type StoreRekeyOptions = { storeHandle: StoreHandle; keyMethod?: string; passKey: string }
 export type StoreRemoveOptions = { specUri: string }
 export type StoreRemoveProfileOptions = { storeHandle: StoreHandle; profile: string }
+export type StoreSetDefaultProfileOptions = { storeHandle: StoreHandle; profile: string }
+
+export type MigrateIndySdkOptions = { specUri: string; walletName: string; walletKey: string; kdfLevel: string }
 
 export type AriesAskar = {
   version(): string
@@ -234,7 +246,7 @@ export type AriesAskar = {
   entryListFree(options: EntryListFreeOptions): void
   entryListGetCategory(options: EntryListGetCategoryOptions): string
   entryListGetName(options: EntryListGetNameOptions): string
-  entryListGetTags(options: EntryListGetTagsOptions): string
+  entryListGetTags(options: EntryListGetTagsOptions): string | null
   entryListGetValue(options: EntryListGetValueOptions): Uint8Array
 
   keyAeadDecrypt(options: KeyAeadDecryptOptions): Uint8Array
@@ -253,9 +265,9 @@ export type AriesAskar = {
   keyEntryListCount(options: KeyEntryListCountOptions): number
   keyEntryListFree(options: KeyEntryListFreeOptions): void
   keyEntryListGetAlgorithm(options: KeyEntryListGetAlgorithmOptions): string
-  keyEntryListGetMetadata(options: KeyEntryListGetMetadataOptions): string
+  keyEntryListGetMetadata(options: KeyEntryListGetMetadataOptions): string | null
   keyEntryListGetName(options: KeyEntryListGetNameOptions): string
-  keyEntryListGetTags(options: KeyEntryListGetTagsOptions): string
+  keyEntryListGetTags(options: KeyEntryListGetTagsOptions): string | null
   keyEntryListLoadLocal(options: KeyEntryListLoadLocalOptions): LocalKeyHandle
   keyFree(options: KeyFreeOptions): void
   keyFromJwk(options: KeyFromJwkOptions): LocalKeyHandle
@@ -277,15 +289,15 @@ export type AriesAskar = {
   keyWrapKey(options: KeyWrapKeyOptions): EncryptedBuffer
 
   scanFree(options: ScanFreeOptions): void
-  scanNext(options: ScanNextOptions): Promise<EntryListHandle>
+  scanNext(options: ScanNextOptions): Promise<EntryListHandle | null>
   scanStart(options: ScanStartOptions): Promise<ScanHandle>
 
   sessionClose(options: SessionCloseOptions): Promise<void>
   sessionCount(options: SessionCountOptions): Promise<number>
-  sessionFetch(options: SessionFetchOptions): Promise<EntryListHandle>
-  sessionFetchAll(options: SessionFetchAllOptions): Promise<EntryListHandle>
-  sessionFetchAllKeys(options: SessionFetchAllKeysOptions): Promise<KeyEntryListHandle>
-  sessionFetchKey(options: SessionFetchKeyOptions): Promise<KeyEntryListHandle>
+  sessionFetch(options: SessionFetchOptions): Promise<EntryListHandle | null>
+  sessionFetchAll(options: SessionFetchAllOptions): Promise<EntryListHandle | null>
+  sessionFetchAllKeys(options: SessionFetchAllKeysOptions): Promise<KeyEntryListHandle | null>
+  sessionFetchKey(options: SessionFetchKeyOptions): Promise<KeyEntryListHandle | null>
   sessionInsertKey(options: SessionInsertKeyOptions): Promise<void>
   sessionRemoveAll(options: SessionRemoveAllOptions): Promise<number>
   sessionRemoveKey(options: SessionRemoveKeyOptions): Promise<void>
@@ -294,12 +306,18 @@ export type AriesAskar = {
   sessionUpdateKey(options: SessionUpdateKeyOptions): Promise<void>
 
   storeClose(options: StoreCloseOptions): Promise<void>
+  storeCopyTo(options: StoreCopyToOptions): Promise<void>
   storeCreateProfile(options: StoreCreateProfileOptions): Promise<string>
   storeGenerateRawKey(options: StoreGenerateRawKeyOptions): string
+  storeGetDefaultProfile(options: StoreGetDefaultProfileOptions): Promise<string>
   storeGetProfileName(options: StoreGetProfileNameOptions): Promise<string>
+  storeListProfiles(options: StoreListProfilesOptions): Promise<string[]>
   storeOpen(options: StoreOpenOptions): Promise<StoreHandle>
   storeProvision(options: StoreProvisionOptions): Promise<StoreHandle>
   storeRekey(options: StoreRekeyOptions): Promise<void>
   storeRemove(options: StoreRemoveOptions): Promise<number>
   storeRemoveProfile(options: StoreRemoveProfileOptions): Promise<number>
+  storeSetDefaultProfile(options: StoreSetDefaultProfileOptions): Promise<void>
+
+  migrateIndySdk(options: MigrateIndySdkOptions): Promise<void>
 }

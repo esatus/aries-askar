@@ -1,5 +1,5 @@
+import type { StoreKeyMethod } from './StoreKeyMethod'
 import type { StoreHandle } from '../crypto'
-import type { StoreKeyMethod } from '../enums/StoreKeyMethod'
 
 import { ariesAskar } from '../ariesAskar'
 
@@ -32,12 +32,24 @@ export class Store {
     return ariesAskar.storeCreateProfile({ storeHandle: this.handle, profile: name })
   }
 
+  public async getDefaultProfile() {
+    return ariesAskar.storeGetDefaultProfile({ storeHandle: this.handle })
+  }
+
+  public async setDefaultProfile(name: string) {
+    return ariesAskar.storeSetDefaultProfile({ storeHandle: this.handle, profile: name })
+  }
+
+  public async listProfiles() {
+    return ariesAskar.storeListProfiles({ storeHandle: this.handle })
+  }
+
   public async removeProfile(name: string) {
     return await ariesAskar.storeRemoveProfile({ profile: name, storeHandle: this.handle })
   }
 
-  public async rekey({ keyMethod, passKey }: { keyMethod: StoreKeyMethod; passKey: string }) {
-    return await ariesAskar.storeRekey({ keyMethod, passKey, storeHandle: this.handle })
+  public async rekey({ keyMethod, passKey }: { keyMethod?: StoreKeyMethod; passKey: string }) {
+    return await ariesAskar.storeRekey({ keyMethod: keyMethod?.toUri(), passKey, storeHandle: this.handle })
   }
 
   public static async provision({
@@ -53,7 +65,13 @@ export class Store {
     profile?: string
     recreate: boolean
   }) {
-    const handle = await ariesAskar.storeProvision({ specUri: uri, keyMethod, profile, passKey, recreate })
+    const handle = await ariesAskar.storeProvision({
+      specUri: uri,
+      keyMethod: keyMethod?.toUri(),
+      profile,
+      passKey,
+      recreate,
+    })
     return new Store({ handle, uri })
   }
 
@@ -68,7 +86,7 @@ export class Store {
     passKey?: string
     profile?: string
   }) {
-    const handle = await ariesAskar.storeOpen({ profile, passKey, keyMethod, specUri: uri })
+    const handle = await ariesAskar.storeOpen({ profile, passKey, keyMethod: keyMethod?.toUri(), specUri: uri })
     return new Store({ uri, handle })
   }
 
@@ -105,5 +123,25 @@ export class Store {
     profile?: string
   }) {
     return new Scan({ ...options, store: this })
+  }
+
+  public async copyTo({
+    uri,
+    keyMethod,
+    passKey,
+    recreate,
+  }: {
+    uri: string
+    keyMethod?: StoreKeyMethod
+    passKey?: string
+    recreate: boolean
+  }) {
+    await ariesAskar.storeCopyTo({
+      storeHandle: this.handle,
+      targetUri: uri,
+      keyMethod: keyMethod?.toUri(),
+      passKey,
+      recreate,
+    })
   }
 }

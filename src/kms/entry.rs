@@ -1,8 +1,8 @@
 use super::local_key::LocalKey;
 use crate::{
     crypto::{alg::AnyKey, buffer::SecretBytes, jwk::FromJwk},
+    entry::{Entry, EntryTag},
     error::Error,
-    storage::{Entry, EntryTag},
 };
 
 /// Parameters defining a stored key
@@ -29,9 +29,8 @@ impl KeyParams {
     }
 
     pub(crate) fn from_slice(params: &[u8]) -> Result<KeyParams, Error> {
-        let result = serde_cbor::from_slice(params)
-            .map_err(|e| err_msg!(Unexpected, "Error deserializing key params: {}", e));
-        result
+        serde_cbor::from_slice(params)
+            .map_err(|e| err_msg!(Unexpected, "Error deserializing key params: {}", e))
     }
 }
 
@@ -64,6 +63,11 @@ impl KeyEntry {
     /// Accessor for the key identity
     pub fn name(&self) -> &str {
         self.name.as_str()
+    }
+
+    /// Accessor for the key tags
+    pub fn tags_as_slice(&self) -> &[EntryTag] {
+        self.tags.as_slice()
     }
 
     /// Determine if a key entry refers to a local or external key

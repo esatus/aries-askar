@@ -1,4 +1,4 @@
-import { refType } from 'ref-napi'
+import { refType } from '@2060.io/ref-napi'
 
 // Primitives
 
@@ -33,3 +33,4 @@ export const FFI_LOCAL_KEY_HANDLE = FFI_ARC_HANDLE
 export const FFI_SESSION_HANDLE = FFI_USIZE
 export const FFI_SCAN_HANDLE = FFI_USIZE
 export const FFI_STORE_HANDLE = FFI_USIZE
+export const FFI_STRING_LIST_HANDLE = FFI_ARC_HANDLE

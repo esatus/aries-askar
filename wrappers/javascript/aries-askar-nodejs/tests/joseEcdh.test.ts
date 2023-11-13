@@ -1,9 +1,11 @@
 import { Ecdh1PU, EcdhEs, Jwk, Key, KeyAlgs } from '@hyperledger/aries-askar-shared'
 
-import { base64url, setup } from './utils'
+import { base64url } from './utils'
 
 describe('jose ecdh', () => {
-  beforeAll(() => setup())
+  beforeAll(() => {
+    require('@hyperledger/aries-askar-nodejs')
+  })
 
   test('ecdh es direct', () => {
     const bobKey = Key.generate(KeyAlgs.EcSecp256r1)
@@ -54,6 +56,8 @@ describe('jose ecdh', () => {
       aad: Uint8Array.from(Buffer.from(protectedB64)),
     })
     expect(Buffer.from(messageReceived).toString()).toStrictEqual(messageString)
+    ephemeralKey.handle.free()
+    bobKey.handle.free()
   })
 
   test('ecdh es wrapped', () => {
@@ -108,6 +112,10 @@ describe('jose ecdh', () => {
     const messageReceived = cekReceiver.aeadDecrypt({ ciphertext, tag, nonce, aad: protectedB64Bytes })
 
     expect(messageReceived).toStrictEqual(message)
+    ephemeralKey.handle.free()
+    bobKey.handle.free()
+    cek.handle.free()
+    cekReceiver.handle.free()
   })
 
   test('ecdh 1pu direct', () => {
@@ -164,6 +172,9 @@ describe('jose ecdh', () => {
     })
 
     expect(messageReceived).toStrictEqual(message)
+    aliceKey.handle.free()
+    bobKey.handle.free()
+    ephemeralKey.handle.free()
   })
 
   /**
@@ -319,5 +330,9 @@ describe('jose ecdh', () => {
     })
 
     expect(cekReceiver2.jwkSecret).toStrictEqual(cek.jwkSecret)
+    cek.handle.free()
+    cekReceiver.handle.free()
+    cekReceiver2.handle.free()
+    derived.handle.free()
   })
 })

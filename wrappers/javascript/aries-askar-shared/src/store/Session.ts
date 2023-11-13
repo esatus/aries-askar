@@ -1,6 +1,8 @@
 import type { Key, SessionHandle } from '../crypto'
 import type { KeyAlgs } from '../enums'
 
+import { Buffer } from 'buffer'
+
 import { ariesAskar } from '../ariesAskar'
 import { EntryOperation } from '../enums/EntryOperation'
 import { AriesAskarError } from '../error'
@@ -35,7 +37,7 @@ export class Session {
     category,
     name,
     forUpdate = false,
-    isJson = false,
+    isJson,
   }: {
     category: string
     name: string
@@ -45,11 +47,14 @@ export class Session {
     if (!this.handle) throw AriesAskarError.customError({ message: 'Cannot fetch from a closed session' })
 
     const handle = await ariesAskar.sessionFetch({ forUpdate, name, category, sessionHandle: this.handle })
-    if (!handle) return undefined
+    if (!handle) return null
 
     const entry = new Entry({ list: handle, position: 0 })
+    const entryObject = entry.toJson(isJson)
 
-    return entry.toJson(isJson)
+    handle.free()
+
+    return entryObject
   }
 
   public async fetchAll({
@@ -57,11 +62,13 @@ export class Session {
     forUpdate = false,
     limit,
     tagFilter,
+    isJson,
   }: {
     category: string
     tagFilter?: Record<string, unknown>
     limit?: number
     forUpdate?: boolean
+    isJson?: boolean
   }) {
     if (!this.handle) throw AriesAskarError.customError({ message: 'Cannot fetch all from a closed session' })
     const handle = await ariesAskar.sessionFetchAll({
@@ -71,9 +78,14 @@ export class Session {
       sessionHandle: this.handle,
       category,
     })
-    const entryList = new EntryList({ handle })
+    if (!handle) return []
 
-    return entryList.toArray()
+    const entryList = new EntryList({ handle })
+    const entryObjects = entryList.toArray(isJson)
+
+    entryList.handle.free()
+
+    return entryObjects
   }
 
   public async insert({
@@ -92,14 +104,8 @@ export class Session {
     if (!this.handle) throw AriesAskarError.customError({ message: 'Cannot insert with a closed session' })
     const serializedValue = typeof value === 'string' ? value : JSON.stringify(value)
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-    const encoder = new TextEncoder()
-
     await ariesAskar.sessionUpdate({
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-      value: new Uint8Array(encoder.encode(serializedValue)),
+      value: Uint8Array.from(Buffer.from(serializedValue)),
       expiryMs,
       tags,
       name,
@@ -125,14 +131,8 @@ export class Session {
     if (!this.handle) throw AriesAskarError.customError({ message: 'Cannot replace with a closed session' })
     const serializedValue = typeof value === 'string' ? value : JSON.stringify(value)
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-    const encoder = new TextEncoder()
-
     await ariesAskar.sessionUpdate({
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-      value: new Uint8Array(encoder.encode(serializedValue)),
+      value: Uint8Array.from(Buffer.from(serializedValue)),
       expiryMs,
       tags,
       name,
@@ -190,9 +190,15 @@ export class Session {
 
   public async fetchKey({ name, forUpdate = false }: { name: string; forUpdate?: boolean }) {
     if (!this.handle) throw AriesAskarError.customError({ message: 'Cannot fetch a key with a closed session' })
+
     const handle = await ariesAskar.sessionFetchKey({ forUpdate, name, sessionHandle: this.handle })
+    if (!handle) return null
+
     const keyEntryList = new KeyEntryList({ handle })
-    return keyEntryList.getEntryByIndex(0).toJson()
+    const keyEntryObject = keyEntryList.getEntryByIndex(0).toJson()
+    keyEntryList.handle.free()
+
+    return keyEntryObject
   }
 
   public async fetchAllKeys({
@@ -217,9 +223,13 @@ export class Session {
       algorithm,
       sessionHandle: this.handle,
     })
+    if (!handle) return []
 
     const keyEntryList = new KeyEntryList({ handle })
-    return keyEntryList.toArray()
+    const keyEntryObjects = keyEntryList.toArray()
+    keyEntryList.handle.free()
+
+    return keyEntryObjects
   }
 
   public async updateKey({

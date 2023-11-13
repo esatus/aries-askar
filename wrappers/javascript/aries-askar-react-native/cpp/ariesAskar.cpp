@@ -1,6 +1,5 @@
-#include <ariesAskar.h>
-
-#include <include/libaries_askar.h>
+#include "ariesAskar.h"
+#include "include/libaries_askar.h"
 
 using namespace ariesAskarTurboModuleUtility;
 
@@ -8,13 +7,19 @@ namespace ariesAskar {
 
 jsi::Value version(jsi::Runtime &rt, jsi::Object options) {
   return jsi::String::createFromAscii(rt, askar_version());
-};
+}
 
 jsi::Value getCurrentError(jsi::Runtime &rt, jsi::Object options) {
   const char *error;
   askar_get_current_error(&error);
   return jsi::String::createFromAscii(rt, error);
-};
+}
+
+jsi::Value setDefaultLogger(jsi::Runtime &rt, jsi::Object options) {
+  ErrorCode code = askar_set_default_logger();
+
+  return createReturnValue(rt, code, nullptr);
+}
 
 jsi::Value entryListCount(jsi::Runtime &rt, jsi::Object options) {
   auto entryListHandle =
@@ -23,17 +28,17 @@ jsi::Value entryListCount(jsi::Runtime &rt, jsi::Object options) {
   int32_t out;
 
   ErrorCode code = askar_entry_list_count(entryListHandle, &out);
-  handleError(rt, code);
 
-  return jsi::Value(out);
-};
+  return createReturnValue(rt, code, &out);
+}
+
 jsi::Value entryListFree(jsi::Runtime &rt, jsi::Object options) {
   auto entryListHandle =
       jsiToValue<EntryListHandle>(rt, options, "entryListHandle");
 
   askar_entry_list_free(entryListHandle);
 
-  return jsi::Value::null();
+  return createReturnValue(rt, ErrorCode::Success, nullptr);
 }
 
 jsi::Value entryListGetCategory(jsi::Runtime &rt, jsi::Object options) {
@@ -44,9 +49,8 @@ jsi::Value entryListGetCategory(jsi::Runtime &rt, jsi::Object options) {
   const char *out;
 
   ErrorCode code = askar_entry_list_get_category(entryListHandle, index, &out);
-  handleError(rt, code);
 
-  return jsi::String::createFromAscii(rt, out);
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value entryListGetTags(jsi::Runtime &rt, jsi::Object options) {
@@ -57,9 +61,8 @@ jsi::Value entryListGetTags(jsi::Runtime &rt, jsi::Object options) {
   const char *out;
 
   ErrorCode code = askar_entry_list_get_tags(entryListHandle, index, &out);
-  handleError(rt, code);
 
-  return jsi::String::createFromAscii(rt, out ? out : "{}");
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value entryListGetValue(jsi::Runtime &rt, jsi::Object options) {
@@ -70,9 +73,8 @@ jsi::Value entryListGetValue(jsi::Runtime &rt, jsi::Object options) {
   SecretBuffer out;
 
   ErrorCode code = askar_entry_list_get_value(entryListHandle, index, &out);
-  handleError(rt, code);
 
-  return secretBufferToArrayBuffer(rt, out);
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value entryListGetName(jsi::Runtime &rt, jsi::Object options) {
@@ -83,9 +85,28 @@ jsi::Value entryListGetName(jsi::Runtime &rt, jsi::Object options) {
   const char *out;
 
   ErrorCode code = askar_entry_list_get_name(entryListHandle, index, &out);
-  handleError(rt, code);
 
-  return jsi::String::createFromAscii(rt, out);
+  return createReturnValue(rt, code, &out);
+}
+
+jsi::Value storeCopyTo(jsi::Runtime &rt, jsi::Object options) {
+  auto storeHandle = jsiToValue<int64_t>(rt, options, "storeHandle");
+  auto targetUri = jsiToValue<std::string>(rt, options, "targetUri");
+  auto keyMethod = jsiToValue<std::string>(rt, options, "keyMethod", true);
+  auto passKey = jsiToValue<std::string>(rt, options, "passKey", true);
+  auto recreate = jsiToValue<int8_t>(rt, options, "recreate");
+
+  jsi::Function cb = options.getPropertyAsFunction(rt, "cb");
+  State *state = new State(&cb);
+  state->rt = &rt;
+
+  ErrorCode code = askar_store_copy(
+      storeHandle, targetUri.c_str(),
+      keyMethod.length() ? keyMethod.c_str() : nullptr,
+      passKey.length() ? passKey.c_str() : nullptr,
+      recreate, callbackWithResponse, CallbackId(state));
+
+  return createReturnValue(rt, code, nullptr);
 }
 
 jsi::Value storeOpen(jsi::Runtime &rt, jsi::Object options) {
@@ -104,9 +125,7 @@ jsi::Value storeOpen(jsi::Runtime &rt, jsi::Object options) {
       profile.length() ? profile.c_str() : nullptr, callbackWithResponse,
       CallbackId(state));
 
-  handleError(rt, code);
-
-  return jsi::Value::null();
+  return createReturnValue(rt, code, nullptr);
 }
 
 jsi::Value storeProvision(jsi::Runtime &rt, jsi::Object options) {
@@ -125,9 +144,8 @@ jsi::Value storeProvision(jsi::Runtime &rt, jsi::Object options) {
       passKey.length() ? passKey.c_str() : nullptr,
       profile.length() ? profile.c_str() : nullptr, recreate,
       callbackWithResponse, CallbackId(state));
-  handleError(rt, code);
 
-  return jsi::Value::null();
+  return createReturnValue(rt, code, nullptr);
 }
 
 jsi::Value storeGenerateRawKey(jsi::Runtime &rt, jsi::Object options) {
@@ -135,9 +153,8 @@ jsi::Value storeGenerateRawKey(jsi::Runtime &rt, jsi::Object options) {
 
   const char *out;
   ErrorCode code = askar_store_generate_raw_key(seed, &out);
-  handleError(rt, code);
 
-  return jsi::String::createFromAscii(rt, out);
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value storeClose(jsi::Runtime &rt, jsi::Object options) {
@@ -148,9 +165,8 @@ jsi::Value storeClose(jsi::Runtime &rt, jsi::Object options) {
   state->rt = &rt;
 
   ErrorCode code = askar_store_close(storeHandle, callback, CallbackId(state));
-  handleError(rt, code);
 
-  return jsi::Value::null();
+  return createReturnValue(rt, code, nullptr);
 }
 
 jsi::Value storeCreateProfile(jsi::Runtime &rt, jsi::Object options) {
@@ -164,9 +180,8 @@ jsi::Value storeCreateProfile(jsi::Runtime &rt, jsi::Object options) {
   ErrorCode code = askar_store_create_profile(
       storeHandle, profile.length() ? profile.c_str() : nullptr,
       callbackWithResponse, CallbackId(state));
-  handleError(rt, code);
 
-  return jsi::Value::null();
+  return createReturnValue(rt, code, nullptr);
 }
 
 jsi::Value storeGetProfileName(jsi::Runtime &rt, jsi::Object options) {
@@ -178,25 +193,50 @@ jsi::Value storeGetProfileName(jsi::Runtime &rt, jsi::Object options) {
 
   ErrorCode code = askar_store_get_profile_name(
       storeHandle, callbackWithResponse, CallbackId(state));
-  handleError(rt, code);
 
-  return jsi::Value::null();
+  return createReturnValue(rt, code, nullptr);
+}
+
+jsi::Value storeGetDefaultProfile(jsi::Runtime &rt, jsi::Object options) {
+  auto storeHandle = jsiToValue<int64_t>(rt, options, "storeHandle");
+
+  jsi::Function cb = options.getPropertyAsFunction(rt, "cb");
+  State *state = new State(&cb);
+  state->rt = &rt;
+
+  ErrorCode code = askar_store_get_default_profile(
+      storeHandle, callbackWithResponse, CallbackId(state));
+
+  return createReturnValue(rt, code, nullptr);
+}
+
+jsi::Value storeListProfiles(jsi::Runtime &rt, jsi::Object options) {
+  auto storeHandle = jsiToValue<int64_t>(rt, options, "storeHandle");
+
+  jsi::Function cb = options.getPropertyAsFunction(rt, "cb");
+  State *state = new State(&cb);
+  state->rt = &rt;
+
+  ErrorCode code = askar_store_list_profiles(
+      storeHandle, callbackWithResponse, CallbackId(state));
+
+  return createReturnValue(rt, code, nullptr);
 }
 
 jsi::Value storeRekey(jsi::Runtime &rt, jsi::Object options) {
   auto storeHandle = jsiToValue<int64_t>(rt, options, "storeHandle");
-  auto keyMethod = jsiToValue<std::string>(rt, options, "keyMethod");
+  auto keyMethod = jsiToValue<std::string>(rt, options, "keyMethod", true);
   auto passKey = jsiToValue<std::string>(rt, options, "passKey");
 
   jsi::Function cb = options.getPropertyAsFunction(rt, "cb");
   State *state = new State(&cb);
   state->rt = &rt;
 
-  ErrorCode code = askar_store_get_profile_name(
-      storeHandle, callbackWithResponse, CallbackId(state));
-  handleError(rt, code);
-
-  return jsi::Value::null();
+  ErrorCode code = askar_store_rekey(storeHandle, 
+      keyMethod.length() ? keyMethod.c_str() : nullptr, 
+      passKey.c_str(), callback, CallbackId(state));
+                            
+  return createReturnValue(rt, code, nullptr);
 }
 
 jsi::Value storeRemove(jsi::Runtime &rt, jsi::Object options) {
@@ -208,9 +248,8 @@ jsi::Value storeRemove(jsi::Runtime &rt, jsi::Object options) {
 
   ErrorCode code = askar_store_remove(specUri.c_str(), callbackWithResponse,
                                       CallbackId(state));
-  handleError(rt, code);
 
-  return jsi::Value::null();
+  return createReturnValue(rt, code, nullptr);
 }
 
 jsi::Value storeRemoveProfile(jsi::Runtime &rt, jsi::Object options) {
@@ -223,9 +262,22 @@ jsi::Value storeRemoveProfile(jsi::Runtime &rt, jsi::Object options) {
 
   ErrorCode code = askar_store_remove_profile(
       storeHandle, profile.c_str(), callbackWithResponse, CallbackId(state));
-  handleError(rt, code);
 
-  return jsi::Value::null();
+  return createReturnValue(rt, code, nullptr);
+}
+
+jsi::Value storeSetDefaultProfile(jsi::Runtime &rt, jsi::Object options) {
+  auto storeHandle = jsiToValue<int64_t>(rt, options, "storeHandle");
+  auto profile = jsiToValue<std::string>(rt, options, "profile");
+
+  jsi::Function cb = options.getPropertyAsFunction(rt, "cb");
+  State *state = new State(&cb);
+  state->rt = &rt;
+
+  ErrorCode code = askar_store_set_default_profile(
+      storeHandle, profile.c_str(), callback, CallbackId(state));
+
+  return createReturnValue(rt, code, nullptr);
 }
 
 jsi::Value sessionClose(jsi::Runtime &rt, jsi::Object options) {
@@ -238,9 +290,8 @@ jsi::Value sessionClose(jsi::Runtime &rt, jsi::Object options) {
 
   ErrorCode code =
       askar_session_close(sessionHandle, commit, callback, CallbackId(state));
-  handleError(rt, code);
 
-  return jsi::Value::null();
+  return createReturnValue(rt, code, nullptr);
 }
 
 jsi::Value sessionCount(jsi::Runtime &rt, jsi::Object options) {
@@ -256,9 +307,8 @@ jsi::Value sessionCount(jsi::Runtime &rt, jsi::Object options) {
       askar_session_count(sessionHandle, category.c_str(),
                           tagFilter.length() ? tagFilter.c_str() : nullptr,
                           callbackWithResponse, CallbackId(state));
-  handleError(rt, code);
 
-  return jsi::Value::null();
+  return createReturnValue(rt, code, nullptr);
 }
 
 jsi::Value sessionFetch(jsi::Runtime &rt, jsi::Object options) {
@@ -274,9 +324,8 @@ jsi::Value sessionFetch(jsi::Runtime &rt, jsi::Object options) {
   ErrorCode code =
       askar_session_fetch(sessionHandle, category.c_str(), name.c_str(),
                           forUpdate, callbackWithResponse, CallbackId(state));
-  handleError(rt, code);
 
-  return jsi::Value::null();
+  return createReturnValue(rt, code, nullptr);
 }
 
 jsi::Value sessionFetchAll(jsi::Runtime &rt, jsi::Object options) {
@@ -294,9 +343,8 @@ jsi::Value sessionFetchAll(jsi::Runtime &rt, jsi::Object options) {
       sessionHandle, category.c_str(),
       tagFilter.length() ? tagFilter.c_str() : nullptr, limit, forUpdate,
       callbackWithResponse, CallbackId(state));
-  handleError(rt, code);
 
-  return jsi::Value::null();
+  return createReturnValue(rt, code, nullptr);
 }
 
 jsi::Value sessionFetchAllKeys(jsi::Runtime &rt, jsi::Object options) {
@@ -316,9 +364,8 @@ jsi::Value sessionFetchAllKeys(jsi::Runtime &rt, jsi::Object options) {
       thumbprint.length() ? thumbprint.c_str() : nullptr,
       tagFilter.length() ? tagFilter.c_str() : nullptr, limit, forUpdate,
       callbackWithResponse, CallbackId(state));
-  handleError(rt, code);
 
-  return jsi::Value::null();
+  return createReturnValue(rt, code, nullptr);
 }
 
 jsi::Value sessionFetchKey(jsi::Runtime &rt, jsi::Object options) {
@@ -333,9 +380,8 @@ jsi::Value sessionFetchKey(jsi::Runtime &rt, jsi::Object options) {
   ErrorCode code =
       askar_session_fetch_key(sessionHandle, name.c_str(), forUpdate,
                               callbackWithResponse, CallbackId(state));
-  handleError(rt, code);
 
-  return jsi::Value::null();
+  return createReturnValue(rt, code, nullptr);
 }
 
 jsi::Value sessionInsertKey(jsi::Runtime &rt, jsi::Object options) {
@@ -356,9 +402,8 @@ jsi::Value sessionInsertKey(jsi::Runtime &rt, jsi::Object options) {
                                metadata.length() ? metadata.c_str() : nullptr,
                                tags.length() ? tags.c_str() : nullptr, expiryMs,
                                callback, CallbackId(state));
-  handleError(rt, code);
 
-  return jsi::Value::null();
+  return createReturnValue(rt, code, nullptr);
 }
 
 jsi::Value sessionRemoveAll(jsi::Runtime &rt, jsi::Object options) {
@@ -375,9 +420,7 @@ jsi::Value sessionRemoveAll(jsi::Runtime &rt, jsi::Object options) {
                                tagFilter.length() ? tagFilter.c_str() : nullptr,
                                callbackWithResponse, CallbackId(state));
 
-  handleError(rt, code);
-
-  return jsi::Value::null();
+  return createReturnValue(rt, code, nullptr);
 }
 
 jsi::Value sessionRemoveKey(jsi::Runtime &rt, jsi::Object options) {
@@ -391,9 +434,7 @@ jsi::Value sessionRemoveKey(jsi::Runtime &rt, jsi::Object options) {
   ErrorCode code = askar_session_remove_key(sessionHandle, name.c_str(),
                                             callback, CallbackId(state));
 
-  handleError(rt, code);
-
-  return jsi::Value::null();
+  return createReturnValue(rt, code, nullptr);
 }
 
 jsi::Value sessionStart(jsi::Runtime &rt, jsi::Object options) {
@@ -409,9 +450,7 @@ jsi::Value sessionStart(jsi::Runtime &rt, jsi::Object options) {
       storeHandle, profile.length() ? profile.c_str() : nullptr, asTransaction,
       callbackWithResponse, CallbackId(state));
 
-  handleError(rt, code);
-
-  return jsi::Value::null();
+  return createReturnValue(rt, code, nullptr);
 }
 
 jsi::Value sessionUpdate(jsi::Runtime &rt, jsi::Object options) {
@@ -432,9 +471,7 @@ jsi::Value sessionUpdate(jsi::Runtime &rt, jsi::Object options) {
                                         tags.length() ? tags.c_str() : nullptr,
                                         expiryMs, callback, CallbackId(state));
 
-  handleError(rt, code);
-
-  return jsi::Value::null();
+  return createReturnValue(rt, code, nullptr);
 }
 
 jsi::Value sessionUpdateKey(jsi::Runtime &rt, jsi::Object options) {
@@ -454,9 +491,7 @@ jsi::Value sessionUpdateKey(jsi::Runtime &rt, jsi::Object options) {
                                tags.length() ? tags.c_str() : nullptr, expiryMs,
                                callback, CallbackId(state));
 
-  handleError(rt, code);
-
-  return jsi::Value::null();
+  return createReturnValue(rt, code, nullptr);
 }
 
 jsi::Value scanStart(jsi::Runtime &rt, jsi::Object options) {
@@ -476,9 +511,8 @@ jsi::Value scanStart(jsi::Runtime &rt, jsi::Object options) {
       storeHandle, profile.length() ? profile.c_str() : nullptr,
       category.c_str(), tagFilter.length() ? tagFilter.c_str() : nullptr,
       offset, limit, callbackWithResponse, CallbackId(state));
-  handleError(rt, code);
 
-  return jsi::Value::null();
+  return createReturnValue(rt, code, nullptr);
 };
 
 jsi::Value scanNext(jsi::Runtime &rt, jsi::Object options) {
@@ -490,18 +524,16 @@ jsi::Value scanNext(jsi::Runtime &rt, jsi::Object options) {
 
   ErrorCode code =
       askar_scan_next(scanHandle, callbackWithResponse, CallbackId(state));
-  handleError(rt, code);
 
-  return jsi::Value::null();
+  return createReturnValue(rt, code, nullptr);
 };
 
 jsi::Value scanFree(jsi::Runtime &rt, jsi::Object options) {
   auto scanHandle = jsiToValue<int64_t>(rt, options, "scanHandle");
 
   ErrorCode code = askar_scan_free(scanHandle);
-  handleError(rt, code);
 
-  return jsi::Value::null();
+  return createReturnValue(rt, code, nullptr);
 };
 
 jsi::Value keyFromJwk(jsi::Runtime &rt, jsi::Object options) {
@@ -510,11 +542,8 @@ jsi::Value keyFromJwk(jsi::Runtime &rt, jsi::Object options) {
   LocalKeyHandle out;
 
   ErrorCode code = askar_key_from_jwk(jwk, &out);
-  handleError(rt, code);
 
-  auto serializedPointer = std::to_string(intptr_t(out._0));
-  jsi::String pointer = jsi::String::createFromAscii(rt, serializedPointer);
-  return pointer;
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyFromKeyExchange(jsi::Runtime &rt, jsi::Object options) {
@@ -526,11 +555,8 @@ jsi::Value keyFromKeyExchange(jsi::Runtime &rt, jsi::Object options) {
 
   ErrorCode code =
       askar_key_from_key_exchange(algorithm.c_str(), skHandle, pkHandle, &out);
-  handleError(rt, code);
 
-  auto serializedPointer = std::to_string(intptr_t(out._0));
-  jsi::String pointer = jsi::String::createFromAscii(rt, serializedPointer);
-  return pointer;
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyFromPublicBytes(jsi::Runtime &rt, jsi::Object options) {
@@ -541,11 +567,8 @@ jsi::Value keyFromPublicBytes(jsi::Runtime &rt, jsi::Object options) {
 
   ErrorCode code =
       askar_key_from_public_bytes(algorithm.c_str(), publicKey, &out);
-  handleError(rt, code);
 
-  auto serializedPointer = std::to_string(intptr_t(out._0));
-  jsi::String pointer = jsi::String::createFromAscii(rt, serializedPointer);
-  return pointer;
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyFromSecretBytes(jsi::Runtime &rt, jsi::Object options) {
@@ -556,11 +579,8 @@ jsi::Value keyFromSecretBytes(jsi::Runtime &rt, jsi::Object options) {
 
   ErrorCode code =
       askar_key_from_secret_bytes(algorithm.c_str(), secretKey, &out);
-  handleError(rt, code);
 
-  auto serializedPointer = std::to_string(intptr_t(out._0));
-  jsi::String pointer = jsi::String::createFromAscii(rt, serializedPointer);
-  return pointer;
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyFromSeed(jsi::Runtime &rt, jsi::Object options) {
@@ -572,26 +592,19 @@ jsi::Value keyFromSeed(jsi::Runtime &rt, jsi::Object options) {
 
   ErrorCode code =
       askar_key_from_seed(algorithm.c_str(), seed, method.c_str(), &out);
-  handleError(rt, code);
 
-  auto serializedPointer = std::to_string(intptr_t(out._0));
-  jsi::String pointer = jsi::String::createFromAscii(rt, serializedPointer);
-  return pointer;
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyGenerate(jsi::Runtime &rt, jsi::Object options) {
   auto algorithm = jsiToValue<std::string>(rt, options, "algorithm");
-  //  auto ephemeral = jsiToValue<int8_t>(rt, options, "ephemeral");
-  auto ephemeral = 0;
+  auto ephemeral = jsiToValue<int8_t>(rt, options, "ephemeral");
 
   LocalKeyHandle out;
 
   ErrorCode code = askar_key_generate(algorithm.c_str(), ephemeral, &out);
-  handleError(rt, code);
 
-  auto serializedPointer = std::to_string(intptr_t(out._0));
-  jsi::String pointer = jsi::String::createFromAscii(rt, serializedPointer);
-  return pointer;
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyGetAlgorithm(jsi::Runtime &rt, jsi::Object options) {
@@ -601,9 +614,8 @@ jsi::Value keyGetAlgorithm(jsi::Runtime &rt, jsi::Object options) {
   const char *out;
 
   ErrorCode code = askar_key_get_algorithm(localKeyHandle, &out);
-  handleError(rt, code);
 
-  return jsi::String::createFromAscii(rt, out);
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyGetEphemeral(jsi::Runtime &rt, jsi::Object options) {
@@ -613,9 +625,8 @@ jsi::Value keyGetEphemeral(jsi::Runtime &rt, jsi::Object options) {
   int8_t out;
 
   ErrorCode code = askar_key_get_ephemeral(localKeyHandle, &out);
-  handleError(rt, code);
 
-  return jsi::Value(int(out));
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyGetJwkPublic(jsi::Runtime &rt, jsi::Object options) {
@@ -627,9 +638,8 @@ jsi::Value keyGetJwkPublic(jsi::Runtime &rt, jsi::Object options) {
 
   ErrorCode code =
       askar_key_get_jwk_public(localKeyHandle, algorithm.c_str(), &out);
-  handleError(rt, code);
 
-  return jsi::String::createFromAscii(rt, out);
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyGetJwkSecret(jsi::Runtime &rt, jsi::Object options) {
@@ -639,9 +649,8 @@ jsi::Value keyGetJwkSecret(jsi::Runtime &rt, jsi::Object options) {
   SecretBuffer out;
 
   ErrorCode code = askar_key_get_jwk_secret(localKeyHandle, &out);
-  handleError(rt, code);
 
-  return secretBufferToArrayBuffer(rt, out);
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyGetJwkThumbprint(jsi::Runtime &rt, jsi::Object options) {
@@ -653,9 +662,8 @@ jsi::Value keyGetJwkThumbprint(jsi::Runtime &rt, jsi::Object options) {
 
   ErrorCode code =
       askar_key_get_jwk_thumbprint(localKeyHandle, algorithm.c_str(), &out);
-  handleError(rt, code);
 
-  return jsi::String::createFromAscii(rt, out);
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyGetPublicBytes(jsi::Runtime &rt, jsi::Object options) {
@@ -665,9 +673,8 @@ jsi::Value keyGetPublicBytes(jsi::Runtime &rt, jsi::Object options) {
   SecretBuffer out;
 
   ErrorCode code = askar_key_get_public_bytes(localKeyHandle, &out);
-  handleError(rt, code);
 
-  return secretBufferToArrayBuffer(rt, out);
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyGetSecretBytes(jsi::Runtime &rt, jsi::Object options) {
@@ -677,9 +684,8 @@ jsi::Value keyGetSecretBytes(jsi::Runtime &rt, jsi::Object options) {
   SecretBuffer out;
 
   ErrorCode code = askar_key_get_secret_bytes(localKeyHandle, &out);
-  handleError(rt, code);
 
-  return secretBufferToArrayBuffer(rt, out);
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keySignMessage(jsi::Runtime &rt, jsi::Object options) {
@@ -693,9 +699,8 @@ jsi::Value keySignMessage(jsi::Runtime &rt, jsi::Object options) {
   ErrorCode code = askar_key_sign_message(
       localKeyHandle, message, sigType.length() ? sigType.c_str() : nullptr,
       &out);
-  handleError(rt, code);
 
-  return secretBufferToArrayBuffer(rt, out);
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyUnwrapKey(jsi::Runtime &rt, jsi::Object options) {
@@ -710,11 +715,8 @@ jsi::Value keyUnwrapKey(jsi::Runtime &rt, jsi::Object options) {
 
   ErrorCode code = askar_key_unwrap_key(localKeyHandle, algorithm.c_str(),
                                         ciphertext, nonce, tag, &out);
-  handleError(rt, code);
 
-  auto serializedPointer = std::to_string(intptr_t(out._0));
-  jsi::String pointer = jsi::String::createFromAscii(rt, serializedPointer);
-  return pointer;
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyVerifySignature(jsi::Runtime &rt, jsi::Object options) {
@@ -729,9 +731,8 @@ jsi::Value keyVerifySignature(jsi::Runtime &rt, jsi::Object options) {
   ErrorCode code = askar_key_verify_signature(
       localKeyHandle, message, signature,
       sigType.length() ? sigType.c_str() : nullptr, &out);
-  handleError(rt, code);
 
-  return jsi::Value(int(out));
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyWrapKey(jsi::Runtime &rt, jsi::Object options) {
@@ -743,14 +744,8 @@ jsi::Value keyWrapKey(jsi::Runtime &rt, jsi::Object options) {
   EncryptedBuffer out;
 
   ErrorCode code = askar_key_wrap_key(localKeyHandle, other, nonce, &out);
-  handleError(rt, code);
 
-  auto object = jsi::Object(rt);
-  object.setProperty(rt, "buffer", secretBufferToArrayBuffer(rt, out.buffer));
-  object.setProperty(rt, "tagPos", int(out.tag_pos));
-  object.setProperty(rt, "noncePos", int(out.nonce_pos));
-
-  return object;
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyConvert(jsi::Runtime &rt, jsi::Object options) {
@@ -761,11 +756,8 @@ jsi::Value keyConvert(jsi::Runtime &rt, jsi::Object options) {
   LocalKeyHandle out;
 
   ErrorCode code = askar_key_convert(localKeyHandle, algorithm.c_str(), &out);
-  handleError(rt, code);
 
-  auto serializedPointer = std::to_string(intptr_t(out._0));
-  jsi::String pointer = jsi::String::createFromAscii(rt, serializedPointer);
-  return pointer;
+  return createReturnValue(rt, code, &out);
 };
 
 jsi::Value keyFree(jsi::Runtime &rt, jsi::Object options) {
@@ -774,7 +766,7 @@ jsi::Value keyFree(jsi::Runtime &rt, jsi::Object options) {
 
   askar_key_free(localKeyHandle);
 
-  return jsi::Value::null();
+  return createReturnValue(rt, ErrorCode::Success, nullptr);
 };
 
 jsi::Value keyCryptoBox(jsi::Runtime &rt, jsi::Object options) {
@@ -787,9 +779,8 @@ jsi::Value keyCryptoBox(jsi::Runtime &rt, jsi::Object options) {
 
   ErrorCode code =
       askar_key_crypto_box(recipientKey, senderKey, message, nonce, &out);
-  handleError(rt, code);
 
-  return secretBufferToArrayBuffer(rt, out);
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyCryptoBoxOpen(jsi::Runtime &rt, jsi::Object options) {
@@ -802,18 +793,16 @@ jsi::Value keyCryptoBoxOpen(jsi::Runtime &rt, jsi::Object options) {
 
   ErrorCode code =
       askar_key_crypto_box_open(recipientKey, senderKey, message, nonce, &out);
-  handleError(rt, code);
 
-  return secretBufferToArrayBuffer(rt, out);
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyCryptoBoxRandomNonce(jsi::Runtime &rt, jsi::Object options) {
   SecretBuffer out;
 
   ErrorCode code = askar_key_crypto_box_random_nonce(&out);
-  handleError(rt, code);
 
-  return secretBufferToArrayBuffer(rt, out);
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyCryptoBoxSeal(jsi::Runtime &rt, jsi::Object options) {
@@ -824,9 +813,8 @@ jsi::Value keyCryptoBoxSeal(jsi::Runtime &rt, jsi::Object options) {
   SecretBuffer out;
 
   ErrorCode code = askar_key_crypto_box_seal(localKeyHandle, message, &out);
-  handleError(rt, code);
 
-  return secretBufferToArrayBuffer(rt, out);
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyCryptoBoxSealOpen(jsi::Runtime &rt, jsi::Object options) {
@@ -838,9 +826,8 @@ jsi::Value keyCryptoBoxSealOpen(jsi::Runtime &rt, jsi::Object options) {
 
   ErrorCode code =
       askar_key_crypto_box_seal_open(localKeyHandle, ciphertext, &out);
-  handleError(rt, code);
 
-  return secretBufferToArrayBuffer(rt, out);
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyDeriveEcdh1pu(jsi::Runtime &rt, jsi::Object options) {
@@ -859,11 +846,8 @@ jsi::Value keyDeriveEcdh1pu(jsi::Runtime &rt, jsi::Object options) {
   ErrorCode code = askar_key_derive_ecdh_1pu(algorithm.c_str(), ephemeralKey,
                                              senderKey, recipientKey, algId,
                                              apu, apv, ccTag, receive, &out);
-  handleError(rt, code);
 
-  auto serializedPointer = std::to_string(intptr_t(out._0));
-  jsi::String pointer = jsi::String::createFromAscii(rt, serializedPointer);
-  return pointer;
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyDeriveEcdhEs(jsi::Runtime &rt, jsi::Object options) {
@@ -880,11 +864,8 @@ jsi::Value keyDeriveEcdhEs(jsi::Runtime &rt, jsi::Object options) {
   ErrorCode code =
       askar_key_derive_ecdh_es(algorithm.c_str(), ephemeralKey, recipientKey,
                                algId, apu, apv, receive, &out);
-  handleError(rt, code);
 
-  auto serializedPointer = std::to_string(intptr_t(out._0));
-  jsi::String pointer = jsi::String::createFromAscii(rt, serializedPointer);
-  return pointer;
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyAeadDecrypt(jsi::Runtime &rt, jsi::Object options) {
@@ -899,9 +880,8 @@ jsi::Value keyAeadDecrypt(jsi::Runtime &rt, jsi::Object options) {
 
   ErrorCode code =
       askar_key_aead_decrypt(localKeyHandle, ciphertext, nonce, tag, aad, &out);
-  handleError(rt, code);
 
-  return secretBufferToArrayBuffer(rt, out);
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyAeadEncrypt(jsi::Runtime &rt, jsi::Object options) {
@@ -915,14 +895,8 @@ jsi::Value keyAeadEncrypt(jsi::Runtime &rt, jsi::Object options) {
 
   ErrorCode code =
       askar_key_aead_encrypt(localKeyHandle, message, nonce, aad, &out);
-  handleError(rt, code);
 
-  auto object = jsi::Object(rt);
-  object.setProperty(rt, "buffer", secretBufferToArrayBuffer(rt, out.buffer));
-  object.setProperty(rt, "tagPos", int(out.tag_pos));
-  object.setProperty(rt, "noncePos", int(out.nonce_pos));
-
-  return object;
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyAeadGetPadding(jsi::Runtime &rt, jsi::Object options) {
@@ -934,9 +908,8 @@ jsi::Value keyAeadGetPadding(jsi::Runtime &rt, jsi::Object options) {
 
   ErrorCode code =
       askar_key_aead_get_padding(localKeyHandle, messageLength, &out);
-  handleError(rt, code);
 
-  return jsi::Value(out);
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyAeadGetParams(jsi::Runtime &rt, jsi::Object options) {
@@ -946,13 +919,8 @@ jsi::Value keyAeadGetParams(jsi::Runtime &rt, jsi::Object options) {
   AeadParams out;
 
   ErrorCode code = askar_key_aead_get_params(localKeyHandle, &out);
-  handleError(rt, code);
 
-  auto object = jsi::Object(rt);
-  object.setProperty(rt, "nonceLength", out.nonce_length);
-  object.setProperty(rt, "tagLength", out.tag_length);
-
-  return object;
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyAeadRandomNonce(jsi::Runtime &rt, jsi::Object options) {
@@ -962,9 +930,8 @@ jsi::Value keyAeadRandomNonce(jsi::Runtime &rt, jsi::Object options) {
   SecretBuffer out;
 
   ErrorCode code = askar_key_aead_random_nonce(localKeyHandle, &out);
-  handleError(rt, code);
 
-  return secretBufferToArrayBuffer(rt, out);
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyEntryListCount(jsi::Runtime &rt, jsi::Object options) {
@@ -974,9 +941,8 @@ jsi::Value keyEntryListCount(jsi::Runtime &rt, jsi::Object options) {
   int32_t out;
 
   ErrorCode code = askar_key_entry_list_count(keyEntryListHandle, &out);
-  handleError(rt, code);
 
-  return jsi::Value(out);
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyEntryListFree(jsi::Runtime &rt, jsi::Object options) {
@@ -986,9 +952,8 @@ jsi::Value keyEntryListFree(jsi::Runtime &rt, jsi::Object options) {
   int32_t out;
 
   ErrorCode code = askar_key_entry_list_count(keyEntryListHandle, &out);
-  handleError(rt, code);
 
-  return jsi::Value(out);
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyEntryListGetAlgorithm(jsi::Runtime &rt, jsi::Object options) {
@@ -1000,9 +965,8 @@ jsi::Value keyEntryListGetAlgorithm(jsi::Runtime &rt, jsi::Object options) {
 
   ErrorCode code =
       askar_key_entry_list_get_algorithm(keyEntryListHandle, index, &out);
-  handleError(rt, code);
 
-  return jsi::String::createFromAscii(rt, out);
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyEntryListGetMetadata(jsi::Runtime &rt, jsi::Object options) {
@@ -1014,9 +978,8 @@ jsi::Value keyEntryListGetMetadata(jsi::Runtime &rt, jsi::Object options) {
 
   ErrorCode code =
       askar_key_entry_list_get_metadata(keyEntryListHandle, index, &out);
-  handleError(rt, code);
 
-  return jsi::String::createFromAscii(rt, out);
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyEntryListGetName(jsi::Runtime &rt, jsi::Object options) {
@@ -1028,9 +991,8 @@ jsi::Value keyEntryListGetName(jsi::Runtime &rt, jsi::Object options) {
 
   ErrorCode code =
       askar_key_entry_list_get_name(keyEntryListHandle, index, &out);
-  handleError(rt, code);
 
-  return jsi::String::createFromAscii(rt, out);
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyEntryListGetTags(jsi::Runtime &rt, jsi::Object options) {
@@ -1042,9 +1004,8 @@ jsi::Value keyEntryListGetTags(jsi::Runtime &rt, jsi::Object options) {
 
   ErrorCode code =
       askar_key_entry_list_get_tags(keyEntryListHandle, index, &out);
-  handleError(rt, code);
 
-  return jsi::String::createFromAscii(rt, out ? out : "{}");
+  return createReturnValue(rt, code, &out);
 }
 
 jsi::Value keyEntryListLoadLocal(jsi::Runtime &rt, jsi::Object options) {
@@ -1056,11 +1017,57 @@ jsi::Value keyEntryListLoadLocal(jsi::Runtime &rt, jsi::Object options) {
 
   ErrorCode code =
       askar_key_entry_list_load_local(keyEntryListHandle, index, &out);
-  handleError(rt, code);
 
-  auto serializedPointer = std::to_string(intptr_t(out._0));
-  jsi::String pointer = jsi::String::createFromAscii(rt, serializedPointer);
-  return pointer;
+  return createReturnValue(rt, code, &out);
+}
+
+jsi::Value migrateIndySdk(jsi::Runtime &rt, jsi::Object options) {
+  auto specUri = jsiToValue<std::string>(rt, options, "specUri");
+  auto walletName = jsiToValue<std::string>(rt, options, "walletName");
+  auto walletKey = jsiToValue<std::string>(rt, options, "walletKey");
+  auto kdfLevel = jsiToValue<std::string>(rt, options, "kdfLevel");
+
+  jsi::Function cb = options.getPropertyAsFunction(rt, "cb");
+  State *state = new State(&cb);
+  state->rt = &rt;
+
+  ErrorCode code = askar_migrate_indy_sdk(specUri.c_str(), walletName.c_str(),
+                                          walletKey.c_str(), kdfLevel.c_str(),
+                                          callback, CallbackId(state));
+
+  return createReturnValue(rt, code, nullptr);
+}
+
+jsi::Value stringListCount(jsi::Runtime &rt, jsi::Object options) {
+  auto stringListHandle =
+      jsiToValue<StringListHandle>(rt, options, "stringListHandle");
+
+  int32_t out;
+
+  ErrorCode code = askar_string_list_count(stringListHandle, &out);
+
+  return createReturnValue(rt, code, &out);
+}
+
+jsi::Value stringListFree(jsi::Runtime &rt, jsi::Object options) {
+  auto stringListHandle =
+      jsiToValue<StringListHandle>(rt, options, "stringListHandle");
+
+  askar_string_list_free(stringListHandle);
+
+  return createReturnValue(rt, ErrorCode::Success, nullptr);
+}
+
+jsi::Value stringListGetItem(jsi::Runtime &rt, jsi::Object options) {
+  auto stringListHandle =
+      jsiToValue<StringListHandle>(rt, options, "stringListHandle");
+  auto index = jsiToValue<int32_t>(rt, options, "index");
+
+  const char *out;
+
+  ErrorCode code = askar_string_list_get_item(stringListHandle, index, &out);
+
+  return createReturnValue(rt, code, &out);
 }
 
 } // namespace ariesAskar
