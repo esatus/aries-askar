@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace aries_askar_dotnet.Models
+namespace aries_askar_dotnet_tests.Models
 {
     public static class Structures
     {
@@ -26,7 +26,7 @@ namespace aries_askar_dotnet.Models
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public unsafe  struct ByteBuffer
+        public unsafe struct ByteBuffer
         {
             public long len;
             public IntPtr value;

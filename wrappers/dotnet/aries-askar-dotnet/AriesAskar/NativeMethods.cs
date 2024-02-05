@@ -122,9 +122,9 @@ namespace aries_askar_dotnet.AriesAskar
         #region Log
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int askar_set_custom_logger(IntPtr context, GetLogCallbackDelegate log, GetEnableCallbackDelegate enable, GetFlushCallbackDelegate flush, int max_level);
-        internal delegate void GetLogCallbackDelegate(IntPtr context, int level, string target, string message, string module_path, string file, int line);
-        internal delegate void GetEnableCallbackDelegate(IntPtr context, int level);
-        internal delegate void GetFlushCallbackDelegate(IntPtr context);
+        public delegate void GetLogCallbackDelegate(IntPtr context, int level, string target, string message, string module_path, string file, int line);
+        public delegate void GetEnableCallbackDelegate(IntPtr context, int level);
+        public delegate void GetFlushCallbackDelegate(IntPtr context);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int askar_clear_custom_logger();
@@ -184,7 +184,7 @@ namespace aries_askar_dotnet.AriesAskar
 
         #region Secret
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int askar_buffer_free(ByteBuffer buffer);
+        internal static extern void askar_buffer_free(ByteBuffer buffer);
         #endregion
 
         #region Store
@@ -265,6 +265,12 @@ namespace aries_askar_dotnet.AriesAskar
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int askar_session_close(IntPtr sessionHandle, byte commit, NoReturnValueStoreCompletedDelegate cb, long cb_id);
+        #endregion
+
+        #region Migration
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_migrate_indy_sdk(FfiStr spec_uri, FfiStr wallet_name, FfiStr wallet_key, FfiStr kdf_level, MigrationCompletedDelegate callback, long callback_id);
+        internal delegate void MigrationCompletedDelegate(long callback_id, int errorCode);
         #endregion
     }
 }
