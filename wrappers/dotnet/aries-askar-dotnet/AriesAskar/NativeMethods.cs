@@ -137,6 +137,10 @@ namespace aries_askar_dotnet.AriesAskar
         #endregion
 
         #region Mod
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern void askar_terminate();
+
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern string askar_version();
         #endregion
@@ -272,5 +276,6 @@ namespace aries_askar_dotnet.AriesAskar
         internal static extern int askar_migrate_indy_sdk(FfiStr spec_uri, FfiStr wallet_name, FfiStr wallet_key, FfiStr kdf_level, MigrationCompletedDelegate callback, long callback_id);
         internal delegate void MigrationCompletedDelegate(long callback_id, int errorCode);
         #endregion
+
     }
 }
