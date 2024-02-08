@@ -1,4 +1,5 @@
-﻿using aries_askar_dotnet.AriesAskar;
+﻿using aries_askar_dotnet;
+using aries_askar_dotnet.AriesAskar;
 using FluentAssertions;
 using NUnit.Framework;
 using System;
@@ -11,8 +12,6 @@ namespace aries_askar_dotnet_tests.AriesAskar
 {
     public class LogApiTest
     {
-
-
         [Test, TestCase(TestName = "SetCustomLoggerAsyncWorks() call returns a result int.")]
         public async Task SetCustomLoggerAsyncWorks()
         {
@@ -23,26 +22,22 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             //Assert
             _ = actual.Should().Be(0);
-
         }
 
-
-        [Test, TestCase(TestName = "ClearCustomLoggerAsyncWorks() call returns a result string.")]
-        public async Task ClearCustomLoggerAsyncWorks()
+        [Test, TestCase(TestName = "SetCustomLoggerAsyncWorks() call with invalid maxlevel throws.")]
+        public async Task SetCustomLoggerAsyncThrows()
         {
-            IntPtr context = new IntPtr();
-            int maxlevel = 1;
+            int maxlevel = 6;
+            IntPtr context = new();
+
             //Act
-            int actual = await LogApi.SetCustomLoggerAsync(context, maxlevel);
-            //Act
-            await LogApi.ClearCustomLoggerAsync();
+            Func<Task> func = async () => await LogApi.SetCustomLoggerAsync(context, maxlevel);
 
             //Assert
-            _ = actual.Should().Be(0);
-
+            _ = await func.Should().ThrowAsync<AriesAskarException>();
         }
 
-        [Test, TestCase(TestName = "SetDefaultLoggerAsyncWorks() call returns a result string.")]
+        [Test, TestCase(TestName = "SetDefaultLoggerAsyncWorks() call returns a result int.")]
         public async Task SetDefaultLoggerAsyncWorks()
         {
             //Act
@@ -50,7 +45,6 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             //Assert
             _ = actual.Should().Be(0);
-
         }
 
         [Test, TestCase(TestName = "SetMaxLogLevelAsyncWorks() call returns a result int.")]
@@ -63,9 +57,18 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             //Assert
             _ = actual.Should().Be(0);
-
         }
 
+        [Test, TestCase(TestName = "SetMaxLogLevelAsyncWorks() call with invalid maxlevel throws.")]
+        public async Task SetMaxLogLevelAsyncThrows()
+        {
+            int maxlevel = 6;
 
+            //Act
+            Func<Task> func = async () => await LogApi.SetMaxLogLevelAsync(maxlevel);
+
+            //Assert
+            _ = await func.Should().ThrowAsync<AriesAskarException>();
+        }
     }
 }

@@ -43,5 +43,20 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = actual.Should().Be(true);
         }
 
+        [Test, TestCase(TestName = "MigrateIndySdkAsync() call with invalid db throws.")]
+        public async Task MigrateIndySdkAsyncThrows()
+        {
+            string specuri = null;
+            string walletname = "walletwallet.0";
+            string walletkey = "GfwU1DC7gEZNs3w41tjBiZYj7BNToDoFEqKY6wZXqs1A";
+            string kdflevel = "RAW";
+
+            //Act
+            Func<Task> func = async () => await MigrationApi.MigrateIndySdkAsync(specuri, walletname, walletkey, kdflevel);
+
+            //Assert
+            await func.Should().ThrowAsync<Exception>();
+        }
+
     }
 }
