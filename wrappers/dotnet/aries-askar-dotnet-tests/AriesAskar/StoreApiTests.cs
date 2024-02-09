@@ -387,6 +387,82 @@ namespace aries_askar_dotnet_tests.AriesAskar
             //Assert
             _ = await actual.Should().ThrowAsync<Exception>();
         }
+
+        [Test, TestCase(TestName = "GetListProfilesAsync() call works and returns active profile.")]
+        public async Task GetListProfilesAsyncAsyncWorks()
+        {
+            //Arrange
+            Store store = await StoreApi.ProvisionAsync(_testUriInMemory, testKeyMethod, testPassKey, testProfile, testRecreate);
+
+            //Act
+            IntPtr actual = await store.GetListProfilesAsync();
+
+            //Assert
+            _ = actual.Should().Be(new IntPtr());
+        }
+        [Test, TestCase(TestName = "GetListProfilesAsync() callback throws with invalid storeHandle.")]
+        public async Task GetListProfilesAsyncThrows()
+        {
+            //Arrange
+            Store store = await StoreApi.ProvisionAsync(_testUriInMemory, testKeyMethod, testPassKey, testProfile, testRecreate);
+            store.storeHandle = (IntPtr)99;
+            //Act
+            Func<Task> actual = async () => await store.GetListProfilesAsync();
+
+            //Assert
+            _ = await actual.Should().ThrowAsync<Exception>();
+        }
+
+        [Test, TestCase(TestName = "GetDefaultProfileAsync() call works and returns active profile.")]
+        public async Task GetDefaultProfileAsyncWorks()
+        {
+            //Arrange
+            Store store = await StoreApi.ProvisionAsync(_testUriInMemory, testKeyMethod, testPassKey, testProfile, testRecreate);
+
+            //Act
+            string actual = await store.GetDefaultProfileAsync();
+
+            //Assert
+            _ = actual.Should().Be(testProfile);
+        }
+        [Test, TestCase(TestName = "GetDefaultProfileAsync() callback throws with invalid storeHandle.")]
+        public async Task GetDefaultProfileAsyncThrows()
+        {
+            //Arrange
+            Store store = await StoreApi.ProvisionAsync(_testUriInMemory, testKeyMethod, testPassKey, testProfile, testRecreate);
+            store.storeHandle = (IntPtr)99;
+            //Act
+            Func<Task> actual = async () => await store.GetDefaultProfileAsync();
+
+            //Assert
+            _ = await actual.Should().ThrowAsync<Exception>();
+        }
+
+        [Test, TestCase(TestName = "SetDefaultProfileAsync() call works and returns active profile.")]
+        public async Task SetDefaultProfileAsyncWorks()
+        {
+            //Arrange
+            Store store = await StoreApi.ProvisionAsync(_testUriInMemory, testKeyMethod, testPassKey, testProfile, testRecreate);
+            string defaultProfile = "defaultProfile";
+            //Act
+            bool actual = await store.SetDefaultProfileAsync(defaultProfile);
+
+            //Assert
+            _ = actual.Should().Be(true);
+        }
+        [Test, TestCase(TestName = "SetDefaultProfileAsync() callback throws with invalid storeHandle.")]
+        public async Task SetDefaultProfileAsyncThrows()
+        {
+            //Arrange
+            Store store = await StoreApi.ProvisionAsync(_testUriInMemory, testKeyMethod, testPassKey, testProfile, testRecreate);
+            store.storeHandle = (IntPtr)99;
+            string defaultProfile = String.Empty;
+            //Act
+            Func<Task> actual = async () => await store.SetDefaultProfileAsync(defaultProfile);
+
+            //Assert
+            _ = await actual.Should().ThrowAsync<Exception>();
+        }
         #endregion
 
         #region rekey

@@ -113,6 +113,26 @@ namespace aries_askar_dotnet.AriesAskar
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="store">The store instance, holding the store handle from the backend.</param>
+        /// <returns></returns>
+        public static async Task<IntPtr> GetListProfilesAsync(this Store store)
+        {
+            return await StoreListProfilesAsync(store.storeHandle);
+        }
+        
+        public static async Task<string> GetDefaultProfileAsync(this Store store)
+        {
+            return await StoreGetDefaultProfileAsync(store.storeHandle);
+        }
+
+        public static async Task<bool> SetDefaultProfileAsync(this Store store, string profile)
+        {
+            return await StoreSetDefaultProfileAsync(store.storeHandle, profile);
+        }
+
+        /// <summary>
         /// Remove an existing profile from the backend with the given profile name.
         /// </summary>
         /// <param name="profile">The store profile name of the profile to remove.</param>
@@ -806,7 +826,30 @@ namespace aries_askar_dotnet.AriesAskar
 
             return await taskCompletionSource.Task;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="storeHandle"></param>
+        /// <returns></returns>
+        private static async Task<IntPtr> StoreListProfilesAsync(IntPtr storeHandle)
+        {
+            TaskCompletionSource<IntPtr> taskCompletionSource = new TaskCompletionSource<IntPtr>();
+            long callbackId = PendingCallbacks.Add(taskCompletionSource);
 
+            int errorCode = NativeMethods.askar_store_list_profiles(
+                storeHandle,
+                GetStoreStringListCallback,
+                callbackId);
+
+            if (errorCode != (int)ErrorCode.Success)
+            {
+                string error = await ErrorApi.GetCurrentErrorAsync();
+
+                throw AriesAskarException.FromSdkError(error);
+            }
+
+            return await taskCompletionSource.Task;
+        }
         /// <summary>
         /// Remove an existing profile from the backend with the given profile name.
         /// </summary>
@@ -836,6 +879,46 @@ namespace aries_askar_dotnet.AriesAskar
             return Convert.ToBoolean(await taskCompletionSource.Task);
         }
 
+        private static async Task<string> StoreGetDefaultProfileAsync(IntPtr storeHandle)
+        {
+            TaskCompletionSource<string> taskCompletionSource = new TaskCompletionSource<string>();
+            long callbackId = PendingCallbacks.Add(taskCompletionSource);
+
+            int errorCode = NativeMethods.askar_store_get_default_profile(
+                storeHandle,
+                GetStoreStringCallback,
+                callbackId);
+
+            if (errorCode != (int)ErrorCode.Success)
+            {
+                string error = await ErrorApi.GetCurrentErrorAsync();
+
+                throw AriesAskarException.FromSdkError(error);
+            }
+
+            return await taskCompletionSource.Task;
+        }
+
+        private static async Task<bool> StoreSetDefaultProfileAsync(IntPtr storeHandle, string profile)
+        {
+            TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
+            long callbackId = PendingCallbacks.Add(taskCompletionSource);
+
+            int errorCode = NativeMethods.askar_store_set_default_profile(
+                storeHandle,
+                profile,
+                SetStoreStringCallback,
+                callbackId);
+
+            if (errorCode != (int)ErrorCode.Success)
+            {
+                string error = await ErrorApi.GetCurrentErrorAsync();
+
+                throw AriesAskarException.FromSdkError(error);
+            }
+
+            return Convert.ToBoolean(await taskCompletionSource.Task);
+        }
         /// <summary>
         /// Replace the wrapping key on a store in the backend.
         /// </summary>
@@ -1654,6 +1737,34 @@ namespace aries_askar_dotnet.AriesAskar
             taskCompletionSource.SetResult(result);
         }
         private static readonly GetStoreStringCompletedDelegate GetStoreStringCallback = GetStoreStringCallbackMethod;
+
+        private static void GetStoreStringListCallbackMethod(long callback_id, int err, IntPtr result)
+        {
+            TaskCompletionSource<IntPtr> taskCompletionSource = PendingCallbacks.Remove<IntPtr>(callback_id);
+
+            if (err != (int)ErrorCode.Success)
+            {
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                taskCompletionSource.SetException(AriesAskarException.FromSdkError(error));
+                return;
+            }
+            taskCompletionSource.SetResult(result);
+        }
+        private static readonly GetStoreStringListCompletedDelegate GetStoreStringListCallback = GetStoreStringListCallbackMethod;
+       
+        private static void SetStoreStringCallbackMethod(long callback_id, int err)
+        {
+            TaskCompletionSource<bool> taskCompletionSource = PendingCallbacks.Remove<bool>(callback_id);
+
+            if (err != (int)ErrorCode.Success)
+            {
+                string error = ErrorApi.GetCurrentErrorAsync().GetAwaiter().GetResult();
+                taskCompletionSource.SetException(AriesAskarException.FromSdkError(error));
+                return;
+            }
+            taskCompletionSource.SetResult(true);
+        }
+        private static readonly SetStoreStringCompletedDelegate SetStoreStringCallback = SetStoreStringCallbackMethod;
         #endregion
     }
 }

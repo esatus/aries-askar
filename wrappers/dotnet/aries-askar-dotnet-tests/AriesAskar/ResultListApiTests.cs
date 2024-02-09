@@ -484,5 +484,32 @@ namespace aries_askar_dotnet_tests.AriesAskar
             // Assert
             _ = await func.Should().ThrowAsync<AriesAskarException>();
         }
+
+        #region Tests for SetStringListCountAsync
+        [Test, TestCase(TestName = "StringListCountAsync() returns the count.")]
+        public async Task StringListCountAsyncWork()
+        {
+            //Arrange
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            IntPtr StringListHandle = await store.GetListProfilesAsync();
+            // Act
+            int count = await ResultListApi.StringListCountAsync(StringListHandle);
+
+            // Assert
+            _ = count.Should().Be(1);
+        }
+        #endregion
+        [Test, TestCase(TestName = "GetItemStringListAsync() returns the count.")]
+        public async Task GetItemStringListAsynccWork()
+        {
+            //Arrange
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            IntPtr StringListHandle = await store.GetListProfilesAsync();
+            // Act
+            string item = await ResultListApi.GetItemStringListAsync(StringListHandle, 0);
+
+            // Assert
+            _ = item.Should().Be("testProfile");
+        }
     }
 }

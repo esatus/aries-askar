@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using static aries_askar_dotnet.Models.Structures;
 
@@ -184,6 +185,15 @@ namespace aries_askar_dotnet.AriesAskar
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int askar_key_entry_list_load_local(IntPtr keyEntryListHandle, int index, ref IntPtr outLocalKeyHandle);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_string_list_count(IntPtr StringListHandle, ref int count);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_string_list_get_item(IntPtr StringListHandle, int index, ref string item);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern void askar_string_list_free(IntPtr StringListHandle);
         #endregion
 
         #region Secret
@@ -195,8 +205,10 @@ namespace aries_askar_dotnet.AriesAskar
         internal delegate void NoReturnValueStoreCompletedDelegate(long callback_id, int err);
         internal delegate void GetStoreByteCompletedDelegate(long callback_id, int err, byte remove);
         internal delegate void GetStoreStringCompletedDelegate(long callback_id, int err, string result_p);
+        internal delegate void GetStoreStringListCompletedDelegate(long callback_id, int err, IntPtr result_p);
         internal delegate void GetStoreLongCompletedDelegate(long callback_id, int err, long count);
         internal delegate void GetStoreHandleCompletedDelegate(long callback_id, int err, IntPtr handle);
+        internal delegate void SetStoreStringCompletedDelegate(long callback_id, int err);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int askar_store_generate_raw_key(ByteBuffer seed, ref string output);
@@ -212,6 +224,14 @@ namespace aries_askar_dotnet.AriesAskar
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int askar_store_create_profile(IntPtr storeHandle, FfiStr profile, GetStoreStringCompletedDelegate cb, long cb_id);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_store_list_profiles(IntPtr storeHandle, GetStoreStringListCompletedDelegate cb, long cb_id);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_store_get_default_profile(IntPtr storeHandle, GetStoreStringCompletedDelegate cb, long cb_id);
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_store_set_default_profile(IntPtr storeHandle, string profile, SetStoreStringCompletedDelegate cb, long cb_id);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int askar_store_get_profile_name(IntPtr storeHandle, GetStoreStringCompletedDelegate cb, long cb_id);

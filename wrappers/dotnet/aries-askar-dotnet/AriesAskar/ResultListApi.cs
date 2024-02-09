@@ -1,5 +1,6 @@
 ﻿using aries_askar_dotnet.Models;
 using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using static aries_askar_dotnet.Models.Structures;
 
@@ -333,6 +334,48 @@ namespace aries_askar_dotnet.AriesAskar
                 throw AriesAskarException.FromSdkError(error);
             }
             return output;
+        }
+
+        public static async Task<int> StringListCountAsync(
+                IntPtr StringListHandle)
+        {
+            int count = 0;
+            int errorCode = NativeMethods.askar_string_list_count(
+               StringListHandle,
+               ref count);
+
+            if (errorCode != (int)ErrorCode.Success)
+            {
+                string error = await ErrorApi.GetCurrentErrorAsync();
+
+                throw AriesAskarException.FromSdkError(error);
+            }
+            return count;
+        }
+
+        public static async Task<string> GetItemStringListAsync(
+                IntPtr StringListHandle,
+                int index)
+        {
+            string item = string.Empty;
+            int errorCode = NativeMethods.askar_string_list_get_item(
+                StringListHandle,
+                index,
+                ref item);
+
+            if (errorCode != (int)ErrorCode.Success)
+            {
+                string error = await ErrorApi.GetCurrentErrorAsync();
+
+                throw AriesAskarException.FromSdkError(error);
+            }
+            return item;
+        }
+
+        public static Task SetStringListFreeAsync(IntPtr StringListHandle)
+        {
+            NativeMethods.askar_string_list_free(StringListHandle);
+            return Task.CompletedTask;
         }
     }
 }
