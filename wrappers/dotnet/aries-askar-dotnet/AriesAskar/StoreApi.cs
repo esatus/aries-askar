@@ -186,6 +186,12 @@ namespace aries_askar_dotnet.AriesAskar
             return remove && await store.RemoveAsync(store.specUri);
         }
 
+        public static async Task<Store> CopyAsync(this Store store, string target_uri, string key_method, string pass_key, bool recreate)
+        {
+            Store newStore = await StoreCopyAsync(store.storeHandle, target_uri, key_method, pass_key, recreate);
+           
+            return newStore;
+        }
         /// <summary>
         /// Create a new <see cref="Scan"/> instance against the store in the backend with the given scan parameters. The result will keep an open connection to the backend until it is consumed.
         /// </summary>
@@ -951,6 +957,35 @@ namespace aries_askar_dotnet.AriesAskar
             }
 
             return await taskCompletionSource.Task;
+        }
+
+        private static async Task<Store> StoreCopyAsync(
+            IntPtr storeHandle,
+            string targeturi,
+            string keymmethod,
+            string passkey,
+            bool recreate)
+        {
+            TaskCompletionSource<IntPtr> taskCompletionSource = new TaskCompletionSource<IntPtr>();
+            long callbackId = PendingCallbacks.Add(taskCompletionSource);
+
+            int errorCode = NativeMethods.askar_store_copy(
+                storeHandle,
+                FfiStr.Create(targeturi),
+                FfiStr.Create(keymmethod),
+                FfiStr.Create(passkey),
+                recreate,
+                GetStoreHandleCallback,
+                callbackId);
+
+            if (errorCode != (int)ErrorCode.Success)
+            {
+                string error = await ErrorApi.GetCurrentErrorAsync();
+
+                throw AriesAskarException.FromSdkError(error);
+            }
+            
+            return new Store(await taskCompletionSource.Task, targeturi);
         }
 
         /// <summary>

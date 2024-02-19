@@ -194,6 +194,7 @@ namespace aries_askar_dotnet.AriesAskar
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern void askar_string_list_free(IntPtr StringListHandle);
+
         #endregion
 
         #region Secret
@@ -244,6 +245,9 @@ namespace aries_askar_dotnet.AriesAskar
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int askar_store_close(IntPtr storeHandle, NoReturnValueStoreCompletedDelegate cb, long cb_id);
+
+        [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int askar_store_copy(IntPtr storeHandle, FfiStr target_uri, FfiStr key_method, FfiStr pass_key, bool recreate, GetStoreHandleCompletedDelegate cb, long cb_id);
 
         [DllImport(Consts.ARIES_ASKAR_LIB_NAME, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int askar_scan_start(IntPtr storeHandle, FfiStr profile, FfiStr category, FfiStr tag_filter, long offset, long limit, GetStoreHandleCompletedDelegate cb, long cb_id);

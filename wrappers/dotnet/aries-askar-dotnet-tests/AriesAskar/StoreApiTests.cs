@@ -16,6 +16,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
         private Dictionary<string, string> testEntry;
         private string _testUriInMemory;
         private string _testPathDb;
+        private string _testPathCopyDb;
         private KeyMethod testKeyMethod;
         private string testPassKey;
         private string testProfile;
@@ -46,6 +47,9 @@ namespace aries_askar_dotnet_tests.AriesAskar
             string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
             string testPathDb = Path.Combine(currentDirectory, @"..\..\..\test-db");
             _testPathDb = _dbType + "://" + Path.GetFullPath(testPathDb);
+
+            string testPathCopyDb = Path.Combine(currentDirectory, @"..\..\..\test-db1");
+            _testPathCopyDb = _dbType + "://" + Path.GetFullPath(testPathCopyDb);
         }
 
         #region STORE
@@ -162,7 +166,6 @@ namespace aries_askar_dotnet_tests.AriesAskar
             //Clean-up
             _ = await StoreApi.CloseAsync(actual, remove: true);
         }
-
 
         [Test]
         [TestCase(TestName = "OpenAsync() works on several store processes.")]
@@ -398,7 +401,7 @@ namespace aries_askar_dotnet_tests.AriesAskar
             IntPtr actual = await store.GetListProfilesAsync();
 
             //Assert
-            _ = actual.Should().Be(new IntPtr());
+            _ = actual.Should().NotBe(new IntPtr());
         }
         [Test, TestCase(TestName = "GetListProfilesAsync() callback throws with invalid storeHandle.")]
         public async Task GetListProfilesAsyncThrows()
@@ -555,6 +558,30 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = actual.Should().Be(expected);
             _ = store.session.Should().Be(null);
             _ = store.storeHandle.Should().Be((IntPtr)0);
+        }
+        #endregion
+
+        #region copy
+        [Test, TestCase(TestName = "CopyAsync() call returns a store.")]
+        public async Task CopyAsync()
+        {
+            string seed = "testseed000000000000000000000001";
+            string passKey = StoreApi.GenerateRawKeyAsync(seed).GetAwaiter().GetResult();
+
+            string newTestSeed = "testseed500000200006400003008001";
+            string newTestPassKey = StoreApi.GenerateRawKeyAsync(newTestSeed).GetAwaiter().GetResult();
+            KeyMethod newTestKeyMethod = KeyMethod.RAW;
+
+            //Act
+            Store actual = await StoreApi.ProvisionAsync(_testPathDb, KeyMethod.RAW, passKey, "testprofile", true);
+
+            //Assert
+            _ = actual.storeHandle.Should().NotBe((IntPtr)0);
+
+            Store newStore = await actual.CopyAsync(_testPathCopyDb, null, passKey, true);
+
+            //Assert
+            _ = newStore.storeHandle.Should().NotBe((IntPtr)0);
         }
         #endregion
 

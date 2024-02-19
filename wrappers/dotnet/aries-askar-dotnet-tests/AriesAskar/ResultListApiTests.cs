@@ -228,6 +228,27 @@ namespace aries_askar_dotnet_tests.AriesAskar
             _ = await func.Should().ThrowAsync<AriesAskarException>();
         }
 
+        [Test, TestCase(TestName = "EntryListFreeAsync() .")]
+        public async Task EntryListFreeAsyncWork()
+        {
+            // Arrange
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync();
+            _ = await session.InsertAsync(
+                testEntry["category"].ToString(),
+                testEntry["name"].ToString(),
+                testEntry["value"].ToString(),
+                testEntry["tags"].ToString());
+            // Act
+            IntPtr entryListHandle = await session.FetchAllAsync(
+                testEntry["category"].ToString());
+
+             await ResultListApi.EntryListFreeAsync(entryListHandle);
+
+            int count = await ResultListApi.EntryListCountAsync(entryListHandle);
+            _ = count.Should().Be(0);
+        }
+
         [Test, TestCase(TestName = "EntryListGetTagsAsync() returns the tag.")]
         public async Task EntryListGetTagsAsyncWorks()
         {
@@ -450,6 +471,25 @@ namespace aries_askar_dotnet_tests.AriesAskar
             // Assert
             _ = await func.Should().ThrowAsync<AriesAskarException>();
         }
+        [Test, TestCase(TestName = "KeyEntryListFreeAsync() returns the count.")]
+        public async Task KeyEntryListFreeAsyncWorks()
+        {
+            // Arrange
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            Session session = await store.StartSessionAsync();
+            _ = await session.InsertKeyAsync(
+                KeyApi.CreateKeyAsync(KeyAlg.ED25519, true).GetAwaiter().GetResult(),
+                testKeyEntry["key_name"],
+                testKeyEntry["metadata"],
+                testKeyEntry["tags"]);
+            IntPtr keyEntryListHandle = await session.FetchAllKeysAsync();
+            // Act
+            await ResultListApi.KeyEntryListFreeAsync(keyEntryListHandle); 
+            int count = await ResultListApi.KeyEntryListCountAsync(keyEntryListHandle);
+
+            // Assert
+            _ = count.Should().Be(0);
+        }
 
         [Test, TestCase(TestName = "LoadLocalKeyHandleFromKeyEntryListAsync() returns a localKeyHandle.")]
         public async Task LoadLocalKeyHandleFromKeyEntryListAsyncWorks()
@@ -510,6 +550,22 @@ namespace aries_askar_dotnet_tests.AriesAskar
 
             // Assert
             _ = item.Should().Be("testProfile");
+        }
+
+        [Test, TestCase(TestName = "SetStringListFreeAsync() returns the count.")]
+        public async Task SetStringListFreeAsyncWork()
+        {
+            //Arrange
+            Store store = await StoreApi.ProvisionAsync(testSpecUri, testKeyMethod, testPassKey, testProfile);
+            IntPtr StringListHandle = await store.GetListProfilesAsync();
+
+            int count1 = await ResultListApi.StringListCountAsync(StringListHandle);
+            // Act
+            await ResultListApi.SetStringListFreeAsync(StringListHandle);
+            int count = await ResultListApi.StringListCountAsync(StringListHandle);
+
+            // Assert
+            _ = count.Should().Be(0);
         }
     }
 }

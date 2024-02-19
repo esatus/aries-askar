@@ -377,5 +377,6 @@ namespace aries_askar_dotnet.AriesAskar
             NativeMethods.askar_string_list_free(StringListHandle);
             return Task.CompletedTask;
         }
+
     }
 }
